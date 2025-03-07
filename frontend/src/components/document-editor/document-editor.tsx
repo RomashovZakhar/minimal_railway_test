@@ -22,6 +22,7 @@ interface Document {
 interface DocumentEditorProps {
   document: Document;
   onChange: (document: Document) => void;
+  titleInputRef?: React.RefObject<HTMLInputElement | null>;
 }
 
 // Интерфейс для курсора другого пользователя
@@ -58,81 +59,370 @@ const NestedDocumentTool = {
       title: string;
     };
     block: HTMLElement;
+    container: HTMLElement;
+    pendingCreation: boolean;
+    isNewBlock: boolean;
     
     static get toolbox() {
       return {
         title: 'Вложенный документ',
-        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19 5V19H5V5H19ZM21 3H3V21H21V3ZM17 7H7V9H17V7ZM14 11H7V13H14V11Z" fill="currentColor"/></svg>'
+        icon: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 5C3 3.89543 3.89543 3 5 3H19C20.1046 3 21 3.89543 21 5V19C21 20.1046 20.1046 21 19 21H5C3.89543 21 3 20.1046 3 19V5Z" stroke="currentColor" stroke-width="2"/><path d="M7 7H17" stroke="currentColor" stroke-width="2"/><path d="M7 12H17" stroke="currentColor" stroke-width="2"/><path d="M7 17H13" stroke="currentColor" stroke-width="2"/></svg>'
       };
     }
-
+    
     constructor({ data, api, block }: { data: any, api: any, block: HTMLElement }) {
       this.api = api;
       this.data = data || { id: '', title: 'Новый документ' };
       this.block = block;
+      this.container = document.createElement('div');
+      this.container.classList.add('nested-document-block');
+      this.pendingCreation = false;
+      
+      // Определяем, является ли блок новым или существующим
+      // Новый блок - созданный через тулбар (без ID)
+      // Существующий блок - загруженный из сохраненного документа (с или без ID)
+      this.isNewBlock = !this.data.id && !block.innerHTML;
+      
+      console.log('Создан блок вложенного документа:', {
+        isNewBlock: this.isNewBlock, 
+        hasId: !!this.data.id, 
+        title: this.data.title
+      });
     }
-
-    async render() {
-      const wrapper = document.createElement('div');
-      wrapper.classList.add('nested-document-block');
-      wrapper.style.padding = '15px';
-      wrapper.style.border = '1px solid #e2e8f0';
-      wrapper.style.borderRadius = '6px';
-      wrapper.style.marginBottom = '15px';
-      wrapper.style.backgroundColor = '#f8fafc';
-      wrapper.style.cursor = 'pointer';
-      
-      const icon = document.createElement('span');
-      icon.innerHTML = '📄';
-      icon.style.marginRight = '10px';
-      
-      const title = document.createElement('span');
-      title.textContent = this.data.title;
-      title.style.fontWeight = 'bold';
-      
-      wrapper.appendChild(icon);
-      wrapper.appendChild(title);
-      
-      // Если документ уже создан, добавляем обработчик для перехода
+    
+    // Отображает блок в редакторе
+    render() {
+      // Если это существующий документ с ID, просто отображаем ссылку
       if (this.data.id) {
-        wrapper.addEventListener('click', () => {
-          window.location.href = `/documents/${this.data.id}`;
-        });
-      } else {
-        // Создаем новый документ при первом рендере
-        try {
-          const response = await fetch('/api/documents/', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-            },
-            body: JSON.stringify({
-              title: this.data.title,
-              parent: window.location.pathname.split('/').pop()
-            })
-          });
-          
-          const newDoc = await response.json();
-          this.data.id = newDoc.id;
-          
-          // Теперь добавляем обработчик для перехода
-          wrapper.addEventListener('click', () => {
-            window.location.href = `/documents/${this.data.id}`;
-          });
-        } catch (err) {
-          console.error('Ошибка при создании вложенного документа:', err);
-        }
+        this.renderExistingDocument();
+        return this.container;
       }
       
-      return wrapper;
+      // Если это новый блок (созданный через тулбар), то создаем новый документ
+      if (this.isNewBlock) {
+        // Сразу отображаем состояние загрузки
+        this.renderLoadingState();
+        
+        // Начинаем создание с небольшой задержкой
+        setTimeout(() => {
+          this.createDocument().catch(error => {
+            console.error('Ошибка при создании документа:', error);
+            this.renderErrorState(error.message || 'Не удалось создать документ');
+          });
+        }, 100);
+      } else {
+        // Если это существующий блок без ID (например, загруженный из сохраненного документа),
+        // то отображаем кнопку для создания документа
+        this.renderCreateButton();
+      }
+      
+      return this.container;
     }
-
+    
+    // Отображает ссылку на существующий документ
+    renderExistingDocument() {
+      // Если у нас есть id документа, загружаем актуальные данные
+      if (this.data.id) {
+        // Загружаем актуальные данные о документе с сервера
+        this.fetchDocumentDetails(this.data.id);
+      } else {
+        // Если ID нет, просто отображаем с имеющимися данными
+        this.renderDocumentLink();
+      }
+      
+      return this.container;
+    }
+    
+    // Загружает актуальные данные о документе
+    async fetchDocumentDetails(documentId: string) {
+      try {
+        console.log(`Загрузка актуальных данных для документа: ${documentId}`);
+        const response = await api.get(`/documents/${documentId}/`);
+        
+        if (response.data && response.data.title) {
+          console.log(`Получены данные, текущее название: ${this.data.title}, актуальное название: ${response.data.title}`);
+          
+          // Обновляем данные только если название изменилось
+          if (this.data.title !== response.data.title) {
+            this.data.title = response.data.title;
+            console.log(`Название обновлено на: ${this.data.title}`);
+            
+            // Обновляем данные блока в EditorJS
+            try {
+              if (this.api && typeof this.api.blocks?.getCurrentBlockIndex === 'function') {
+                const blockIndex = this.api.blocks.getCurrentBlockIndex();
+                if (typeof blockIndex === 'number') {
+                  await this.api.blocks.update(blockIndex, this.data);
+                  console.log(`Блок ${blockIndex} обновлен с новым названием`);
+                }
+              }
+            } catch (e) {
+              console.error('Ошибка при обновлении блока:', e);
+            }
+          }
+        }
+        
+        // Отображаем ссылку с актуальными данными
+        this.renderDocumentLink();
+      } catch (error) {
+        console.error('Ошибка при загрузке документа:', error);
+        // В случае ошибки просто отображаем с имеющимися данными
+        this.renderDocumentLink();
+      }
+    }
+    
+    // Непосредственно отображает ссылку
+    renderDocumentLink() {
+      // Безопасно экранируем title
+      const safeTitle = (this.data.title || 'Документ')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+      
+      // Создаем кнопку с дизайном в стиле shadcn Button outline
+      const buttonLink = document.createElement('button');
+      buttonLink.className = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2';
+      buttonLink.style.cursor = 'pointer';
+      
+      // Текст ссылки
+      const textSpan = document.createElement('span');
+      textSpan.textContent = safeTitle;
+      
+      // Добавляем текст в кнопку
+      buttonLink.appendChild(textSpan);
+      
+      // Добавляем обработчик клика
+      buttonLink.addEventListener('click', () => {
+        window.location.href = `/documents/${this.data.id}`;
+      });
+      
+      // Контейнер для кнопки с отступами
+      const container = document.createElement('div');
+      container.className = 'my-1';
+      container.appendChild(buttonLink);
+      
+      // Очищаем и добавляем новое содержимое
+      this.container.innerHTML = '';
+      this.container.appendChild(container);
+    }
+    
+    // Отображает кнопку для создания документа
+    renderCreateButton() {
+      // Создаем контейнер в стиле shadcn
+      const container = document.createElement('div');
+      container.className = 'my-2';
+      
+      // Создаем кнопку в стиле shadcn Button
+      const createButton = document.createElement('button');
+      createButton.type = 'button';
+      createButton.className = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2';
+      
+      // Иконка добавления
+      const plusIcon = document.createElement('span');
+      plusIcon.className = 'mr-2 h-4 w-4';
+      plusIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4V20M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      
+      // Текст кнопки
+      const buttonText = document.createElement('span');
+      buttonText.textContent = 'Создать документ';
+      
+      // Добавляем элементы в кнопку
+      createButton.appendChild(plusIcon);
+      createButton.appendChild(buttonText);
+      
+      // Добавляем обработчик для кнопки
+      createButton.addEventListener('click', async () => {
+        // Отключаем кнопку
+        createButton.disabled = true;
+        createButton.className += ' opacity-70';
+        
+        try {
+          await this.createDocument();
+        } catch (error) {
+          // Восстанавливаем кнопку в случае ошибки
+          createButton.disabled = false;
+          createButton.className = createButton.className.replace(' opacity-70', '');
+        }
+      });
+      
+      // Добавляем кнопку в контейнер
+      container.appendChild(createButton);
+      
+      // Очищаем и добавляем новое содержимое
+      this.container.innerHTML = '';
+      this.container.appendChild(container);
+    }
+    
+    // Отображает состояние загрузки
+    renderLoadingState() {
+      // Создаем кнопку-заглушку с анимацией загрузки в стиле shadcn Button outline
+      const loadingButton = document.createElement('button');
+      loadingButton.className = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background h-9 px-4 py-2 opacity-70';
+      loadingButton.disabled = true;
+      
+      // Добавляем иконку загрузки (spinning circle)
+      const spinnerSpan = document.createElement('span');
+      spinnerSpan.className = 'mr-2 h-4 w-4 animate-spin';
+      spinnerSpan.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="30 30" stroke-dashoffset="0"/></svg>';
+      
+      // Текст загрузки
+      const textSpan = document.createElement('span');
+      textSpan.textContent = 'Создание документа...';
+      
+      // Добавляем элементы в кнопку
+      loadingButton.appendChild(spinnerSpan);
+      loadingButton.appendChild(textSpan);
+      
+      // Контейнер для кнопки с отступами
+      const container = document.createElement('div');
+      container.className = 'my-1';
+      container.appendChild(loadingButton);
+      
+      // Очищаем и добавляем новое содержимое
+      this.container.innerHTML = '';
+      this.container.appendChild(container);
+    }
+    
+    // Создает новый вложенный документ
+    async createDocument() {
+      if (this.pendingCreation) return; // Предотвращаем двойное создание
+      
+      this.pendingCreation = true;
+      
+      try {
+        // Сначала отображаем состояние загрузки
+        this.renderLoadingState();
+        
+        // Получаем ID текущего документа
+        const currentPathParts = window.location.pathname.split('/');
+        const currentDocumentId = currentPathParts[currentPathParts.length - 1];
+        
+        if (!currentDocumentId) {
+          throw new Error('Не удалось определить ID текущего документа');
+        }
+        
+        // Шаг 1: Получаем текущий контент родительского документа перед созданием нового
+        const parentResponse = await api.get(`/documents/${currentDocumentId}/`);
+        const parentDoc = parentResponse.data;
+        
+        if (!parentDoc.content) {
+          parentDoc.content = {
+            time: new Date().getTime(),
+            version: "2.27.0",
+            blocks: []
+          };
+        }
+        
+        if (!Array.isArray(parentDoc.content.blocks)) {
+          parentDoc.content.blocks = [];
+        }
+        
+        console.log('Создание вложенного документа...');
+        
+        // Шаг 2: Создаем новый документ
+        const response = await api.post('/documents/', {
+          title: 'Новый документ',
+          content: {
+            time: new Date().getTime(),
+            version: "2.27.0",
+            blocks: []
+          },
+          parent: currentDocumentId
+        });
+        
+        if (!response.data || !response.data.id) {
+          throw new Error('Сервер вернул некорректный ответ');
+        }
+        
+        const newDocumentId = response.data.id;
+        const newTitle = response.data.title || 'Новый документ';
+        
+        // Обновляем данные блока в локальном представлении
+        this.data = {
+          id: newDocumentId,
+          title: newTitle
+        };
+        
+        // Обновляем отображение блока - НЕ вызываем здесь renderExistingDocument,
+        // так как он будет вызван позже при редиректе
+        
+        // Шаг 3: Создаем новый блок в родительском документе
+        // Вместо обновления существующего блока, просто добавляем новый
+        if (typeof this.api.blocks.getCurrentBlockIndex() === 'number') {
+          // Получаем текущий индекс блока для замены
+          const blockIndex = this.api.blocks.getCurrentBlockIndex();
+          
+          // Добавляем новый блок вместо текущего
+          const updatedBlock = {
+            type: 'nestedDocument',
+            data: {
+              id: newDocumentId,
+              title: newTitle
+            }
+          };
+          
+          // Обновляем блоки в родительском документе
+          parentDoc.content.blocks[blockIndex] = updatedBlock;
+          
+          // Шаг 4: Сохраняем обновленный родительский документ
+          const saveResponse = await api.put(`/documents/${currentDocumentId}/`, {
+            content: parentDoc.content,
+            title: parentDoc.title,
+            parent: parentDoc.parent
+          });
+          
+          console.log('Родительский документ успешно обновлен с ссылкой на новый документ', saveResponse.data);
+          
+          // Добавляем задержку перед редиректом, чтобы убедиться что сохранение завершено
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        } else {
+          console.warn('Не удалось получить индекс текущего блока');
+        }
+        
+        // Шаг 5: Редирект на новый документ
+        window.location.href = `/documents/${newDocumentId}`;
+      } catch (error: any) {
+        this.pendingCreation = false;
+        console.error('Ошибка при создании документа:', error);
+        this.renderErrorState(error.message || 'Не удалось создать документ');
+        throw error; // Пробрасываем ошибку дальше
+      }
+    }
+    
+    // Отображает состояние ошибки
+    renderErrorState(errorMessage: string) {
+      // Создаем элементы вручную
+      const errorContainer = document.createElement('div');
+      errorContainer.className = 'flex items-center p-4 my-2 bg-red-50 rounded-lg border border-red-200 text-red-700';
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'flex-1';
+      
+      const titleElement = document.createElement('h4');
+      titleElement.className = 'font-medium';
+      titleElement.textContent = 'Ошибка при создании документа';
+      
+      const descElement = document.createElement('p');
+      descElement.className = 'text-sm';
+      descElement.textContent = errorMessage;
+      
+      contentDiv.appendChild(titleElement);
+      contentDiv.appendChild(descElement);
+      errorContainer.appendChild(contentDiv);
+      
+      // Очищаем и добавляем новое содержимое
+      this.container.innerHTML = '';
+      this.container.appendChild(errorContainer);
+    }
+    
+    // Метод сохранения данных блока
     save() {
       return this.data;
     }
   }
-}
+};
 
 // Генерация случайного цвета для курсора пользователя
 function getRandomColor() {
@@ -151,7 +441,7 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
+export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEditorProps) {
   const [title, setTitle] = useState(document.title)
   const editorRef = useRef<HTMLDivElement>(null)
   const editorInstanceRef = useRef<any>(null)
@@ -160,6 +450,14 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
   const wsRef = useRef<WebSocket | null>(null)
   const router = useRouter()
   const { user } = useAuth()
+  const [editor, setEditor] = useState<any | null>(null);
+  const [isReady, setIsReady] = useState(false);
+  const [remoteCursors, setRemoteCursors] = useState<RemoteCursor[]>([]);
+  const cursorUpdateTimer = useRef<NodeJS.Timeout | null>(null);
+  const [userId, setUserId] = useState<string>('');
+  const [username, setUsername] = useState<string>('');
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const lastDocumentContent = useRef<any>(document.content);
 
   // Команды редактора
   const editorCommands = [
@@ -440,9 +738,6 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
   
   // Последнее состояние контента для сравнения
   const lastContentRef = useRef<any>(null);
-  
-  // Автосохранение с дебаунсингом
-  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // Получаем кэшированный контент при инициализации
   const getCachedContent = useCallback((documentId: string) => {
@@ -802,7 +1097,7 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
               config: {
                 placeholder: 'Введите заголовок',
                 levels: [2, 3, 4],
-                defaultLevel: 2
+                defaultLevel: 3
               }
             },
             list: {
@@ -812,10 +1107,6 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
                 defaultStyle: 'unordered'
               }
             },
-            checklist: {
-              class: Checklist,
-              inlineToolbar: true
-            },
             image: {
               class: Image,
               config: {
@@ -824,7 +1115,7 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
                 }
               }
             },
-            nestedDocument: NestedDocumentTool
+            nestedDocument: NestedDocumentTool 
           },
           i18n: {
             messages: {
@@ -927,9 +1218,6 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     onChange({ ...document, title: newTitle });
   };
 
-  // Последний контент для сохранения при выходе
-  const lastDocumentContent = useRef<any>(document.content);
-  
   // Сохранение перед уходом
   useEffect(() => {
     // Функция для сохранения данных перед уходом со страницы
@@ -1000,10 +1288,135 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     lastDocumentContent.current = document.content;
   }, [document.content]);
 
+  // Обновляет заголовок блока вложенного документа при получении соответствующего события
+  const updateNestedDocumentTitle = useCallback((data: {id: string, title: string}) => {
+    if (!editor || !editor.blocks) return;
+    
+    console.log('Получено обновление заголовка для документа:', data.id, data.title);
+    
+    // Проходим по всем блокам в редакторе
+    const blockCount = editor.blocks.getBlocksCount();
+    for (let i = 0; i < blockCount; i++) {
+      try {
+        // Получаем блок по индексу
+        const block = editor.blocks.getBlockByIndex(i);
+        if (!block) continue;
+        
+        // Получаем данные блока
+        const blockData = block.save();
+        
+        // Проверяем, является ли это блоком nestedDocument с нужным id
+        if (blockData && blockData.type === 'nestedDocument' && 
+            blockData.data && blockData.data.id === data.id) {
+          
+          console.log('Найден блок для обновления заголовка:', i);
+          
+          // Создаем обновленные данные с новым заголовком
+          const updatedData = {
+            ...blockData.data,
+            title: data.title
+          };
+          
+          // Обновляем данные блока
+          editor.blocks.update(i, updatedData);
+          console.log('Обновлен заголовок блока вложенного документа');
+        }
+      } catch (err) {
+        console.error('Ошибка при проверке блока для обновления заголовка:', err);
+      }
+    }
+  }, [editor]);
+
+  // Слушатель событий через localStorage для межвкладочной коммуникации
+  useEffect(() => {
+    // Обработчик для получения обновлений заголовков документов
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith('document_title_update_')) {
+        try {
+          const data = JSON.parse(e.newValue || '');
+          if (data && data.id && data.title) {
+            updateNestedDocumentTitle(data);
+          }
+        } catch (err) {
+          console.error('Ошибка при обработке события обновления заголовка:', err);
+        }
+      }
+    };
+    
+    // Добавляем слушатель
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Удаляем слушатель при размонтировании
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [updateNestedDocumentTitle]);
+
+  // Слушатель события обновления документа
+  useEffect(() => {
+    const handleDocumentRefresh = (event: Event) => {
+      const customEvent = event as CustomEvent;
+      if (customEvent.detail && customEvent.detail.documentId === document.id) {
+        console.log('Получено событие обновления документа, перезагружаем содержимое');
+        reloadDocument();
+      }
+    };
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'document_refresh') {
+        try {
+          const data = JSON.parse(event.newValue || '{}');
+          if (data && data.documentId === document.id) {
+            console.log('Получено событие обновления документа через localStorage, перезагружаем содержимое');
+            reloadDocument();
+          }
+        } catch (e) {
+          console.error('Ошибка при обработке события обновления из localStorage:', e);
+        }
+      }
+    };
+
+    // Функция для перезагрузки содержимого документа
+    const reloadDocument = async () => {
+      try {
+        console.log('Перезагрузка содержимого документа');
+        const response = await api.get(`/documents/${document.id}/`);
+        if (response.data && response.data.content) {
+          console.log('Получены обновленные данные документа');
+          
+          // Обновляем документ через коллбэк
+          onChange({
+            ...document,
+            content: response.data.content
+          });
+          
+          // Если редактор уже инициализирован, обновляем его содержимое
+          if (editor) {
+            editor.render(response.data.content);
+            console.log('Редактор обновлен с новым содержимым');
+          }
+        }
+      } catch (e) {
+        console.error('Ошибка при перезагрузке документа:', e);
+      }
+    };
+
+    // Добавляем слушатели событий
+    window.addEventListener('document_refresh', handleDocumentRefresh);
+    window.addEventListener('storage', handleStorageChange);
+
+    // Удаляем слушатели при размонтировании
+    return () => {
+      window.removeEventListener('document_refresh', handleDocumentRefresh);
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [document.id, editor, onChange]);
+
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto">
       {/* Поле заголовка */}
       <Input
+        ref={titleInputRef}
         type="text"
         value={title}
         onChange={handleTitleChange}

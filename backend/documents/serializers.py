@@ -21,11 +21,36 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
     """
     owner_username = serializers.ReadOnlyField(source='owner.username')
     children = DocumentSerializer(many=True, read_only=True)
+    path = serializers.SerializerMethodField()
+    is_root = serializers.SerializerMethodField()
+    
+    def get_path(self, obj):
+        """
+        Получает путь к документу в древовидной структуре
+        """
+        ancestors = []
+        parent = obj.parent
+        
+        # Строим путь от корня к текущему документу
+        while parent:
+            ancestors.insert(0, {
+                'id': str(parent.id),
+                'title': parent.title
+            })
+            parent = parent.parent
+        
+        return ancestors
+    
+    def get_is_root(self, obj):
+        """
+        Проверяет, является ли документ корневым
+        """
+        return obj.parent is None
     
     class Meta:
         model = Document
-        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'owner', 'owner_username', 'parent', 'children', 'is_favorite']
-        read_only_fields = ['owner', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'owner', 'owner_username', 'parent', 'children', 'is_favorite', 'path', 'is_root']
+        read_only_fields = ['owner', 'created_at', 'updated_at', 'path', 'is_root']
 
 class UserBasicSerializer(serializers.ModelSerializer):
     """
