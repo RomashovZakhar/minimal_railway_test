@@ -23,13 +23,6 @@ interface DocumentEditorProps {
   onChange: (document: Document) => void;
 }
 
-// Интерфейс для команд редактора
-interface EditorCommand {
-  name: string;
-  icon: string;
-  action: () => void;
-}
-
 // Интерфейс для курсора другого пользователя
 interface RemoteCursor {
   id: string;
@@ -146,12 +139,8 @@ function getRandomColor() {
 
 export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
   const [title, setTitle] = useState(document.title)
-  const [showCommandMenu, setShowCommandMenu] = useState(false)
-  const [commandMenuPosition, setCommandMenuPosition] = useState({ top: 0, left: 0 })
-  const [remoteCursors, setRemoteCursors] = useState<RemoteCursor[]>([])
   const editorRef = useRef<HTMLDivElement>(null)
   const editorInstanceRef = useRef<any>(null)
-  const commandMenuRef = useRef<HTMLDivElement>(null)
   const cursorIdRef = useRef(nanoid())
   const cursorPositionRef = useRef<{blockIndex: number, offset: number} | null>(null)
   const wsRef = useRef<WebSocket | null>(null)
@@ -159,7 +148,7 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
   const { user } = useAuth()
 
   // Команды редактора
-  const editorCommands: EditorCommand[] = [
+  const editorCommands = [
     {
       name: "Заголовок 2-го уровня",
       icon: "H2",
@@ -236,263 +225,204 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
 
   // Инициализация WebSocket соединения
   useEffect(() => {
+    // Проверяем, что мы на клиенте и имеем необходимые данные
     if (typeof window === 'undefined' || !document.id || !user) return;
 
-    // URL для WebSocket соединения
-    const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 
-      (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + 
-      window.location.host + 
-      `/ws/documents/${document.id}/`;
-
-    // Создаем WebSocket соединение
-    const ws = new WebSocket(wsUrl);
-    wsRef.current = ws;
-
-    // Цвет курсора для текущего пользователя
-    const userColor = getRandomColor();
-
-    // Обработка открытия соединения
-    ws.onopen = () => {
-      console.log('WebSocket соединение установлено');
-      // Отправляем информацию о пользователе
-      ws.send(JSON.stringify({
-        type: 'cursor_connect',
-        user_id: user.id,
-        username: user.username || 'Пользователь',
-        cursor_id: cursorIdRef.current,
-        color: userColor
-      }));
-    };
-
-    // Обработка получения сообщений
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
+    let ws: WebSocket | null = null;
+    
+    // Оборачиваем всю логику WebSocket в try-catch
+    try {
+      // URL для WebSocket соединения
+      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 
+        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + 
+        window.location.host + 
+        `/ws/documents/${document.id}/`;
         
-        switch (data.type) {
-          case 'cursor_update':
-            // Обновляем позицию курсора другого пользователя
-            if (data.cursor_id !== cursorIdRef.current) {
-              setRemoteCursors(prev => {
-                // Находим курсор в массиве
-                const index = prev.findIndex(c => c.id === data.cursor_id);
-                
-                // Обновленная информация о курсоре
-                const updatedCursor: RemoteCursor = {
-                  id: data.cursor_id,
-                  username: data.username,
-                  color: data.color,
-                  position: data.position,
-                  timestamp: Date.now()
-                };
-                
-                // Если курсор уже есть, обновляем его, иначе добавляем новый
-                if (index !== -1) {
-                  const newCursors = [...prev];
-                  newCursors[index] = updatedCursor;
-                  return newCursors;
-                } else {
-                  return [...prev, updatedCursor];
-                }
-              });
-            }
-            break;
-            
-          case 'document_update':
-            // Обновляем содержимое документа, если изменения пришли от другого пользователя
-            if (data.sender_id !== cursorIdRef.current && editorInstanceRef.current) {
-              editorInstanceRef.current.render(data.content);
-            }
-            break;
-            
-          case 'cursor_disconnect':
-            // Удаляем курсор отключившегося пользователя
-            if (data.cursor_id !== cursorIdRef.current) {
-              setRemoteCursors(prev => prev.filter(c => c.id !== data.cursor_id));
-            }
-            break;
-        }
-      } catch (err) {
-        console.error('Ошибка при обработке сообщения WebSocket:', err);
+      console.log("Пытаемся подключиться к WebSocket по URL:", wsUrl);
+      
+      // Проверяем поддержку WebSocket в браузере
+      if (typeof WebSocket === 'undefined') {
+        console.warn('WebSocket не поддерживается в этом браузере');
+        return;
       }
-    };
 
-    // Обработка ошибок
-    ws.onerror = (error) => {
-      console.error('Ошибка WebSocket:', error);
-    };
+      // Создаем WebSocket соединение
+      ws = new WebSocket(wsUrl);
+      wsRef.current = ws;
 
-    // Обработка закрытия соединения
-    ws.onclose = () => {
-      console.log('WebSocket соединение закрыто');
-    };
+      // Цвет курсора для текущего пользователя
+      const userColor = getRandomColor();
+
+      // Обработка открытия соединения
+      ws.onopen = () => {
+        console.log('WebSocket соединение установлено');
+        // Отправляем информацию о пользователе
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(JSON.stringify({
+            type: 'cursor_connect',
+            user_id: user.id,
+            username: user.username || 'Пользователь',
+            cursor_id: cursorIdRef.current,
+            color: userColor
+          }));
+        }
+      };
+
+      // Обработка получения сообщений
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          
+          switch (data.type) {
+            case 'cursor_update':
+              // Обновляем позицию курсора другого пользователя
+              break;
+              
+            case 'document_update':
+              // Обновляем содержимое документа, если изменения пришли от другого пользователя
+              if (data.sender_id !== cursorIdRef.current && editorInstanceRef.current) {
+                editorInstanceRef.current.render(data.content);
+              }
+              break;
+          }
+        } catch (err) {
+          console.error('Ошибка при обработке сообщения WebSocket:', err);
+        }
+      };
+
+      // Обработка ошибок
+      ws.onerror = (error) => {
+        console.error('Ошибка WebSocket:', error);
+        // При ошибке не закрываем соединение, просто логируем
+      };
+
+      // Обработка закрытия соединения
+      ws.onclose = (event) => {
+        console.log('WebSocket соединение закрыто', event.code, event.reason);
+      };
+    } catch (err) {
+      console.warn('Не удалось инициализировать WebSocket:', err);
+      // При ошибке инициализации просто продолжаем без WebSocket функциональности
+    }
 
     // Очистка при размонтировании
     return () => {
-      if (ws && (ws.readyState === WebSocket.OPEN)) {
-        // Отправляем сообщение только если соединение открыто
-        ws.send(JSON.stringify({
-          type: 'cursor_disconnect',
-          cursor_id: cursorIdRef.current
-        }));
-        ws.close();
-      } else if (ws) {
-        // Просто закрываем соединение, если оно не в открытом состоянии
-        ws.close();
+      if (ws) {
+        try {
+          if (ws.readyState === WebSocket.OPEN) {
+            // Отправляем сообщение только если соединение открыто
+            ws.send(JSON.stringify({
+              type: 'cursor_disconnect',
+              cursor_id: cursorIdRef.current
+            }));
+            ws.close();
+          } else if (ws.readyState === WebSocket.CONNECTING) {
+            // Если еще подключаемся, закрываем без отправки сообщения
+            ws.close();
+          }
+        } catch (err) {
+          console.warn('Ошибка при закрытии WebSocket:', err);
+        }
       }
     };
   }, [document.id, user]);
 
-  // Очистка неактивных курсоров
-  useEffect(() => {
-    const cleanupInterval = setInterval(() => {
-      // Удаляем курсоры, которые не обновлялись более 5 секунд
-      const now = Date.now();
-      setRemoteCursors(prev => 
-        prev.filter(cursor => now - cursor.timestamp < 5000)
-      );
-    }, 5000);
-
-    return () => clearInterval(cleanupInterval);
-  }, []);
-
-  // Рендеринг курсоров других пользователей
-  useEffect(() => {
-    if (!editorInstanceRef.current || remoteCursors.length === 0) return;
-
-    // Удаляем все существующие отображения курсоров
-    if (typeof window !== 'undefined') {
-      window.document.querySelectorAll('.remote-cursor').forEach((el: Element) => el.remove());
-    }
-
-    // Создаем элементы курсоров для каждого удаленного пользователя
-    remoteCursors.forEach(cursor => {
-      if (!cursor.position) return;
-
-      try {
-        // Получаем блок и позицию для размещения курсора
-        const blocks = editorInstanceRef.current.blocks.getAll();
-        
-        if (cursor.position.blockIndex >= blocks.length) return;
-        
-        const blockElement = blocks[cursor.position.blockIndex].holder;
-        
-        if (!blockElement) return;
-
-        // Создаем элемент курсора
-        if (typeof window !== 'undefined') {
-          const cursorElement = window.document.createElement('div');
-          cursorElement.className = 'remote-cursor';
-          cursorElement.style.position = 'absolute';
-          cursorElement.style.width = '2px';
-          cursorElement.style.height = '20px';
-          cursorElement.style.backgroundColor = cursor.color;
-          cursorElement.style.zIndex = '100';
-          
-          // Добавляем имя пользователя в виде тултипа
-          const nameTag = window.document.createElement('div');
-          nameTag.className = 'cursor-name-tag';
-          nameTag.textContent = cursor.username;
-          nameTag.style.position = 'absolute';
-          nameTag.style.top = '-20px';
-          nameTag.style.left = '0';
-          nameTag.style.backgroundColor = cursor.color;
-          nameTag.style.color = '#fff';
-          nameTag.style.padding = '2px 5px';
-          nameTag.style.borderRadius = '3px';
-          nameTag.style.fontSize = '10px';
-          nameTag.style.whiteSpace = 'nowrap';
-          
-          cursorElement.appendChild(nameTag);
-          
-          // Размещаем курсор в определенной позиции
-          // Это упрощенное позиционирование, в реальном приложении нужно учитывать
-          // точное положение в тексте
-          cursorElement.style.left = `${10 + cursor.position.offset * 8}px`;
-          cursorElement.style.top = '0';
-          
-          blockElement.style.position = 'relative';
-          blockElement.appendChild(cursorElement);
-        }
-      } catch (err) {
-        console.error('Ошибка при отрисовке удаленного курсора:', err);
-      }
-    });
-  }, [remoteCursors]);
-
   // Отправка позиции курсора
   const sendCursorPosition = (position: {blockIndex: number, offset: number} | null) => {
+    // Проверяем доступность WebSocket перед отправкой
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     
-    // Сохраняем текущую позицию
-    cursorPositionRef.current = position;
-    
-    // Отправляем данные о позиции
-    wsRef.current.send(JSON.stringify({
-      type: 'cursor_update',
-      cursor_id: cursorIdRef.current,
-      position,
-      username: user?.username || 'Пользователь'
-    }));
+    try {
+      // Сохраняем текущую позицию
+      cursorPositionRef.current = position;
+      
+      // Отправляем данные о позиции
+      wsRef.current.send(JSON.stringify({
+        type: 'cursor_update',
+        cursor_id: cursorIdRef.current,
+        position,
+        username: user?.username || 'Пользователь'
+      }));
+    } catch (err) {
+      console.warn('Ошибка при отправке позиции курсора:', err);
+    }
   };
-
-  // Закрытие меню команд при клике вне его
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (
-        commandMenuRef.current && 
-        !commandMenuRef.current.contains(e.target as Node) && 
-        showCommandMenu
-      ) {
-        setShowCommandMenu(false)
-      }
-    }
-
-    if (typeof window !== 'undefined') {
-      window.addEventListener("mousedown", handleClickOutside)
-      return () => {
-        window.removeEventListener("mousedown", handleClickOutside)
-      }
-    }
-  }, [showCommandMenu])
 
   // Автосохранение
   useEffect(() => {
-    let saveInterval: NodeJS.Timeout;
+    let saveTimeout: NodeJS.Timeout | null = null;
+    let contentToSave: any = null;
     
-    if (editorInstanceRef.current && typeof window !== 'undefined') {
-      // Сохраняем изменения каждые 3 секунды
-      saveInterval = setInterval(async () => {
-        if (editorInstanceRef.current) {
-          const data = await editorInstanceRef.current.save();
-          onChange({ ...document, content: data, title });
-          
-          // Отправляем данные на сервер
-          try {
-            await api.put(`/documents/${document.id}/`, { 
-              content: data,
-              title 
-            });
-            
-            // Отправляем обновления через WebSocket
-            if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-              wsRef.current.send(JSON.stringify({
-                type: 'document_update',
-                content: data,
-                sender_id: cursorIdRef.current
-              }));
-            }
-          } catch (err) {
-            console.error('Ошибка при автосохранении:', err);
-          }
+    // Функция для сохранения документа с дебаунсом
+    const debouncedSave = async () => {
+      if (!contentToSave) return;
+      
+      try {
+        // Отправляем данные на сервер
+        await api.put(`/documents/${document.id}/`, { 
+          content: contentToSave,
+          title 
+        });
+        
+        // Отправляем обновления через WebSocket
+        if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({
+            type: 'document_update',
+            content: contentToSave,
+            sender_id: cursorIdRef.current
+          }));
         }
-      }, 3000);
+        
+        console.log('Документ успешно сохранен');
+        contentToSave = null;
+      } catch (err) {
+        console.error('Ошибка при автосохранении:', err);
+      }
+    };
+    
+    // Настраиваем событие для перехвата изменений и планирования сохранения
+    const handleEditorChange = (newContent: any) => {
+      contentToSave = newContent;
+      
+      // Очищаем предыдущий таймер, если он был
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+      
+      // Устанавливаем новый таймер для сохранения
+      saveTimeout = setTimeout(() => {
+        debouncedSave();
+      }, 2000); // Задержка в 2 секунды
+    };
+    
+    // Добавляем кастомное событие для отслеживания изменений в редакторе
+    const handleCustomEvent = (e: CustomEvent) => {
+      if (e.detail && e.detail.content) {
+        handleEditorChange(e.detail.content);
+      }
+    };
+    
+    if (typeof window !== 'undefined') {
+      window.addEventListener('editorContentChanged', handleCustomEvent as EventListener);
     }
     
     return () => {
-      if (saveInterval) clearInterval(saveInterval);
+      // Отменяем таймер при размонтировании
+      if (saveTimeout) {
+        clearTimeout(saveTimeout);
+      }
+      
+      // Финальное сохранение при размонтировании, если есть изменения
+      if (contentToSave) {
+        debouncedSave();
+      }
+      
+      // Удаляем обработчик события
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('editorContentChanged', handleCustomEvent as EventListener);
+      }
     };
-  }, [document.id, title, onChange]);
+  }, [document.id, title]);
 
   useEffect(() => {
     // Динамический импорт EditorJS для клиентской стороны
@@ -500,97 +430,69 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
       try {
         // Импортируем библиотеки только на клиенте
         if (typeof window !== "undefined" && editorRef.current) {
-          const EditorJS = (await import('@editorjs/editorjs')).default
-          const Header = (await import('@editorjs/header')).default
-          const List = (await import('@editorjs/list')).default
-          const Checklist = (await import('@editorjs/checklist')).default
-          const Image = (await import('@editorjs/image')).default
+          const EditorJS = (await import('@editorjs/editorjs')).default;
+          const Header = (await import('@editorjs/header')).default;
+          const List = (await import('@editorjs/list')).default;
+          const Checklist = (await import('@editorjs/checklist')).default;
+          const Image = (await import('@editorjs/image')).default;
 
           // Если экземпляр редактора уже существует, не создаем новый
           if (editorInstanceRef.current) return;
 
-          // Создаем экземпляр EditorJS
-          try {
-            console.log("Инициализирую Editor.js с данными:", document.content || { blocks: [] });
-            console.log("Holder элемент:", editorRef.current);
-            
-            editorInstanceRef.current = new EditorJS({
-              holder: editorRef.current,
-              data: document.content || { blocks: [] },
-              autofocus: false,
-              placeholder: 'Нажмите "/" для вызова меню команд',
-              tools: {
-                header: Header,
-                list: List,
-                checklist: Checklist,
-                image: Image,
-                nestedDocument: NestedDocumentTool
-              },
-              onReady: () => {
-                console.log("Editor.js успешно инициализирован");
-              },
-              onChange: async (api: any, event: any) => {
+          // Подготавливаем данные для редактора
+          let editorData = document.content;
+          console.log("Исходные данные документа:", document.content);
+          
+          // Проверяем формат данных и добавляем обязательные поля если они отсутствуют
+          if (!editorData) {
+            editorData = { blocks: [] };
+          }
+          
+          // Добавляем обязательные свойства для EditorJS
+          if (!editorData.time) {
+            editorData.time = new Date().getTime();
+          }
+          
+          if (!editorData.version) {
+            editorData.version = "2.27.0";
+          }
+          
+          console.log("Инициализация редактора с данными:", editorData);
+
+          // Создаем экземпляр EditorJS с хорошо отформатированным контентом
+          editorInstanceRef.current = new EditorJS({
+            holder: editorRef.current,
+            data: editorData,
+            autofocus: true,
+            placeholder: 'Нажмите "/" для вызова меню команд',
+            tools: {
+              header: Header,
+              list: List,
+              checklist: Checklist,
+              image: Image,
+              nestedDocument: NestedDocumentTool
+            },
+            onReady: () => {
+              console.log("Editor.js успешно инициализирован");
+            },
+            onChange: async (api: any, event: any) => {
+              if (!editorInstanceRef.current) return;
+              
+              try {
                 const data = await editorInstanceRef.current.save();
                 onChange({ ...document, content: data, title });
                 
-                // Определяем текущую позицию курсора
-                if (event && event.type === 'block-changed') {
-                  // Упрощенно: берем индекс блока и условную позицию внутри
-                  const blockIndex = event.detail.index;
-                  const offset = 0; // Это упрощение, на практике нужно определять точную позицию
-                  
-                  sendCursorPosition({ blockIndex, offset });
+                // Создаем кастомное событие для автосохранения
+                if (typeof window !== 'undefined') {
+                  const customEvent = new CustomEvent('editorContentChanged', { 
+                    detail: { content: data } 
+                  });
+                  window.dispatchEvent(customEvent);
                 }
-              }
-            });
-          } catch (editorError) {
-            console.error("Ошибка при инициализации Editor.js:", editorError);
-            console.log("Состояние DOM и данных:", {
-              editorElement: editorRef.current,
-              documentContent: document.content
-            });
-          }
-          
-          // Добавляем обработчики событий для определения позиции курсора
-          editorRef.current?.addEventListener('click', (e) => {
-            if (!editorInstanceRef.current) return;
-            
-            // Определяем, в каком блоке произошел клик
-            const blocks = editorInstanceRef.current.blocks.getAll();
-            let targetBlock = null;
-            let blockIndex = -1;
-            
-            for (let i = 0; i < blocks.length; i++) {
-              const block = blocks[i].holder;
-              if (block && block.contains(e.target as Node)) {
-                targetBlock = block;
-                blockIndex = i;
-                break;
+              } catch (err) {
+                console.error("Ошибка при сохранении контента:", err);
               }
             }
-            
-            if (blockIndex !== -1) {
-              // Расчет примерного смещения внутри блока
-              // Это упрощение, в реальном приложении нужно более точное определение
-              const rect = targetBlock.getBoundingClientRect();
-              const offset = Math.floor((e.clientX - rect.left) / 8); // 8px - примерная ширина символа
-              
-              sendCursorPosition({ blockIndex, offset });
-            }
-          });
-          
-          // При вводе текста также обновляем позицию
-          editorRef.current?.addEventListener('keyup', () => {
-            if (!editorInstanceRef.current || !cursorPositionRef.current) return;
-            
-            // Увеличиваем offset при вводе текста
-            // В реальном приложении нужно более точное определение
-            const updatedPosition = {
-              ...cursorPositionRef.current,
-              offset: cursorPositionRef.current.offset + 1
-            };
-            
-            sendCursorPosition(updatedPosition);
           });
         }
       } catch (err) {
@@ -600,49 +502,22 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
 
     initEditor();
 
+    // Очистка при размонтировании компонента
     return () => {
-      // Уничтожаем экземпляр редактора при размонтировании
       if (editorInstanceRef.current) {
-        editorInstanceRef.current.destroy();
+        try {
+          if (typeof editorInstanceRef.current.destroy === 'function') {
+            editorInstanceRef.current.destroy();
+          } else if (typeof editorInstanceRef.current.clear === 'function') {
+            editorInstanceRef.current.clear();
+          }
+        } catch (err) {
+          console.error('Ошибка при уничтожении редактора:', err);
+        }
         editorInstanceRef.current = null;
       }
     };
-  }, [document.id, onChange, title]);
-
-  // Обработчик для "/" команд
-  useEffect(() => {
-    const handleSlashCommands = (e: KeyboardEvent) => {
-      if (e.key === '/' && editorRef.current) {
-        // Создаем событие "/", остановив обычный ввод
-        e.preventDefault();
-        
-        // Получаем позицию курсора для размещения меню
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          const rect = range.getBoundingClientRect();
-          
-          // Устанавливаем позицию меню команд
-          setCommandMenuPosition({
-            top: rect.bottom,
-            left: rect.left
-          });
-          
-          // Показываем меню команд
-          setShowCommandMenu(true);
-        }
-      }
-    };
-
-    // Добавляем обработчик только на клиенте
-    if (typeof window !== "undefined") {
-      window.addEventListener('keydown', handleSlashCommands);
-      
-      return () => {
-        window.removeEventListener('keydown', handleSlashCommands);
-      };
-    }
-  }, []);
+  }, [document.id]);  // Зависимость только от ID документа, чтобы не пересоздавать редактор при каждом изменении контента
 
   // Обновляем заголовок документа
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -671,38 +546,6 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
           />
         </CardContent>
       </Card>
-
-      {/* Меню команд */}
-      {showCommandMenu && (
-        <div
-          ref={commandMenuRef}
-          className="absolute z-50 bg-background border rounded-md shadow-md p-2 w-64"
-          style={{
-            top: `${commandMenuPosition.top}px`,
-            left: `${commandMenuPosition.left}px`
-          }}
-        >
-          <div className="text-sm text-muted-foreground mb-2 px-2">
-            Выберите команду:
-          </div>
-          <div className="flex flex-col gap-1">
-            {editorCommands.map((command) => (
-              <Button
-                key={command.name}
-                variant="ghost"
-                className="justify-start text-sm"
-                onClick={() => {
-                  command.action();
-                  setShowCommandMenu(false);
-                }}
-              >
-                <span className="w-6 text-center mr-2">{command.icon}</span>
-                {command.name}
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   )
 } 

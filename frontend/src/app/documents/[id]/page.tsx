@@ -12,11 +12,6 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
 import { DocumentEditor } from "@/components/document-editor"
 import api from "@/lib/api"
 import { 
@@ -44,6 +39,7 @@ interface Document {
   parent: string | null;
   path?: Array<{ id: string; title: string }>;
   is_favorite?: boolean;
+  is_root?: boolean;
 }
 
 export default function DocumentPage() {
@@ -103,20 +99,31 @@ export default function DocumentPage() {
   }
 
   const deleteDocument = async () => {
-    if (!document || !window.confirm("Вы уверены, что хотите удалить этот документ?")) return
+    if (!document) return;
+    
+    // Проверяем, является ли документ корневым
+    const isRootDocument = document.parent === null && document.is_root === true;
+    
+    if (isRootDocument) {
+      toast.error("Корневой документ нельзя удалить");
+      return;
+    }
+    
+    // Запрашиваем подтверждение пользователя
+    if (!window.confirm("Вы уверены, что хотите удалить этот документ?")) return;
 
     try {
-      await api.delete(`/documents/${document.id}/`)
+      await api.delete(`/documents/${document.id}/`);
       // Редирект на родительский документ или корневой документ
       if (document.parent) {
-        window.location.href = `/documents/${document.parent}`
+        window.location.href = `/documents/${document.parent}`;
       } else {
-        window.location.href = `/documents`
+        window.location.href = `/documents`;
       }
     } catch (err) {
-      toast.error("Не удалось удалить документ")
+      toast.error("Не удалось удалить документ");
     }
-  }
+  };
 
   if (loading) {
     return <div className="flex items-center justify-center h-screen">Загрузка...</div>
@@ -127,36 +134,35 @@ export default function DocumentPage() {
   }
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
+    <div className="flex h-screen w-full">
+      <AppSidebar className="w-64 h-full" />
+      <div className="flex flex-col flex-1 overflow-hidden">
         {/* Хедер с хлебными крошками и кнопками */}
-        <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-          <SidebarTrigger className="-ml-1" />
-          <Separator orientation="vertical" className="mr-2 h-4" />
-          
-          {/* Хлебные крошки с иерархией документа */}
-          <Breadcrumb className="flex-1">
-            <BreadcrumbList>
-              {document.path && document.path.map((item, index) => (
-                <React.Fragment key={item.id}>
-                  <BreadcrumbItem>
-                    <BreadcrumbLink href={`/documents/${item.id}`}>
-                      {item.title || "Без названия"}
-                    </BreadcrumbLink>
-                  </BreadcrumbItem>
-                  <BreadcrumbSeparator>
-                    <ChevronRight className="h-4 w-4" />
-                  </BreadcrumbSeparator>
-                </React.Fragment>
-              ))}
-              <BreadcrumbItem>
-                <BreadcrumbLink href={`/documents/${document.id}`} className="font-semibold">
-                  {document.title || "Без названия"}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
+        <header className="flex h-16 shrink-0 items-center gap-2 border-b border-l px-4">
+          <div className="flex-1">
+            {/* Хлебные крошки с иерархией документа */}
+            <Breadcrumb>
+              <BreadcrumbList>
+                {document.path && document.path.map((item, index) => (
+                  <React.Fragment key={item.id}>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink href={`/documents/${item.id}`}>
+                        {item.title || "Без названия"}
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <BreadcrumbSeparator>
+                      <ChevronRight className="h-4 w-4" />
+                    </BreadcrumbSeparator>
+                  </React.Fragment>
+                ))}
+                <BreadcrumbItem>
+                  <BreadcrumbLink href={`/documents/${document.id}`} className="font-semibold">
+                    {document.title || "Без названия"}
+                  </BreadcrumbLink>
+                </BreadcrumbItem>
+              </BreadcrumbList>
+            </Breadcrumb>
+          </div>
           
           {/* Кнопки действий */}
           <div className="flex items-center gap-2">
@@ -200,10 +206,10 @@ export default function DocumentPage() {
         </header>
         
         {/* Редактор документа */}
-        <div className="flex-1 p-4 overflow-auto">
+        <div className="flex-1 p-4 overflow-auto border-l">
           <DocumentEditor document={document} onChange={handleDocumentChange} />
         </div>
-      </SidebarInset>
-    </SidebarProvider>
+      </div>
+    </div>
   )
 } 

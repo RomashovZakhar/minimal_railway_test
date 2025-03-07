@@ -4,18 +4,8 @@ import * as React from "react"
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarGroup,
-  SidebarGroupLabel,
-  SidebarGroupContent,
-} from "@/components/ui/sidebar"
 import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
 import { 
   Search, 
   Home, 
@@ -28,6 +18,7 @@ import {
 import { useAuth } from "@/components/auth"
 import { useEffect, useState } from "react"
 import api from "@/lib/api"
+import { Button } from "@/components/ui/button"
 
 // Тип для документа в избранном
 interface FavoriteDocument {
@@ -35,7 +26,9 @@ interface FavoriteDocument {
   title: string;
 }
 
-export function AppSidebar() {
+interface AppSidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+export function AppSidebar({ className, ...props }: AppSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const { user, logout, isLoading } = useAuth()
@@ -119,35 +112,33 @@ export function AppSidebar() {
   };
 
   return (
-    <Sidebar>
-      <SidebarHeader className="border-b p-4">
-        <div className="flex items-center gap-2">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Поиск..."
-                className="pl-8 w-full"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </div>
-          </div>
+    <div className={cn("border-r bg-background flex flex-col h-full", className)} {...props}>
+      {/* Поиск */}
+      <div className="p-4 border-b">
+        <div className="relative">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Поиск..."
+            className="pl-8 w-full"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
         </div>
-      </SidebarHeader>
-      <SidebarContent className="pt-0">
+      </div>
+      
+      <ScrollArea className="flex-1 px-2">
         {/* Результаты поиска */}
         {searchQuery && (
-          <SidebarGroup className="mb-4">
-            <SidebarGroupLabel>Результаты поиска</SidebarGroupLabel>
-            <SidebarGroupContent>
-              {isSearching ? (
-                <div className="px-4 py-2 text-sm text-muted-foreground">
-                  Поиск...
-                </div>
-              ) : searchResults.length > 0 ? (
-                searchResults.map((doc) => (
+          <div className="py-2">
+            <h2 className="px-2 py-1.5 text-sm font-semibold">Результаты поиска</h2>
+            {isSearching ? (
+              <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                Поиск...
+              </div>
+            ) : searchResults.length > 0 ? (
+              <div className="space-y-1">
+                {searchResults.map((doc) => (
                   <Link 
                     key={doc.id} 
                     href={`/documents/${doc.id}`}
@@ -160,33 +151,39 @@ export function AppSidebar() {
                     <File className="h-4 w-4" />
                     <span className="truncate">{doc.title || "Без названия"}</span>
                   </Link>
-                ))
-              ) : (
-                <div className="px-4 py-2 text-sm text-muted-foreground">
-                  Ничего не найдено
-                </div>
-              )}
-            </SidebarGroupContent>
-          </SidebarGroup>
+                ))}
+              </div>
+            ) : (
+              <div className="px-2 py-1.5 text-sm text-muted-foreground">
+                Ничего не найдено
+              </div>
+            )}
+          </div>
         )}
 
-        <SidebarMenu>
-          <SidebarMenuButton onClick={navigateToRoot} className={pathname === "/" ? "bg-accent/50" : undefined}>
-            <Home className="h-4 w-4" />
-            <span>Главная</span>
-          </SidebarMenuButton>
-        </SidebarMenu>
+        {/* Главная / Рабочее пространство */}
+        <div className="py-2">
+          <Button
+            variant="ghost"
+            className={cn(
+              "w-full justify-start font-normal",
+              pathname === "/" && "bg-accent/50"
+            )}
+            onClick={navigateToRoot}
+          >
+            <Home className="mr-2 h-4 w-4" />
+            Рабочее пространство
+          </Button>
+        </div>
 
         {/* Избранные документы */}
         {favoriteDocuments.length > 0 && (
-          <SidebarGroup className="mb-4 mt-4">
-            <SidebarGroupLabel>
-              <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 text-yellow-400" />
-                <span>Избранное</span>
-              </div>
-            </SidebarGroupLabel>
-            <SidebarGroupContent>
+          <div className="py-2">
+            <h2 className="flex items-center gap-2 px-2 py-1.5 text-sm font-semibold">
+              <Star className="h-4 w-4 text-yellow-400" />
+              Избранное
+            </h2>
+            <div className="space-y-1">
               {favoriteDocuments.map((doc) => (
                 <Link 
                   key={doc.id} 
@@ -200,29 +197,42 @@ export function AppSidebar() {
                   <span className="truncate">{doc.title || "Без названия"}</span>
                 </Link>
               ))}
-            </SidebarGroupContent>
-          </SidebarGroup>
+            </div>
+          </div>
         )}
+      </ScrollArea>
 
-        <SidebarMenu className="mt-auto">
-          <SidebarMenuButton asChild>
-            <Link href="/settings" className={pathname === "/settings" ? "bg-accent/50 w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium" : "w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"}>
-              <Settings className="h-4 w-4" />
-              <span>Настройки</span>
-            </Link>
-          </SidebarMenuButton>
-          <SidebarMenuButton asChild>
-            <Link href="/profile" className={pathname === "/profile" ? "bg-accent/50 w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium" : "w-full flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium"}>
-              <User className="h-4 w-4" />
-              <span>Профиль</span>
-            </Link>
-          </SidebarMenuButton>
-          <SidebarMenuButton onClick={logout}>
-            <LogOut className="h-4 w-4" />
-            <span>Выйти</span>
-          </SidebarMenuButton>
-        </SidebarMenu>
-      </SidebarContent>
-    </Sidebar>
+      {/* Нижняя часть с настройками и выходом */}
+      <div className="p-2 border-t mt-auto">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start px-2 py-1.5"
+          asChild
+        >
+          <Link href="/settings">
+            <Settings className="mr-2 h-4 w-4" />
+            <span>Настройки</span>
+          </Link>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start px-2 py-1.5"
+          asChild
+        >
+          <Link href="/profile">
+            <User className="mr-2 h-4 w-4" />
+            <span>Профиль</span>
+          </Link>
+        </Button>
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start px-2 py-1.5"
+          onClick={logout}
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Выйти</span>
+        </Button>
+      </div>
+    </div>
   )
 } 
