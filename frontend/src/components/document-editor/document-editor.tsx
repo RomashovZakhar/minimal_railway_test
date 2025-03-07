@@ -181,74 +181,65 @@ const NestedDocumentTool = {
         .replace(/"/g, '&quot;')
         .replace(/'/g, '&#039;');
       
-      // Создаем кнопку с дизайном в стиле shadcn Button outline
-      const buttonLink = document.createElement('button');
-      buttonLink.className = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-4 py-2';
-      buttonLink.style.cursor = 'pointer';
+      // Создаем контейнер для ссылки в стиле Notion
+      const linkContainer = document.createElement('div');
+      linkContainer.className = 'py-1 px-2 -mx-2 my-0.5 inline-block rounded hover:bg-muted/80 transition-colors cursor-pointer';
       
-      // Текст ссылки
+      // Текст ссылки в стиле Notion с подчеркиванием
       const textSpan = document.createElement('span');
+      textSpan.className = 'font-medium text-sm text-foreground border-b border-muted-foreground/40';
       textSpan.textContent = safeTitle;
       
-      // Добавляем текст в кнопку
-      buttonLink.appendChild(textSpan);
+      // Добавляем текст в контейнер
+      linkContainer.appendChild(textSpan);
       
       // Добавляем обработчик клика
-      buttonLink.addEventListener('click', () => {
+      linkContainer.addEventListener('click', () => {
         window.location.href = `/documents/${this.data.id}`;
       });
       
-      // Контейнер для кнопки с отступами
-      const container = document.createElement('div');
-      container.className = 'my-1';
-      container.appendChild(buttonLink);
-      
       // Очищаем и добавляем новое содержимое
       this.container.innerHTML = '';
-      this.container.appendChild(container);
+      this.container.appendChild(linkContainer);
     }
     
     // Отображает кнопку для создания документа
     renderCreateButton() {
-      // Создаем контейнер в стиле shadcn
+      // Создаем контейнер в стиле Notion
       const container = document.createElement('div');
-      container.className = 'my-2';
+      container.className = 'py-1 my-1';
       
-      // Создаем кнопку в стиле shadcn Button
-      const createButton = document.createElement('button');
-      createButton.type = 'button';
-      createButton.className = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring bg-primary text-primary-foreground shadow hover:bg-primary/90 h-9 px-4 py-2';
+      // Создаем интерактивный элемент в стиле Notion
+      const createLink = document.createElement('div');
+      createLink.className = 'inline-flex items-center py-1 px-2 -mx-2 rounded hover:bg-muted/80 transition-colors cursor-pointer text-blue-600 hover:text-blue-700';
       
-      // Иконка добавления
+      // Иконка "плюс" в том же стиле
       const plusIcon = document.createElement('span');
-      plusIcon.className = 'mr-2 h-4 w-4';
+      plusIcon.className = 'mr-1 h-4 w-4';
       plusIcon.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 4V20M4 12H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
       
-      // Текст кнопки
-      const buttonText = document.createElement('span');
-      buttonText.textContent = 'Создать документ';
+      // Текст ссылки
+      const linkText = document.createElement('span');
+      linkText.className = 'font-medium text-sm';
+      linkText.textContent = 'Создать документ';
       
-      // Добавляем элементы в кнопку
-      createButton.appendChild(plusIcon);
-      createButton.appendChild(buttonText);
+      // Собираем элементы
+      createLink.appendChild(plusIcon);
+      createLink.appendChild(linkText);
+      container.appendChild(createLink);
       
-      // Добавляем обработчик для кнопки
-      createButton.addEventListener('click', async () => {
-        // Отключаем кнопку
-        createButton.disabled = true;
-        createButton.className += ' opacity-70';
+      // Добавляем обработчик нажатия
+      createLink.addEventListener('click', async () => {
+        // Показываем загрузку
+        this.renderLoadingState();
         
         try {
           await this.createDocument();
         } catch (error) {
-          // Восстанавливаем кнопку в случае ошибки
-          createButton.disabled = false;
-          createButton.className = createButton.className.replace(' opacity-70', '');
+          // В случае ошибки возвращаем кнопку создания
+          this.renderCreateButton();
         }
       });
-      
-      // Добавляем кнопку в контейнер
-      container.appendChild(createButton);
       
       // Очищаем и добавляем новое содержимое
       this.container.innerHTML = '';
@@ -257,32 +248,27 @@ const NestedDocumentTool = {
     
     // Отображает состояние загрузки
     renderLoadingState() {
-      // Создаем кнопку-заглушку с анимацией загрузки в стиле shadcn Button outline
-      const loadingButton = document.createElement('button');
-      loadingButton.className = 'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium border border-input bg-background h-9 px-4 py-2 opacity-70';
-      loadingButton.disabled = true;
-      
-      // Добавляем иконку загрузки (spinning circle)
-      const spinnerSpan = document.createElement('span');
-      spinnerSpan.className = 'mr-2 h-4 w-4 animate-spin';
-      spinnerSpan.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2" stroke-dasharray="30 30" stroke-dashoffset="0"/></svg>';
+      // Создаем контейнер в стиле Notion
+      const loadingContainer = document.createElement('div');
+      loadingContainer.className = 'py-1 px-2 -mx-2 my-0.5 inline-block rounded bg-muted/30';
       
       // Текст загрузки
       const textSpan = document.createElement('span');
-      textSpan.textContent = 'Создание документа...';
+      textSpan.className = 'font-medium text-sm text-muted-foreground';
+      textSpan.textContent = 'Создание документа';
       
-      // Добавляем элементы в кнопку
-      loadingButton.appendChild(spinnerSpan);
-      loadingButton.appendChild(textSpan);
+      // Добавляем анимацию точек
+      const dotsSpan = document.createElement('span');
+      dotsSpan.className = 'inline-flex ml-1';
+      dotsSpan.innerHTML = '<span class="animate-pulse">.</span><span class="animate-pulse delay-100">.</span><span class="animate-pulse delay-200">.</span>';
       
-      // Контейнер для кнопки с отступами
-      const container = document.createElement('div');
-      container.className = 'my-1';
-      container.appendChild(loadingButton);
+      // Добавляем элементы в контейнер
+      textSpan.appendChild(dotsSpan);
+      loadingContainer.appendChild(textSpan);
       
       // Очищаем и добавляем новое содержимое
       this.container.innerHTML = '';
-      this.container.appendChild(container);
+      this.container.appendChild(loadingContainer);
     }
     
     // Создает новый вложенный документ
