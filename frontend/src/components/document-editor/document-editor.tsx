@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -33,6 +33,19 @@ interface RemoteCursor {
     offset: number;
   } | null;
   timestamp: number;
+}
+
+// Добавляем интерфейсы для типизации
+interface EditorApi {
+  blocks: {
+    insert: (type: string, data?: any) => void;
+  };
+  save: () => Promise<any>;
+}
+
+interface WebSocketError extends Event {
+  error?: Error;
+  message?: string;
 }
 
 // Кастомный блок для вложенного документа
@@ -223,102 +236,172 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     }
   ]
 
-  // Инициализация WebSocket соединения
+  // WebSocket соединение
   useEffect(() => {
-    // Проверяем, что мы на клиенте и имеем необходимые данные
-    if (typeof window === 'undefined' || !document.id || !user) return;
+    // Проверяем необходимые условия для WebSocket
+    if (typeof window === 'undefined' || !document.id || !user) {
+      console.log('Пропускаем инициализацию WebSocket: не на клиенте или нет данных');
+      return;
+    }
+
+    // Проверяем поддержку WebSocket в браузере
+    if (typeof WebSocket === 'undefined') {
+      console.warn('WebSocket не поддерживается в этом браузере');
+      return;
+    }
+
+    // Отключаем WebSocket для разработки, если нет серверной поддержки
+    // Включите эту опцию, если у вас нет поддержки WebSocket на сервере
+    const DISABLE_WEBSOCKET = true;
+    if (DISABLE_WEBSOCKET) {
+      console.log('WebSocket отключен по настройке DISABLE_WEBSOCKET');
+      return;
+    }
 
     let ws: WebSocket | null = null;
+    let reconnectAttempts = 0;
+    const maxReconnectAttempts = 5;
     
-    // Оборачиваем всю логику WebSocket в try-catch
+    // Используем безопасный конструктор URL с проверкой
+    let wsUrl;
     try {
-      // URL для WebSocket соединения
-      const wsUrl = process.env.NEXT_PUBLIC_WS_URL || 
-        (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + 
-        window.location.host + 
-        `/ws/documents/${document.id}/`;
-        
-      console.log("Пытаемся подключиться к WebSocket по URL:", wsUrl);
-      
-      // Проверяем поддержку WebSocket в браузере
-      if (typeof WebSocket === 'undefined') {
-        console.warn('WebSocket не поддерживается в этом браузере');
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const host = window.location.host;
+      wsUrl = `${protocol}//${host}/ws/documents/${document.id}/`;
+      console.log('Создан URL для WebSocket:', wsUrl);
+    } catch (err) {
+      console.error('Ошибка при создании URL для WebSocket:', err);
+      return;
+    }
+
+    const connectWebSocket = () => {
+      if (reconnectAttempts >= maxReconnectAttempts) {
+        console.warn(`Превышено максимальное количество попыток подключения к WebSocket (${maxReconnectAttempts})`);
         return;
       }
 
-      // Создаем WebSocket соединение
-      ws = new WebSocket(wsUrl);
-      wsRef.current = ws;
-
-      // Цвет курсора для текущего пользователя
-      const userColor = getRandomColor();
-
-      // Обработка открытия соединения
-      ws.onopen = () => {
-        console.log('WebSocket соединение установлено');
-        // Отправляем информацию о пользователе
-        if (ws && ws.readyState === WebSocket.OPEN) {
-          ws.send(JSON.stringify({
-            type: 'cursor_connect',
-            user_id: user.id,
-            username: user.username || 'Пользователь',
-            cursor_id: cursorIdRef.current,
-            color: userColor
-          }));
-        }
-      };
-
-      // Обработка получения сообщений
-      ws.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          
-          switch (data.type) {
-            case 'cursor_update':
-              // Обновляем позицию курсора другого пользователя
-              break;
-              
-            case 'document_update':
-              // Обновляем содержимое документа, если изменения пришли от другого пользователя
-              if (data.sender_id !== cursorIdRef.current && editorInstanceRef.current) {
-                editorInstanceRef.current.render(data.content);
-              }
-              break;
+      try {
+        console.log(`Попытка подключения к WebSocket (${reconnectAttempts + 1}/${maxReconnectAttempts})...`);
+        
+        // Создаем WebSocket с таймаутом
+        ws = new WebSocket(wsUrl);
+        wsRef.current = ws;
+        
+        // Таймаут для соединения
+        const connectionTimeout = setTimeout(() => {
+          if (ws && ws.readyState !== WebSocket.OPEN) {
+            console.warn('Таймаут соединения WebSocket');
+            ws.close();
           }
-        } catch (err) {
-          console.error('Ошибка при обработке сообщения WebSocket:', err);
+        }, 5000);
+
+        ws.onopen = () => {
+          clearTimeout(connectionTimeout);
+          console.log('WebSocket подключение установлено');
+          reconnectAttempts = 0; // Сбрасываем счетчик при успешном подключении
+          
+          if (ws && ws.readyState === WebSocket.OPEN) {
+            try {
+              ws.send(JSON.stringify({
+                type: 'cursor_connect',
+                user_id: user.id,
+                username: user.username || 'Пользователь',
+                cursor_id: cursorIdRef.current,
+                color: getRandomColor()
+              }));
+              console.log('Отправлено сообщение о подключении');
+            } catch (sendErr) {
+              console.error('Ошибка при отправке сообщения о подключении:', sendErr);
+            }
+          }
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            console.log('Получено сообщение WebSocket:', data.type);
+            
+            if (data.type === 'document_update' && 
+                data.sender_id !== cursorIdRef.current && 
+                editorInstanceRef.current) {
+              try {
+                // Используем метод render с обработкой ошибок
+                if (typeof editorInstanceRef.current.render === 'function') {
+                  const renderResult = editorInstanceRef.current.render(data.content);
+                  
+                  // Проверяем, возвращает ли render промис
+                  if (renderResult && typeof renderResult.catch === 'function') {
+                    renderResult.catch((err: Error) => {
+                      console.error('Ошибка при рендеринге данных из WebSocket:', err.message || err);
+                    });
+                  }
+                }
+              } catch (renderErr) {
+                console.error('Ошибка при вызове render:', renderErr);
+              }
+            }
+          } catch (parseErr) {
+            console.warn('Ошибка при обработке сообщения WebSocket:', parseErr);
+          }
+        };
+
+        ws.onerror = (error: Event) => {
+          clearTimeout(connectionTimeout);
+          
+          // Безопасно логируем ошибку WebSocket
+          console.warn('WebSocket ошибка:', {
+            type: error.type,
+            timeStamp: error.timeStamp
+          });
+        };
+
+        ws.onclose = (event) => {
+          clearTimeout(connectionTimeout);
+          
+          console.log('WebSocket соединение закрыто:', 
+            event.code, 
+            event.reason || 'Причина не указана',
+            event.wasClean ? '(корректно)' : '(некорректно)'
+          );
+          
+          wsRef.current = null;
+          
+          // Переподключаемся только если соединение закрылось неожиданно
+          // и мы не превысили лимит попыток
+          if (!event.wasClean && reconnectAttempts < maxReconnectAttempts) {
+            reconnectAttempts++;
+            // Exponential backoff: 1s, 2s, 4s, 8s, 16s
+            const delay = Math.min(1000 * Math.pow(2, reconnectAttempts - 1), 16000);
+            console.log(`Переподключение через ${delay/1000} секунд...`);
+            
+            setTimeout(connectWebSocket, delay);
+          }
+        };
+      } catch (err) {
+        console.warn('Ошибка при создании WebSocket:', err);
+        wsRef.current = null;
+        
+        // Пробуем переподключиться с задержкой
+        if (reconnectAttempts < maxReconnectAttempts) {
+          reconnectAttempts++;
+          const delay = Math.min(1000 * Math.pow(2, reconnectAttempts - 1), 16000);
+          setTimeout(connectWebSocket, delay);
         }
-      };
+      }
+    };
 
-      // Обработка ошибок
-      ws.onerror = (error) => {
-        console.error('Ошибка WebSocket:', error);
-        // При ошибке не закрываем соединение, просто логируем
-      };
+    // Инициируем первое подключение с небольшой задержкой
+    const initTimeout = setTimeout(() => {
+      connectWebSocket();
+    }, 500);
 
-      // Обработка закрытия соединения
-      ws.onclose = (event) => {
-        console.log('WebSocket соединение закрыто', event.code, event.reason);
-      };
-    } catch (err) {
-      console.warn('Не удалось инициализировать WebSocket:', err);
-      // При ошибке инициализации просто продолжаем без WebSocket функциональности
-    }
-
-    // Очистка при размонтировании
     return () => {
+      clearTimeout(initTimeout);
+      
       if (ws) {
         try {
-          if (ws.readyState === WebSocket.OPEN) {
-            // Отправляем сообщение только если соединение открыто
-            ws.send(JSON.stringify({
-              type: 'cursor_disconnect',
-              cursor_id: cursorIdRef.current
-            }));
-            ws.close();
-          } else if (ws.readyState === WebSocket.CONNECTING) {
-            // Если еще подключаемся, закрываем без отправки сообщения
-            ws.close();
+          if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+            ws.close(1000, 'Компонент размонтирован');
           }
         } catch (err) {
           console.warn('Ошибка при закрытии WebSocket:', err);
@@ -348,176 +431,345 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     }
   };
 
-  // Автосохранение
-  useEffect(() => {
-    let saveTimeout: NodeJS.Timeout | null = null;
-    let contentToSave: any = null;
+  // Первый render редактора (только один раз)
+  const isFirstRender = useRef(true);
+  
+  // Флаг для определения, происходит ли сохранение
+  const isSavingRef = useRef(false);
+  
+  // Последнее состояние контента для сравнения
+  const lastContentRef = useRef<any>(null);
+  
+  // Автосохранение с дебаунсингом
+  const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  const triggerAutosave = useCallback((content: any) => {
+    // Если уже идет сохранение, пропускаем
+    if (isSavingRef.current) return;
     
-    // Функция для сохранения документа с дебаунсом
-    const debouncedSave = async () => {
-      if (!contentToSave) return;
-      
+    // Если контент не изменился, не сохраняем
+    if (lastContentRef.current && 
+        JSON.stringify(lastContentRef.current) === JSON.stringify(content)) {
+      console.log('Содержимое не изменилось, пропускаем сохранение');
+      return;
+    }
+    
+    // Очищаем предыдущий таймер, если он был
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // Устанавливаем новый таймер для сохранения с большим дебаунсом
+    saveTimeoutRef.current = setTimeout(async () => {
       try {
+        // Устанавливаем флаг сохранения
+        isSavingRef.current = true;
+        
+        console.log('Сохраняем документ на сервере...');
+        
+        // Сохраняем текущее состояние контента
+        lastContentRef.current = content;
+        
         // Отправляем данные на сервер
-        await api.put(`/documents/${document.id}/`, { 
-          content: contentToSave,
-          title 
+        await api.put(`/documents/${document.id}/`, {
+          title,
+          content,
+          parent: document.parent
         });
         
-        // Отправляем обновления через WebSocket
+        console.log('Документ успешно сохранен');
+        
+        // Отправляем данные через WebSocket, если соединение активно
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
           wsRef.current.send(JSON.stringify({
             type: 'document_update',
-            content: contentToSave,
+            content,
             sender_id: cursorIdRef.current
           }));
         }
-        
-        console.log('Документ успешно сохранен');
-        contentToSave = null;
-      } catch (err) {
-        console.error('Ошибка при автосохранении:', err);
+      } catch (error: any) {
+        console.error('Ошибка при автосохранении:', error.message);
+      } finally {
+        // Снимаем флаг сохранения
+        isSavingRef.current = false;
       }
-    };
-    
-    // Настраиваем событие для перехвата изменений и планирования сохранения
-    const handleEditorChange = (newContent: any) => {
-      contentToSave = newContent;
-      
-      // Очищаем предыдущий таймер, если он был
-      if (saveTimeout) {
-        clearTimeout(saveTimeout);
-      }
-      
-      // Устанавливаем новый таймер для сохранения
-      saveTimeout = setTimeout(() => {
-        debouncedSave();
-      }, 2000); // Задержка в 2 секунды
-    };
-    
-    // Добавляем кастомное событие для отслеживания изменений в редакторе
-    const handleCustomEvent = (e: CustomEvent) => {
-      if (e.detail && e.detail.content) {
-        handleEditorChange(e.detail.content);
-      }
-    };
-    
-    if (typeof window !== 'undefined') {
-      window.addEventListener('editorContentChanged', handleCustomEvent as EventListener);
+    }, 3000); // Увеличиваем задержку до 3 секунд
+  }, [document.id, document.parent, title]);
+
+  // Создаем экземпляр EditorJS
+  useEffect(() => {
+    // Для предотвращения ненужных пересозданий редактора
+    if (!isFirstRender.current && editorInstanceRef.current) {
+      // Если это не первый рендер и редактор уже существует, просто обновляем данные
+      console.log("Пропускаем пересоздание редактора, так как он уже существует");
+      return;
     }
     
-    return () => {
-      // Отменяем таймер при размонтировании
-      if (saveTimeout) {
-        clearTimeout(saveTimeout);
-      }
-      
-      // Финальное сохранение при размонтировании, если есть изменения
-      if (contentToSave) {
-        debouncedSave();
-      }
-      
-      // Удаляем обработчик события
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('editorContentChanged', handleCustomEvent as EventListener);
-      }
-    };
-  }, [document.id, title]);
-
-  useEffect(() => {
+    isFirstRender.current = false;
+    
     // Динамический импорт EditorJS для клиентской стороны
     const initEditor = async () => {
       try {
-        // Импортируем библиотеки только на клиенте
-        if (typeof window !== "undefined" && editorRef.current) {
-          const EditorJS = (await import('@editorjs/editorjs')).default;
-          const Header = (await import('@editorjs/header')).default;
-          const List = (await import('@editorjs/list')).default;
-          const Checklist = (await import('@editorjs/checklist')).default;
-          const Image = (await import('@editorjs/image')).default;
+        // Проверяем, что мы на клиенте и элемент существует
+        if (typeof window === "undefined") {
+          console.log("Не на клиенте, пропускаем инициализацию EditorJS");
+          return;
+        }
+        
+        // Проверяем наличие DOM элемента
+        if (!editorRef.current) {
+          console.log("DOM элемент для редактора не найден, пропускаем инициализацию");
+          return;
+        }
 
-          // Если экземпляр редактора уже существует, не создаем новый
-          if (editorInstanceRef.current) return;
+        console.log("Начинаем инициализацию редактора...");
 
-          // Подготавливаем данные для редактора
-          let editorData = document.content;
-          console.log("Исходные данные документа:", document.content);
-          
-          // Проверяем формат данных и добавляем обязательные поля если они отсутствуют
-          if (!editorData) {
-            editorData = { blocks: [] };
+        // Импортируем все необходимые модули
+        const [
+          EditorJSModule,
+          HeaderModule,
+          ListModule,
+          ChecklistModule,
+          ImageModule
+        ] = await Promise.all([
+          import('@editorjs/editorjs'),
+          import('@editorjs/header'),
+          import('@editorjs/list'),
+          import('@editorjs/checklist'),
+          import('@editorjs/image')
+        ]);
+
+        // Извлекаем классы из модулей
+        const EditorJS = EditorJSModule.default;
+        const Header = HeaderModule.default;
+        const List = ListModule.default;
+        const Checklist = ChecklistModule.default;
+        const Image = ImageModule.default;
+
+        // Если редактор уже существует, безопасно уничтожаем его
+        if (editorInstanceRef.current) {
+          try {
+            console.log("Уничтожаем предыдущий экземпляр редактора...");
+            
+            // Безопасное уничтожение экземпляра
+            if (typeof editorInstanceRef.current.destroy === 'function') {
+              const destroyPromise = editorInstanceRef.current.destroy();
+              if (destroyPromise && typeof destroyPromise.then === 'function') {
+                await destroyPromise;
+              }
+            } else {
+              console.log("Метод destroy не найден, очищаем ссылку напрямую");
+            }
+          } catch (destroyError) {
+            console.error("Ошибка при уничтожении предыдущего экземпляра:", destroyError);
           }
           
-          // Добавляем обязательные свойства для EditorJS
-          if (!editorData.time) {
-            editorData.time = new Date().getTime();
-          }
-          
-          if (!editorData.version) {
-            editorData.version = "2.27.0";
-          }
-          
-          console.log("Инициализация редактора с данными:", editorData);
+          // В любом случае, сбрасываем ссылку
+          editorInstanceRef.current = null;
+        }
 
-          // Создаем экземпляр EditorJS с хорошо отформатированным контентом
-          editorInstanceRef.current = new EditorJS({
-            holder: editorRef.current,
-            data: editorData,
-            autofocus: true,
-            placeholder: 'Нажмите "/" для вызова меню команд',
-            tools: {
-              header: Header,
-              list: List,
-              checklist: Checklist,
-              image: Image,
-              nestedDocument: NestedDocumentTool
-            },
-            onReady: () => {
-              console.log("Editor.js успешно инициализирован");
-            },
-            onChange: async (api: any, event: any) => {
-              if (!editorInstanceRef.current) return;
+        console.log("Подготавливаем данные для редактора...");
+        console.log("Исходные данные документа:", document.content);
+
+        // Подготавливаем данные
+        let editorData;
+        
+        // Определяем правильный формат данных
+        if (document.content && 
+            typeof document.content === 'object' && 
+            document.content.blocks && 
+            Array.isArray(document.content.blocks)) {
+          // Имеем корректные данные, просто используем их
+          editorData = {
+            time: document.content.time || new Date().getTime(),
+            version: document.content.version || "2.27.0",
+            blocks: document.content.blocks
+          };
+        } else if (document.content && typeof document.content === 'string') {
+          // Данные в виде строки, пробуем распарсить
+          try {
+            const parsedContent = JSON.parse(document.content);
+            editorData = {
+              time: parsedContent.time || new Date().getTime(),
+              version: parsedContent.version || "2.27.0",
+              blocks: Array.isArray(parsedContent.blocks) ? parsedContent.blocks : []
+            };
+          } catch (parseErr) {
+            console.warn("Ошибка при парсинге содержимого документа:", parseErr);
+            // Если не удается распарсить, создаем пустой документ
+            editorData = {
+              time: new Date().getTime(),
+              version: "2.27.0",
+              blocks: []
+            };
+          }
+        } else {
+          // По умолчанию создаем пустой документ
+          console.log("Создаем пустой документ, так как формат данных не распознан");
+          editorData = {
+            time: new Date().getTime(),
+            version: "2.27.0",
+            blocks: []
+          };
+        }
+        
+        console.log("Подготовленные данные для редактора:", editorData);
+
+        // Создаем новый экземпляр
+        console.log("Создаем экземпляр EditorJS...");
+        const editor = new EditorJS({
+          holder: editorRef.current,
+          data: editorData,
+          onReady: () => {
+            console.log('Editor.js готов к работе');
+            editorInstanceRef.current = editor;
+          },
+          onChange: function(api: any) {
+            try {
+              // Пропускаем автосохранение, если сейчас идет сохранение
+              if (isSavingRef.current) return;
               
-              try {
-                const data = await editorInstanceRef.current.save();
-                onChange({ ...document, content: data, title });
+              // Используем безопасное сохранение с явным this
+              editor.save().then((outputData: any) => {
+                // Обновляем только состояние компонента без перерисовки редактора
+                onChange({ ...document, content: outputData, title });
                 
-                // Создаем кастомное событие для автосохранения
-                if (typeof window !== 'undefined') {
-                  const customEvent = new CustomEvent('editorContentChanged', { 
-                    detail: { content: data } 
-                  });
-                  window.dispatchEvent(customEvent);
+                // Запускаем автосохранение отдельно от обновления состояния
+                triggerAutosave(outputData);
+              }).catch((saveErr: Error) => {
+                console.error('Ошибка при сохранении:', saveErr);
+              });
+            } catch (err) {
+              console.error('Ошибка в onChange:', err);
+            }
+          },
+          autofocus: true,
+          placeholder: 'Нажмите "/" для вызова меню команд',
+          tools: {
+            header: {
+              class: Header,
+              inlineToolbar: true,
+              shortcut: 'CMD+SHIFT+H',
+              config: {
+                placeholder: 'Введите заголовок',
+                levels: [2, 3, 4],
+                defaultLevel: 2
+              }
+            },
+            list: {
+              class: List,
+              inlineToolbar: true,
+              config: {
+                defaultStyle: 'unordered'
+              }
+            },
+            checklist: {
+              class: Checklist,
+              inlineToolbar: true
+            },
+            image: {
+              class: Image,
+              config: {
+                endpoints: {
+                  byFile: '/api/upload-image/'
                 }
-              } catch (err) {
-                console.error("Ошибка при сохранении контента:", err);
+              }
+            },
+            nestedDocument: NestedDocumentTool
+          },
+          i18n: {
+            messages: {
+              ui: {
+                "blockTunes": {
+                  "toggler": {
+                    "Click to tune": "Нажмите, чтобы настроить",
+                  }
+                },
+                "inlineToolbar": {
+                  "converter": {
+                    "Convert to": "Конвертировать в"
+                  }
+                },
+                "toolbar": {
+                  "toolbox": {
+                    "Add": "Добавить"
+                  }
+                }
+              },
+              toolNames: {
+                "Text": "Текст",
+                "Heading": "Заголовок",
+                "List": "Список",
+                "Checklist": "Чек-лист",
+                "Image": "Изображение",
+                "Nested Document": "Вложенный документ"
+              },
+              tools: {
+                "header": {
+                  "Heading 2": "Заголовок 2-го уровня",
+                  "Heading 3": "Заголовок 3-го уровня",
+                  "Heading 4": "Заголовок 4-го уровня"
+                },
+                "list": {
+                  "Unordered": "Маркированный список",
+                  "Ordered": "Нумерованный список"
+                }
               }
             }
-          });
-        }
+          }
+        });
+        
+        console.log("Экземпляр EditorJS создан");
       } catch (err) {
         console.error('Ошибка при инициализации EditorJS:', err);
       }
     };
 
-    initEditor();
+    // Запускаем инициализацию с небольшой задержкой
+    console.log("Установка таймера для инициализации EditorJS...");
+    const timer = setTimeout(() => {
+      initEditor();
+    }, 300); // Увеличиваем задержку для надежности
 
-    // Очистка при размонтировании компонента
     return () => {
+      console.log("Очистка при размонтировании компонента DocumentEditor");
+      clearTimeout(timer);
+      
       if (editorInstanceRef.current) {
         try {
+          // Проверяем, является ли destroy функцией
           if (typeof editorInstanceRef.current.destroy === 'function') {
-            editorInstanceRef.current.destroy();
-          } else if (typeof editorInstanceRef.current.clear === 'function') {
-            editorInstanceRef.current.clear();
+            // Некоторые версии EditorJS могут не возвращать промис из destroy
+            const destroyResult = editorInstanceRef.current.destroy();
+            
+            // Обрабатываем случай, если destroy возвращает промис
+            if (destroyResult && typeof destroyResult.then === 'function') {
+              destroyResult.then(() => {
+                console.log('Редактор успешно уничтожен');
+              }).catch((err: Error) => {
+                console.error('Ошибка при уничтожении редактора:', err.message || 'Неизвестная ошибка');
+              });
+            }
+          } else {
+            console.log('Метод destroy не найден, используем альтернативную очистку');
           }
         } catch (err) {
-          console.error('Ошибка при уничтожении редактора:', err);
+          console.error('Ошибка при попытке уничтожить редактор:', err);
+        } finally {
+          editorInstanceRef.current = null;
         }
-        editorInstanceRef.current = null;
       }
     };
-  }, [document.id]);  // Зависимость только от ID документа, чтобы не пересоздавать редактор при каждом изменении контента
+  }, [document.id]); // Оставляем только зависимость от ID документа
+
+  // Очистка таймера автосохранения при размонтировании
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Обновляем заголовок документа
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -542,10 +794,82 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
         <CardContent className="p-0">
           <div 
             ref={editorRef} 
-            className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none"
+            className="prose prose-sm sm:prose lg:prose-lg xl:prose-xl max-w-none editor-js-container"
           />
         </CardContent>
       </Card>
+
+      {/* Стили для EditorJS */}
+      <style jsx global>{`
+        /* Стили для заголовков */
+        .ce-header {
+          padding: 0.5em 0;
+          margin: 0;
+          line-height: 1.25em;
+        }
+        
+        h2.ce-header {
+          font-size: 1.75em;
+          font-weight: 700;
+        }
+        
+        h3.ce-header {
+          font-size: 1.5em;
+          font-weight: 600;
+        }
+        
+        h4.ce-header {
+          font-size: 1.25em;
+          font-weight: 600;
+        }
+        
+        /* Стили для списков */
+        .cdx-list {
+          margin: 0;
+          padding-left: 40px;
+          outline: none;
+        }
+        
+        .cdx-list__item {
+          padding: 5px 0;
+          line-height: 1.5em;
+        }
+        
+        /* Стили для чеклистов */
+        .cdx-checklist__item {
+          display: flex;
+          align-items: flex-start;
+          padding: 5px 0;
+        }
+        
+        .cdx-checklist__item-checkbox {
+          margin-right: 10px;
+          cursor: pointer;
+        }
+        
+        /* Общие стили для блоков */
+        .ce-block {
+          padding: 0.4em 0;
+        }
+        
+        .ce-block__content {
+          max-width: 100%;
+          margin: 0 auto;
+        }
+        
+        /* Стили для тулбара */
+        .ce-toolbar__content {
+          max-width: 100%;
+        }
+        
+        .ce-toolbar__plus {
+          color: #5a67d8;
+        }
+        
+        .ce-toolbar__settings-btn {
+          color: #5a67d8;
+        }
+      `}</style>
     </div>
   )
 } 

@@ -6,7 +6,6 @@ import api from "@/lib/api"
 
 // Шаблон приветственного контента для нового пользователя
 const welcomeContent = {
-  time: new Date().getTime(),
   blocks: [
     {
       type: "header",
@@ -77,6 +76,7 @@ const welcomeContent = {
       }
     }
   ],
+  time: new Date().getTime(),
   version: "2.27.0"
 };
 
