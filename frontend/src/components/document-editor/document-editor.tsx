@@ -16,6 +16,7 @@ interface Document {
   title: string;
   content: any;
   parent: string | null;
+  is_favorite?: boolean;
 }
 
 interface DocumentEditorProps {
@@ -285,8 +286,8 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
         
         // Создаем WebSocket с таймаутом
         ws = new WebSocket(wsUrl);
-        wsRef.current = ws;
-        
+    wsRef.current = ws;
+
         // Таймаут для соединения
         const connectionTimeout = setTimeout(() => {
           if (ws && ws.readyState !== WebSocket.OPEN) {
@@ -295,30 +296,30 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
           }
         }, 5000);
 
-        ws.onopen = () => {
+    ws.onopen = () => {
           clearTimeout(connectionTimeout);
           console.log('WebSocket подключение установлено');
           reconnectAttempts = 0; // Сбрасываем счетчик при успешном подключении
           
           if (ws && ws.readyState === WebSocket.OPEN) {
             try {
-              ws.send(JSON.stringify({
-                type: 'cursor_connect',
-                user_id: user.id,
-                username: user.username || 'Пользователь',
-                cursor_id: cursorIdRef.current,
+      ws.send(JSON.stringify({
+        type: 'cursor_connect',
+        user_id: user.id,
+        username: user.username || 'Пользователь',
+        cursor_id: cursorIdRef.current,
                 color: getRandomColor()
-              }));
+      }));
               console.log('Отправлено сообщение о подключении');
             } catch (sendErr) {
               console.error('Ошибка при отправке сообщения о подключении:', sendErr);
             }
           }
-        };
+    };
 
-        ws.onmessage = (event) => {
-          try {
-            const data = JSON.parse(event.data);
+    ws.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
             console.log('Получено сообщение WebSocket:', data.type);
             
             if (data.type === 'document_update' && 
@@ -400,7 +401,7 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
       
       if (ws) {
         try {
-          if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
+      if (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING) {
             ws.close(1000, 'Компонент размонтирован');
           }
         } catch (err) {
@@ -416,16 +417,16 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     if (!wsRef.current || wsRef.current.readyState !== WebSocket.OPEN) return;
     
     try {
-      // Сохраняем текущую позицию
-      cursorPositionRef.current = position;
-      
-      // Отправляем данные о позиции
-      wsRef.current.send(JSON.stringify({
-        type: 'cursor_update',
-        cursor_id: cursorIdRef.current,
-        position,
-        username: user?.username || 'Пользователь'
-      }));
+    // Сохраняем текущую позицию
+    cursorPositionRef.current = position;
+    
+    // Отправляем данные о позиции
+    wsRef.current.send(JSON.stringify({
+      type: 'cursor_update',
+      cursor_id: cursorIdRef.current,
+      position,
+      username: user?.username || 'Пользователь'
+    }));
     } catch (err) {
       console.warn('Ошибка при отправке позиции курсора:', err);
     }
@@ -443,6 +444,59 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
   // Автосохранение с дебаунсингом
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
+  // Получаем кэшированный контент при инициализации
+  const getCachedContent = useCallback((documentId: string) => {
+    try {
+      const cachedData = localStorage.getItem(`document_cache_${documentId}`);
+      if (cachedData) {
+        const parsed = JSON.parse(cachedData);
+        const timestamp = parsed.timestamp || 0;
+        const content = parsed.content;
+        
+        // Проверяем, не устарел ли кэш (24 часа)
+        const cacheLifetime = 24 * 60 * 60 * 1000; // 24 часа в миллисекундах
+        if (Date.now() - timestamp < cacheLifetime) {
+          console.log('Найден действительный кэшированный контент:', content);
+          return content;
+        } else {
+          console.log('Кэшированный контент устарел, удаляем');
+          localStorage.removeItem(`document_cache_${documentId}`);
+        }
+      }
+    } catch (err) {
+      console.warn('Ошибка при чтении кэшированного контента:', err);
+    }
+    return null;
+  }, []);
+
+  // Сохраняем контент в локальное хранилище
+  const updateContentCache = useCallback((documentId: string, content: any) => {
+    try {
+      localStorage.setItem(`document_cache_${documentId}`, JSON.stringify({
+        content,
+        timestamp: Date.now()
+      }));
+      console.log('Контент сохранен в кэш');
+    } catch (err) {
+      console.warn('Ошибка при сохранении контента в кэш:', err);
+    }
+  }, []);
+
+  // Добавляем эффект загрузки кэшированного контента при монтировании
+  useEffect(() => {
+    if (document.id) {
+      const cachedContent = getCachedContent(document.id);
+      if (cachedContent && (!document.content || Object.keys(document.content).length === 0)) {
+        console.log('Используем кэшированный контент вместо пустого контента с сервера');
+        onChange({
+          ...document,
+          content: cachedContent
+        });
+      }
+    }
+  }, [document.id, document.content, getCachedContent, onChange]);
+
+  // Модифицируем triggerAutosave для кэширования
   const triggerAutosave = useCallback((content: any) => {
     // Если уже идет сохранение, пропускаем
     if (isSavingRef.current) return;
@@ -453,6 +507,12 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
       console.log('Содержимое не изменилось, пропускаем сохранение');
       return;
     }
+    
+    console.log('Контент изменился, планируем сохранение...');
+    console.log('Новый контент:', content);
+    
+    // Сразу кэшируем контент локально для защиты от потери данных
+    updateContentCache(document.id, content);
     
     // Очищаем предыдущий таймер, если он был
     if (saveTimeoutRef.current) {
@@ -470,14 +530,30 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
         // Сохраняем текущее состояние контента
         lastContentRef.current = content;
         
-        // Отправляем данные на сервер
-        await api.put(`/documents/${document.id}/`, {
+        // Полные данные для обновления документа
+        const documentData = {
           title,
           content,
-          parent: document.parent
-        });
+          parent: document.parent,
+          is_favorite: document.is_favorite || false
+        };
         
+        console.log('Отправляемые данные:', documentData);
+        
+        // Отправляем данные на сервер с полным URL
+        const response = await api.put(`/documents/${document.id}/`, documentData);
+        
+        console.log('Ответ сервера:', response.data);
         console.log('Документ успешно сохранен');
+        
+        // Синхронизируем состояние документа с полученными данными
+        if (response.data && typeof onChange === 'function') {
+          onChange({
+            ...document,
+            content: response.data.content || content,
+            title: response.data.title || title
+          });
+        }
         
         // Отправляем данные через WebSocket, если соединение активно
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -488,13 +564,20 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
           }));
         }
       } catch (error: any) {
-        console.error('Ошибка при автосохранении:', error.message);
+        console.error('Ошибка при автосохранении:', error);
+        console.error('Детали ошибки:', error.response?.data || error.message);
+        
+        // Повторная попытка сохранения через 5 секунд при ошибке
+        setTimeout(() => {
+          isSavingRef.current = false;
+          triggerAutosave(content);
+        }, 5000);
       } finally {
         // Снимаем флаг сохранения
         isSavingRef.current = false;
       }
-    }, 3000); // Увеличиваем задержку до 3 секунд
-  }, [document.id, document.parent, title]);
+    }, 3000); // Задержка в 3 секунды
+  }, [document.id, document.parent, document.is_favorite, title, onChange, updateContentCache]);
 
   // Создаем экземпляр EditorJS
   useEffect(() => {
@@ -571,47 +654,113 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
         console.log("Подготавливаем данные для редактора...");
         console.log("Исходные данные документа:", document.content);
 
-        // Подготавливаем данные
+        // Гарантируем, что у нас есть данные в правильном формате
         let editorData;
         
-        // Определяем правильный формат данных
-        if (document.content && 
-            typeof document.content === 'object' && 
-            document.content.blocks && 
-            Array.isArray(document.content.blocks)) {
-          // Имеем корректные данные, просто используем их
+        // Проверяем наличие кэшированного контента
+        const cachedContent = getCachedContent(document.id);
+        
+        // Функция для проверки валидности структуры данных
+        const isValidEditorData = (data: any) => {
+          return data && 
+                 typeof data === 'object' && 
+                 Array.isArray(data.blocks);
+        };
+        
+        // Сначала пробуем использовать кэшированный контент
+        if (cachedContent && isValidEditorData(cachedContent)) {
+          console.log("Используем кэшированный контент");
+          editorData = {
+            time: cachedContent.time || new Date().getTime(),
+            version: cachedContent.version || "2.27.0",
+            blocks: cachedContent.blocks
+          };
+        }
+        // Затем пытаемся использовать существующие данные
+        else if (isValidEditorData(document.content)) {
+          console.log("Найдены корректные данные в контенте документа");
           editorData = {
             time: document.content.time || new Date().getTime(),
             version: document.content.version || "2.27.0",
             blocks: document.content.blocks
           };
-        } else if (document.content && typeof document.content === 'string') {
-          // Данные в виде строки, пробуем распарсить
+        } 
+        // Если content - пустой объект, создаем базовую структуру
+        else if (document.content && typeof document.content === 'object' && Object.keys(document.content).length === 0) {
+          console.log("Контент - пустой объект, создаем базовую структуру");
+          editorData = {
+            time: new Date().getTime(),
+            version: "2.27.0",
+            blocks: []
+          };
+        } else if (typeof document.content === 'string') {
+          // Пробуем распарсить JSON-строку
           try {
+            console.log("Контент в виде строки, пробуем распарсить JSON");
             const parsedContent = JSON.parse(document.content);
-            editorData = {
-              time: parsedContent.time || new Date().getTime(),
-              version: parsedContent.version || "2.27.0",
-              blocks: Array.isArray(parsedContent.blocks) ? parsedContent.blocks : []
-            };
+            
+            if (isValidEditorData(parsedContent)) {
+              console.log("JSON успешно распарсен");
+              editorData = {
+                time: parsedContent.time || new Date().getTime(),
+                version: parsedContent.version || "2.27.0",
+                blocks: parsedContent.blocks
+              };
+            } else {
+              console.log("Распарсенный JSON не содержит корректных данных");
+              // Создаем базовый текстовый блок из строки
+              editorData = {
+                time: new Date().getTime(),
+                version: "2.27.0",
+                blocks: [
+                  {
+                    type: "paragraph",
+                    data: {
+                      text: typeof document.content === 'string' ? document.content : ""
+                    }
+                  }
+                ]
+              };
+            }
           } catch (parseErr) {
-            console.warn("Ошибка при парсинге содержимого документа:", parseErr);
-            // Если не удается распарсить, создаем пустой документ
+            console.warn("Ошибка при парсинге JSON:", parseErr);
+            // Создаем базовый текстовый блок из строки
             editorData = {
               time: new Date().getTime(),
               version: "2.27.0",
-              blocks: []
+              blocks: [
+                {
+                  type: "paragraph",
+                  data: {
+                    text: typeof document.content === 'string' ? document.content : ""
+                  }
+                }
+              ]
             };
           }
+        } else if (document.content === null || document.content === undefined) {
+          // Документ новый или без контента
+          console.log("Документ без контента, создаем пустую структуру");
+          editorData = {
+            time: new Date().getTime(),
+            version: "2.27.0",
+            blocks: []
+          };
         } else {
-          // По умолчанию создаем пустой документ
-          console.log("Создаем пустой документ, так как формат данных не распознан");
+          // Непонятный формат данных
+          console.log("Неизвестный формат данных, создаем пустую структуру");
           editorData = {
             time: new Date().getTime(),
             version: "2.27.0",
             blocks: []
           };
         }
+        
+        // Сохраняем подготовленные данные для автосохранения
+        lastContentRef.current = editorData;
+        
+        // Обновляем кэш с подготовленными данными
+        updateContentCache(document.id, editorData);
         
         console.log("Подготовленные данные для редактора:", editorData);
 
@@ -728,7 +877,7 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     // Запускаем инициализацию с небольшой задержкой
     console.log("Установка таймера для инициализации EditorJS...");
     const timer = setTimeout(() => {
-      initEditor();
+    initEditor();
     }, 300); // Увеличиваем задержку для надежности
 
     return () => {
@@ -756,7 +905,7 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
         } catch (err) {
           console.error('Ошибка при попытке уничтожить редактор:', err);
         } finally {
-          editorInstanceRef.current = null;
+        editorInstanceRef.current = null;
         }
       }
     };
@@ -777,6 +926,79 @@ export function DocumentEditor({ document, onChange }: DocumentEditorProps) {
     setTitle(newTitle);
     onChange({ ...document, title: newTitle });
   };
+
+  // Последний контент для сохранения при выходе
+  const lastDocumentContent = useRef<any>(document.content);
+  
+  // Сохранение перед уходом
+  useEffect(() => {
+    // Функция для сохранения данных перед уходом со страницы
+    const saveBeforeLeavingPage = async (event: BeforeUnloadEvent) => {
+      try {
+        // Если редактор существует, сохраняем его содержимое
+        if (editorInstanceRef.current) {
+          try {
+            // Синхронное блокирующее сохранение
+            const contentToSave = await editorInstanceRef.current.save();
+            
+            // Если контент изменился с момента последнего сохранения
+            if (JSON.stringify(lastDocumentContent.current) !== JSON.stringify(contentToSave)) {
+              console.log('Сохранение контента перед выходом...');
+              
+              // Отправляем данные с использованием navigator.sendBeacon
+              if (navigator.sendBeacon) {
+                const blob = new Blob([
+                  JSON.stringify({
+                    title,
+                    content: contentToSave,
+                    parent: document.parent
+                  })
+                ], { type: 'application/json' });
+                
+                const success = navigator.sendBeacon(`/api/documents/${document.id}/`, blob);
+                console.log('Запрос sendBeacon отправлен:', success);
+              } else {
+                // Альтернативный вариант с fetch и keepalive
+                fetch(`/api/documents/${document.id}/`, {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+                  },
+                  body: JSON.stringify({
+                    title,
+                    content: contentToSave,
+                    parent: document.parent
+                  }),
+                  keepalive: true
+                });
+              }
+              
+              // Обновляем последнее сохраненное состояние
+              lastDocumentContent.current = contentToSave;
+            }
+          } catch (editorErr) {
+            console.error('Ошибка при получении контента редактора:', editorErr);
+          }
+        }
+      } catch (err) {
+        console.error('Ошибка при сохранении перед уходом:', err);
+      }
+    };
+    
+    // Регистрируем обработчик события beforeunload
+    window.addEventListener('beforeunload', saveBeforeLeavingPage);
+    
+    // Очистка при размонтировании
+    return () => {
+      window.removeEventListener('beforeunload', saveBeforeLeavingPage);
+    };
+  }, [document.id, document.parent, title]);
+
+  // Обновляем ссылку на последний контент при его сохранении
+  useEffect(() => {
+    lastDocumentContent.current = document.content;
+  }, [document.content]);
 
   return (
     <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto">

@@ -47,12 +47,17 @@ export default function DocumentPage() {
   const [document, setDocument] = useState<Document | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const [title, setTitle] = useState<string>("")
 
   const fetchDocument = async () => {
     try {
       setLoading(true)
-      const response = await api.get(`/documents/${id}/`)
-      setDocument(response.data)
+      const { data } = await api.get(`/documents/${id}/`)
+      console.log('Загружен документ с сервера:', data)
+      console.log('Контент документа:', data.content)
+      
+      setDocument(data)
+      setTitle(data.title)
       setError(null)
     } catch (err) {
       console.error("Ошибка при загрузке документа:", err)
