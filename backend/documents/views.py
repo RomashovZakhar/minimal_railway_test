@@ -5,6 +5,12 @@ from rest_framework.response import Response
 from django.db.models import Q
 from .models import Document, AccessRight
 from .serializers import DocumentSerializer, DocumentDetailSerializer, AccessRightSerializer
+import json
+import logging
+import copy
+
+# Настройка логгера
+logger = logging.getLogger(__name__)
 
 class DocumentViewSet(viewsets.ModelViewSet):
     """
@@ -61,7 +67,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 # Если уже есть корневой документ, отменяем флаг is_root для нового документа
                 serializer.validated_data['is_root'] = False
                 # Логируем информацию
-                print(f"Попытка создать второй корневой документ для пользователя {self.request.user.id}: отменено")
+                logger.info(f"Попытка создать второй корневой документ для пользователя {self.request.user.id}: отменено")
         
         # Если создается документ с parent=None (верхнего уровня)
         parent = serializer.validated_data.get('parent', None)
@@ -74,9 +80,76 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 if not root_docs.exists():
                     # Если нет других документов верхнего уровня, помечаем этот как корневой
                     serializer.validated_data['is_root'] = True
-                    print(f"Автоматически установлен флаг is_root=True для документа пользователя {self.request.user.id}")
+                    logger.info(f"Автоматически установлен флаг is_root=True для документа пользователя {self.request.user.id}")
         
         serializer.save(owner=self.request.user)
+    
+    def update(self, request, *args, **kwargs):
+        """
+        Переопределяем метод update для правильного сохранения content
+        """
+        logger.info(f"UPDATE запрос для документа ID: {kwargs.get('pk')}")
+        
+        # Создаем глубокую копию данных запроса
+        mutable_data = copy.deepcopy(request.data)
+        
+        # Проверяем наличие контента в запросе
+        if 'content' in mutable_data:
+            content_data = mutable_data['content']
+            logger.info(f"Тип content в запросе: {type(content_data)}")
+            
+            # Проверка и обработка content
+            if isinstance(content_data, str):
+                try:
+                    content_data = json.loads(content_data)
+                    mutable_data['content'] = content_data
+                    logger.info("Преобразовали строку JSON в объект")
+                except json.JSONDecodeError as e:
+                    logger.error(f"Ошибка декодирования JSON: {e}")
+            
+            # Если content - словарь, логируем его ключи
+            if isinstance(content_data, dict):
+                logger.info(f"Ключи в content: {', '.join(content_data.keys())}")
+                
+                if 'blocks' in content_data:
+                    blocks = content_data.get('blocks', [])
+                    logger.info(f"Найдено {len(blocks)} блоков в словаре content")
+        
+        # Получаем объект документа
+        instance = self.get_object()
+        
+        # Проверка текущего содержимого
+        logger.info(f"Текущий content: тип {type(instance.content)}, пустой: {not bool(instance.content)}")
+        
+        # Создаем сериализатор с нашими данными
+        serializer = self.get_serializer(instance, data=mutable_data, partial=True)
+        
+        if serializer.is_valid():
+            # Перед сохранением явно устанавливаем content, если он есть в запросе
+            if 'content' in mutable_data and isinstance(mutable_data['content'], dict):
+                # Экстренное исправление: сохраняем content напрямую, минуя сериализатор
+                instance.content = mutable_data['content']
+                instance.save()
+                logger.info(f"Сохранили content напрямую в модель. Размер: {len(json.dumps(instance.content))}")
+            
+            # Сохраняем остальные поля через сериализатор
+            serializer.save()
+            
+            # Проверяем результат сохранения
+            updated_instance = self.get_object()
+            logger.info(f"После сохранения: content тип {type(updated_instance.content)}, пустой: {not bool(updated_instance.content)}")
+            
+            if isinstance(updated_instance.content, dict):
+                logger.info(f"Ключи после сохранения: {', '.join(updated_instance.content.keys())}")
+                
+                if 'blocks' in updated_instance.content:
+                    blocks = updated_instance.content.get('blocks', [])
+                    logger.info(f"Блоков после сохранения: {len(blocks)}")
+            
+            return Response(serializer.data)
+        
+        logger.error(f"Ошибка валидации: {serializer.errors}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['post'])
     def toggle_favorite(self, request, pk=None):
