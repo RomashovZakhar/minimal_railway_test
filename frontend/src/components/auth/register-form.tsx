@@ -115,27 +115,62 @@ export function RegisterForm({
 
       // После успешной верификации - автоматический вход
       try {
+        console.log("Выполняем автовход после успешной регистрации...");
+        
         const loginResponse = await api.post("/token/", {
           email: registrationData.email,
-          password: registrationData.password, // Нужно сохранить пароль при регистрации
-        })
+          password: registrationData.password,
+        });
 
         // Сохраняем токены
-        localStorage.setItem("accessToken", loginResponse.data.access)
-        localStorage.setItem("refreshToken", loginResponse.data.refresh)
+        localStorage.setItem("accessToken", loginResponse.data.access);
+        localStorage.setItem("refreshToken", loginResponse.data.refresh);
         
-        // Перенаправляем на корневой документ
-        router.push("/")
+        // После входа проверяем, есть ли корневой документ
+        console.log("Перед переходом к документу проверяем наличие корневых документов");
+        
+        // Делаем задержку, чтобы гарантировать, что все ранее созданные документы попадут в выборку
+        setTimeout(async () => {
+          try {
+            // Запрашиваем список корневых документов
+            const docsResponse = await api.get("/documents/?root=true");
+            console.log("Ответ API при запросе корневых документов после регистрации:", docsResponse.data);
+            
+            if (Array.isArray(docsResponse.data) && docsResponse.data.length > 0) {
+              // Если есть корневые документы, берем самый старый
+              const sortedDocs = [...docsResponse.data].sort((a, b) => {
+                const idA = parseInt(a.id);
+                const idB = parseInt(b.id);
+                return idA - idB;  // От меньшего к большему
+              });
+              
+              const rootDocId = sortedDocs[0].id;
+              console.log(`Переходим к корневому документу с ID ${rootDocId} после регистрации`);
+              router.push(`/documents/${rootDocId}`);
+            } else if (docsResponse.data && docsResponse.data.id) {
+              // Если получили один документ
+              const rootDocId = docsResponse.data.id;
+              console.log(`Переходим к корневому документу с ID ${rootDocId} после регистрации`);
+              router.push(`/documents/${rootDocId}`);
+            } else {
+              // Если нет корневых документов, идем на главную
+              console.log("Корневые документы не найдены, перенаправляем на главную страницу");
+              router.push("/");
+            }
+          } catch (error) {
+            console.error("Ошибка при получении корневых документов:", error);
+            router.push("/");
+          }
+        }, 1000); // Добавляем задержку в 1 секунду
       } catch (loginError) {
-        console.error("Не удалось автоматически войти:", loginError)
+        console.error("Не удалось автоматически войти:", loginError);
         // В случае ошибки автовхода, перенаправляем на страницу входа
-        router.push("/login")
+        router.push("/login");
       }
     } catch (error: any) {
-      console.error("Ошибка подтверждения email:", error)
-      setError(error.response?.data?.detail || "Неверный код подтверждения")
-    } finally {
-      setIsLoading(false)
+      console.error("Ошибка подтверждения email:", error);
+      setError(error.response?.data?.detail || "Неверный код подтверждения");
+      setIsLoading(false);
     }
   }
 

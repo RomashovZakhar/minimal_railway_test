@@ -90,23 +90,49 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
   // Функция для перехода к корневому документу
   const navigateToRoot = async () => {
     try {
+      console.log("Запрос корневого документа из сайдбара...");
+      
+      // Получаем список всех корневых документов пользователя
       const response = await api.get("/documents/?root=true");
       console.log("Ответ API при запросе корневого документа из сайдбара:", response.data);
       
-      // Проверяем, что ответ содержит документ с id
-      if (response.data && response.data.id) {
-        router.push(`/documents/${response.data.id}`);
-      } else if (Array.isArray(response.data) && response.data.length > 0 && response.data[0].id) {
-        // Если API возвращает массив документов, берем первый
-        router.push(`/documents/${response.data[0].id}`);
+      // Определяем ID корневого документа согласно установленным правилам
+      let rootDocumentId = null;
+      
+      if (Array.isArray(response.data) && response.data.length > 0) {
+        console.log(`Обнаружено ${response.data.length} корневых документов, выбираем основной`);
+        
+        // Строгое правило: всегда выбираем документ с наименьшим ID (самый первый созданный)
+        const sortedDocs = [...response.data].sort((a, b) => {
+          const idA = parseInt(a.id);
+          const idB = parseInt(b.id);
+          return idA - idB;  // От меньшего к большему - выбираем самый старый
+        });
+        
+        const oldestDoc = sortedDocs[0];
+        rootDocumentId = oldestDoc.id;
+        console.log(`Выбран документ с ID ${rootDocumentId} как самый первый корневой документ`);
+      } else if (response.data && response.data.id) {
+        // Если получили один объект документа
+        rootDocumentId = response.data.id;
+        console.log(`Выбран единственный корневой документ с ID ${rootDocumentId}`);
+      }
+      
+      // Если нашли корневой документ, перенаправляем на него
+      if (rootDocumentId) {
+        if (pathname !== `/documents/${rootDocumentId}`) {
+          console.log(`Переход к корневому документу с ID ${rootDocumentId}`);
+          router.push(`/documents/${rootDocumentId}`);
+        } else {
+          console.log("Уже находимся на странице корневого документа");
+        }
       } else {
-        // Если документ не найден, перенаправляем на главную страницу,
-        // где произойдет создание корневого документа
+        // Если корневых документов нет, перенаправляем на главную
+        console.log("Корневой документ не найден, перенаправление на главную");
         router.push('/');
       }
     } catch (err) {
       console.error("Ошибка при загрузке корневого документа:", err);
-      // Перенаправляем на главную страницу для создания документа
       router.push('/');
     }
   };

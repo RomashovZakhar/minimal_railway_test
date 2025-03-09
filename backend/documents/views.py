@@ -27,6 +27,18 @@ class DocumentViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
         
+        # Проверяем параметр root для получения корневых документов
+        root = self.request.query_params.get('root', None)
+        if root and root.lower() == 'true':
+            # Сначала проверяем, есть ли документы с явным флагом is_root=True
+            root_docs = Document.objects.filter(owner=user, is_root=True)
+            if root_docs.exists():
+                # Возвращаем документы с флагом is_root=True
+                return root_docs
+            
+            # Если таких нет, возвращаем документы с parent=None
+            return Document.objects.filter(owner=user, parent=None).order_by('id')
+        
         # Документы, которые пользователь создал
         own_documents = Q(owner=user)
         
@@ -40,6 +52,30 @@ class DocumentViewSet(viewsets.ModelViewSet):
         """
         Устанавливаем текущего пользователя как владельца при создании
         """
+        # Если создается корневой документ (is_root=True), проверяем, нет ли уже такого
+        is_root = serializer.validated_data.get('is_root', False)
+        if is_root:
+            # Проверяем, существует ли уже корневой документ у этого пользователя
+            existing_root = Document.objects.filter(owner=self.request.user, is_root=True).first()
+            if existing_root:
+                # Если уже есть корневой документ, отменяем флаг is_root для нового документа
+                serializer.validated_data['is_root'] = False
+                # Логируем информацию
+                print(f"Попытка создать второй корневой документ для пользователя {self.request.user.id}: отменено")
+        
+        # Если создается документ с parent=None (верхнего уровня)
+        parent = serializer.validated_data.get('parent', None)
+        if parent is None and not is_root:
+            # Проверяем, есть ли уже корневой документ (is_root=True)
+            existing_root = Document.objects.filter(owner=self.request.user, is_root=True).first()
+            if not existing_root:
+                # Если нет явного корневого документа, проверяем документы верхнего уровня
+                root_docs = Document.objects.filter(owner=self.request.user, parent=None)
+                if not root_docs.exists():
+                    # Если нет других документов верхнего уровня, помечаем этот как корневой
+                    serializer.validated_data['is_root'] = True
+                    print(f"Автоматически установлен флаг is_root=True для документа пользователя {self.request.user.id}")
+        
         serializer.save(owner=self.request.user)
     
     @action(detail=True, methods=['post'])

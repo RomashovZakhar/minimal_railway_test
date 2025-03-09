@@ -80,6 +80,12 @@ const welcomeContent = {
   version: "2.27.0"
 };
 
+// Флаг для предотвращения параллельного создания корневого документа
+// @ts-ignore
+let isCreatingRootDocument = window.isCreatingRootDocument || false;
+// @ts-ignore
+window.isCreatingRootDocument = isCreatingRootDocument;
+
 export default function Home() {
   const router = useRouter()
 
@@ -96,22 +102,40 @@ export default function Home() {
     // Если авторизован, загружаем корневой документ
     const fetchRootDocument = async () => {
       try {
+        console.log("Запрос корневого документа с главной страницы...");
+        
         // Получаем корневой документ
         const response = await api.get("/documents/?root=true")
         console.log("Ответ API при запросе корневого документа:", response.data)
         
-        // Проверяем, что ответ содержит документ с id
-        if (response.data && response.data.id) {
-          const rootDocumentId = response.data.id
-          // Перенаправляем на страницу документа
-          router.push(`/documents/${rootDocumentId}`)
-        } else if (Array.isArray(response.data) && response.data.length > 0 && response.data[0].id) {
-          // Если API возвращает массив документов, берем первый
-          const rootDocumentId = response.data[0].id
-          router.push(`/documents/${rootDocumentId}`)
+        // Определяем ID корневого документа согласно установленным правилам
+        let rootDocumentId = null;
+        
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          console.log(`Обнаружено ${response.data.length} корневых документов, выбираем основной`);
+          
+          // Строгое правило: всегда выбираем документ с наименьшим ID (самый первый созданный) 
+          const sortedDocs = [...response.data].sort((a, b) => {
+            const idA = parseInt(a.id);
+            const idB = parseInt(b.id);
+            return idA - idB;  // От меньшего к большему
+          });
+          
+          rootDocumentId = sortedDocs[0].id;
+          console.log(`Выбран документ с ID ${rootDocumentId} как самый первый корневой документ`);
+        } else if (response.data && response.data.id) {
+          // Если получили один объект документа
+          rootDocumentId = response.data.id;
+          console.log(`Выбран единственный корневой документ с ID ${rootDocumentId}`);
+        }
+        
+        // Если нашли корневой документ, перенаправляем на него
+        if (rootDocumentId) {
+          console.log(`Переход к корневому документу с ID ${rootDocumentId}`);
+          router.push(`/documents/${rootDocumentId}`);
         } else {
           // Создаем новый документ без выбрасывания ошибки
-          console.log("Корневой документ не найден или неверный формат ответа, создаем новый");
+          console.log("Корневой документ не найден, создаем новый");
           await createRootDocument();
         }
       } catch (err) {
@@ -123,8 +147,56 @@ export default function Home() {
 
     // Выделяем создание корневого документа в отдельную функцию
     const createRootDocument = async () => {
+      // Предотвращаем параллельное создание документа
+      if (isCreatingRootDocument) {
+        console.log("Создание корневого документа уже выполняется, ожидаем...");
+        // Ждем небольшое время и проверяем, появился ли документ
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        const retryResponse = await api.get("/documents/?root=true");
+        
+        if (Array.isArray(retryResponse.data) && retryResponse.data.length > 0) {
+          console.log("Документ был создан параллельным процессом, перенаправляем...");
+          const sortedDocs = [...retryResponse.data].sort((a, b) => {
+            const idA = parseInt(a.id);
+            const idB = parseInt(b.id);
+            return idA - idB;
+          });
+          
+          const rootDocumentId = sortedDocs[0].id;
+          router.push(`/documents/${rootDocumentId}`);
+          return;
+        }
+        
+        console.log("Документ все еще не создан, повторяем проверку...");
+        // Если документ все равно не создан, продолжаем попытку создания
+      }
+      
+      // Устанавливаем флаг, что процесс создания начался
+      isCreatingRootDocument = true;
+      // @ts-ignore
+      window.isCreatingRootDocument = true;
+      
       try {
         console.log("Создаю новый корневой документ с приветственным контентом");
+        
+        // Сначала проверим, нет ли уже корневых документов (это может означать,
+        // что предыдущие запросы не вернули их по какой-то причине)
+        const checkResponse = await api.get("/documents/?root=true");
+        if (Array.isArray(checkResponse.data) && checkResponse.data.length > 0) {
+          console.log("Обнаружены существующие корневые документы, отменяю создание нового");
+          
+          // Если есть документы, используем первый (с наименьшим ID)
+          const sortedDocs = [...checkResponse.data].sort((a, b) => {
+            const idA = parseInt(a.id);
+            const idB = parseInt(b.id);
+            return idA - idB;
+          });
+          
+          const rootDocumentId = sortedDocs[0].id;
+          console.log(`Перенаправление на существующий документ с ID ${rootDocumentId}`);
+          router.push(`/documents/${rootDocumentId}`);
+          return;
+        }
         
         // Структура данных для EditorJS в правильном формате
         const documentData = {
@@ -152,6 +224,11 @@ export default function Home() {
         console.error("Ошибка при создании корневого документа:", createErr);
         // Показываем сообщение об ошибке пользователю
         alert("Произошла ошибка при создании корневого документа. Пожалуйста, попробуйте еще раз.");
+      } finally {
+        // Сбрасываем флаг после завершения
+        isCreatingRootDocument = false;
+        // @ts-ignore
+        window.isCreatingRootDocument = false;
       }
     }
 
