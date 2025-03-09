@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'channels',
+    'mptt',  # Django MPTT для древовидных структур
     
     # Local apps
     'api',

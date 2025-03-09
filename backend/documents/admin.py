@@ -1,6 +1,6 @@
 from django.contrib import admin
 from .models import Document, AccessRight, DocumentHistory
-from mptt.admin import MPTTModelAdmin
+from mptt.admin import MPTTModelAdmin, DraggableMPTTAdmin
 
 class AccessRightInline(admin.TabularInline):
     model = AccessRight
@@ -12,13 +12,22 @@ class DocumentHistoryInline(admin.TabularInline):
     readonly_fields = ['user', 'changes', 'created_at']
     max_num = 5
     
-class DocumentAdmin(MPTTModelAdmin):
-    list_display = ['id', 'title', 'owner', 'parent', 'created_at', 'updated_at', 'is_favorite']
-    list_filter = ['is_favorite', 'created_at', 'updated_at']
+class DocumentAdmin(DraggableMPTTAdmin):
+    list_display = ['tree_actions', 'indented_title', 'id', 'owner', 'created_at', 'updated_at', 'is_favorite', 'is_root']
+    list_display_links = ['indented_title']  # Делаем indented_title кликабельным для перехода к редактированию
+    list_filter = ['is_favorite', 'is_root', 'created_at', 'updated_at']
     search_fields = ['title', 'owner__username', 'owner__email']
     raw_id_fields = ['owner', 'parent']
     date_hierarchy = 'created_at'
     inlines = [AccessRightInline, DocumentHistoryInline]
+    
+    # Дополнительные свойства для DraggableMPTTAdmin
+    mptt_indent_field = "title"
+    
+    def indented_title(self, instance):
+        """Возвращает заголовок с отступом для отображения в админке"""
+        return instance.title
+    indented_title.short_description = 'Title'
 
 class AccessRightAdmin(admin.ModelAdmin):
     list_display = ['id', 'document', 'user', 'role', 'include_children', 'created_at']
