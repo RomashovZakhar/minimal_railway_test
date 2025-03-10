@@ -59,12 +59,30 @@ export function NotificationDropdown() {
   const handleAcceptInvitation = async (notification: Notification) => {
     try {
       // Отмечаем уведомление как прочитанное
-      await api.post(`/users/mark_as_read/${notification.id}/`);
+      console.log("Отмечаем уведомление как прочитанное:", notification.id);
+      await api.post(`/users/${notification.id}/mark_as_read/`);
       
       // Обновляем список уведомлений
       setNotifications(notifications.map(n => 
         n.id === notification.id ? { ...n, is_read: true } : n
       ));
+      
+      // Отправляем событие о принятии приглашения для обновления списка совместных документов
+      const invitationAcceptedEvent = {
+        documentId: notification.content.document_id,
+        title: notification.content.document_title,
+        role: notification.content.role,
+        timestamp: new Date().getTime()
+      };
+      
+      // Сохраняем в localStorage для синхронизации с другими компонентами
+      localStorage.setItem('invitation_accepted', JSON.stringify(invitationAcceptedEvent));
+      
+      // Вызываем событие storage вручную для текущей вкладки
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'invitation_accepted',
+        newValue: JSON.stringify(invitationAcceptedEvent)
+      }));
       
       // Переходим к документу
       router.push(`/documents/${notification.content.document_id}`);
@@ -80,7 +98,8 @@ export function NotificationDropdown() {
   const handleDeclineInvitation = async (notification: Notification) => {
     try {
       // Отмечаем уведомление как прочитанное
-      await api.post(`/users/mark_as_read/${notification.id}/`);
+      console.log("Отмечаем уведомление как прочитанное:", notification.id);
+      await api.post(`/users/${notification.id}/mark_as_read/`);
       
       // Обновляем список уведомлений
       setNotifications(notifications.map(n => 

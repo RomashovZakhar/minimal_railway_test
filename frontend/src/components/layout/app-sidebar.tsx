@@ -26,6 +26,14 @@ interface FavoriteDocument {
   title: string;
 }
 
+// Тип для совместного документа
+interface SharedDocument {
+  id: string;
+  title: string;
+  owner_username: string;
+  role?: string;
+}
+
 interface AppSidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
 
 export function AppSidebar({ className, ...props }: AppSidebarProps) {
@@ -33,6 +41,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
   const router = useRouter()
   const { user, logout, isLoading } = useAuth()
   const [favoriteDocuments, setFavoriteDocuments] = useState<FavoriteDocument[]>([])
+  const [sharedDocuments, setSharedDocuments] = useState<SharedDocument[]>([])
   const [searchQuery, setSearchQuery] = useState("")
   const [isSearching, setIsSearching] = useState(false)
   const [searchResults, setSearchResults] = useState<FavoriteDocument[]>([])
@@ -59,10 +68,32 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
         setFavoriteDocuments([]);
       }
     };
+    
+    const fetchSharedDocuments = async () => {
+      try {
+        console.log("Загрузка совместных документов...");
+        
+        // Получаем список документов, к которым пользователь имеет доступ
+        const response = await api.get("/documents/shared_with_me/");
+        console.log("Ответ API совместных документов:", response.data);
+        
+        if (Array.isArray(response.data)) {
+          setSharedDocuments(response.data);
+          console.log(`Загружено ${response.data.length} совместных документов`);
+        } else {
+          console.warn("Неожиданный формат данных от API совместных документов:", response.data);
+          setSharedDocuments([]);
+        }
+      } catch (err) {
+        console.error("Ошибка при загрузке совместных документов:", err);
+        setSharedDocuments([]);
+      }
+    };
 
-    // Загружаем избранные только если пользователь авторизован
+    // Загружаем данные только если пользователь авторизован
     if (user) {
       fetchFavorites();
+      fetchSharedDocuments();
     }
   }, [user, pathname]); // Обновляем при изменении пользователя или пути
   
@@ -102,6 +133,42 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
     return () => {
       // Удаляем обработчик при размонтировании компонента
       window.removeEventListener('storage', handleFavoriteUpdated);
+    };
+  }, []);
+
+  // Обработка обновлений при принятии приглашений
+  useEffect(() => {
+    const handleInvitationAccepted = (event: StorageEvent) => {
+      if (event.key === 'invitation_accepted' && event.newValue) {
+        try {
+          const data = JSON.parse(event.newValue);
+          console.log('Обновление совместных документов:', data);
+          
+          // Загружаем совместные документы повторно при принятии приглашения
+          const fetchSharedDocuments = async () => {
+            try {
+              const response = await api.get("/documents/shared_with_me/");
+              if (Array.isArray(response.data)) {
+                setSharedDocuments(response.data);
+              }
+            } catch (err) {
+              console.error("Ошибка при обновлении совместных документов:", err);
+            }
+          };
+          
+          fetchSharedDocuments();
+        } catch (err) {
+          console.error('Ошибка при обработке принятого приглашения:', err);
+        }
+      }
+    };
+    
+    // Добавляем обработчик события storage
+    window.addEventListener('storage', handleInvitationAccepted);
+    
+    return () => {
+      // Удаляем обработчик при размонтировании компонента
+      window.removeEventListener('storage', handleInvitationAccepted);
     };
   }, []);
 
@@ -261,6 +328,43 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                   )}
                 >
                   <span className="truncate">{doc.title || "Без названия"}</span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Совместные документы */}
+        {sharedDocuments.length > 0 && (
+          <div className="py-2">
+            <h2 className="flex items-center gap-2 px-2 py-1.5 text-sm font-semibold">
+              <User className="mr-2 h-4 w-4" />
+              Совместные документы
+            </h2>
+            <div className="space-y-1">
+              {sharedDocuments.map((doc) => (
+                <Link 
+                  key={doc.id} 
+                  href={`/documents/${doc.id}`}
+                  className={cn(
+                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent/50 ml-6",
+                    pathname === `/documents/${doc.id}` && "bg-accent/50"
+                  )}
+                >
+                  <div className="flex flex-col flex-1 min-w-0">
+                    <span className="truncate">{doc.title || "Без названия"}</span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      От: {doc.owner_username}
+                      {doc.role && (
+                        <span className={cn(
+                          "ml-2 px-1.5 py-0.5 rounded text-[10px]",
+                          doc.role === 'editor' ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800"
+                        )}>
+                          {doc.role === 'editor' ? 'редактор' : 'наблюдатель'}
+                        </span>
+                      )}
+                    </span>
+                  </div>
                 </Link>
               ))}
             </div>

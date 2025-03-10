@@ -378,3 +378,20 @@ class DocumentViewSet(viewsets.ModelViewSet):
         serializer = AccessRightSerializer(access_rights, many=True)
         
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def shared_with_me(self, request):
+        """
+        Получение списка документов, к которым у пользователя есть доступ, но владельцем которых он не является
+        """
+        user = request.user
+        
+        # Документы, к которым у пользователя есть доступ через права доступа, но владельцем которых он не является
+        shared_documents = Document.objects.filter(
+            access_rights__user=user
+        ).exclude(
+            owner=user
+        ).select_related('owner').distinct()
+        
+        serializer = self.get_serializer(shared_documents, many=True)
+        return Response(serializer.data)

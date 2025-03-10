@@ -524,28 +524,14 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
   // Настройка WebSocket для совместного редактирования
   useEffect(() => {
     // Если нет данных о пользователе или документе, пропускаем инициализацию WebSocket
-    if (!user || !document.id) {
-      console.log('⛔ Инициализация WebSocket пропущена: пользователь или ID документа не определены', {
-        userId: user?.id,
-        documentId: document.id
-      });
-      return;
-    }
+    if (!user || !document.id) return;
     
-    console.log('🔵 Инициализация WebSocket для совместного редактирования...');
-    console.log('🔵 Данные пользователя:', {
-      id: user.id,
-      username: user.username
-    });
-    console.log('🔵 Данные документа:', {
-      id: document.id,
-      title: document.title
-    });
+    console.log('Инициализация WebSocket для совместного редактирования...');
     
     // Генерируем уникальный ID для этого подключения
     if (!cursorIdRef.current) {
       cursorIdRef.current = nanoid();
-      console.log('🔵 Создан ID курсора:', cursorIdRef.current);
+      console.log('Создан ID курсора:', cursorIdRef.current);
     }
     
     // Переменные для WebSocket и переподключения
@@ -570,10 +556,9 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       
       // Формируем URL для WebSocket
       // Формат URL должен точно соответствовать маршруту на бэкенде
-      // ВАЖНОЕ ИСПРАВЛЕНИЕ: убраны /ws/ из пути, так как это уже указано в маршрутах
-      wsUrl = `${protocol}//${host}/documents/${document.id}/`;
+      wsUrl = `${protocol}//${host}/ws/documents/${document.id}/`;
       
-      console.log('🔵 Создан URL для WebSocket:', wsUrl);
+      console.log('Создан URL для WebSocket:', wsUrl);
     } catch (err) {
       console.error('Ошибка при создании URL для WebSocket:', err);
       return;
@@ -634,11 +619,12 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 console.log('🟢 ID пользователя:', data.user_id);
                 console.log('🟢 ID отправителя:', data.sender_id);
                 console.log('🟢 Мой ID курсора:', cursorIdRef.current);
+                console.log('🟢 Содержимое контента:', JSON.stringify(data.content).substring(0, 100) + '...');
                 
                 // Используем полученный контент для обновления редактора
                 if (data.content && typeof editorInstanceRef.current.render === 'function') {
-                  console.log('🟢 Применяем изменения к редактору...');
-                  console.log('🟢 Количество блоков в контенте:', data.content.blocks?.length || 0);
+                  console.log('Применяем изменения к редактору...');
+                  console.log('Количество блоков в новом контенте:', data.content.blocks?.length || 0);
                   
                   // Сохраняем полученный контент как последний известный
                   lastContentRef.current = data.content;
@@ -649,7 +635,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                   if (renderPromise && typeof renderPromise.then === 'function') {
                     renderPromise
                       .then(() => {
-                        console.log('🟢 Изменения успешно применены к редактору');
+                        console.log('Изменения успешно применены к редактору');
                         
                         // Обновляем состояние документа после синхронизации
                         if (typeof onChange === 'function') {
@@ -675,8 +661,6 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
             } else if (data.type === 'cursor_connected') {
               console.log(`Курсор пользователя ${data.username} подключен`);
               // Здесь можно добавить отображение курсора другого пользователя
-            } else if (data.type === 'connection_established') {
-              console.log('🟢 Соединение WebSocket успешно установлено:', data.message);
             }
           } catch (parseErr) {
             console.warn('Ошибка при обработке сообщения WebSocket:', parseErr);
@@ -913,32 +897,21 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
         
         // Отправляем данные через WebSocket, если соединение активно
         if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN && user) {
-          console.log('🟢 Отправляем обновления через WebSocket...');
+          console.log('Отправляем обновления другим пользователям через WebSocket...');
           try {
-            // Создаем объект сообщения для отправки
-            const wsMessage = {
+            wsRef.current.send(JSON.stringify({
               type: 'document_update',
               content: content,
               sender_id: cursorIdRef.current,
               user_id: user.id,
               username: user.username || 'Пользователь'
-            };
-            
-            console.log('🟢 Отправляемое сообщение:', wsMessage);
-            
-            // Отправляем сообщение
-            wsRef.current.send(JSON.stringify(wsMessage));
-            
-            console.log('✅ Обновления успешно отправлены через WebSocket');
+            }));
+            console.log('Обновления успешно отправлены через WebSocket');
           } catch (wsError) {
-            console.error('❌ Ошибка при отправке обновлений через WebSocket:', wsError);
+            console.error('Ошибка при отправке обновлений через WebSocket:', wsError);
           }
         } else {
-          console.warn('⚠️ WebSocket недоступен, обновления не были отправлены');
-          console.log('⚠️ Состояние соединения:', wsRef.current ? {
-            readyState: wsRef.current.readyState,
-            OPEN: WebSocket.OPEN
-          } : 'Соединение не инициализировано');
+          console.warn('WebSocket недоступен, обновления не были отправлены другим пользователям');
         }
       } catch (error: any) {
         console.error('Ошибка при автосохранении:', error);
@@ -1316,7 +1289,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
               console.log('Сохранение контента перед выходом...');
               
               // Отправляем данные с использованием navigator.sendBeacon
-              if (typeof navigator.sendBeacon === 'function') {
+              if (navigator.sendBeacon) {
                 const blob = new Blob([
                   JSON.stringify({
                     title,
@@ -1324,59 +1297,9 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                     parent: document.parent
                   })
                 ], { type: 'application/json' });
-
+                
                 const success = navigator.sendBeacon(`/api/documents/${document.id}/`, blob);
                 console.log('Запрос sendBeacon отправлен:', success);
               } else {
                 // Альтернативный вариант с fetch и keepalive
-                fetch(`/api/documents/${document.id}/`, {
-                  method: 'PUT',
-                  headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-                  },
-                  body: JSON.stringify({
-                    title,
-                    content: contentToSave,
-                    parent: document.parent
-                  }),
-                  keepalive: true
-                });
-              }
-              
-              // Обновляем последнее сохраненное состояние
-              lastDocumentContent.current = contentToSave;
-            }
-          } catch (editorErr) {
-            console.error('Ошибка при получении контента редактора:', editorErr);
-          }
-        }
-      } catch (err) {
-        console.error('Ошибка при сохранении перед уходом:', err);
-      }
-    };
-    
-    window.addEventListener('beforeunload', saveBeforeLeavingPage);
-    
-    return () => {
-      window.removeEventListener('beforeunload', saveBeforeLeavingPage);
-    };
-  }, [document.id, title, document.parent]);
-  
-  return (
-    <div className="flex flex-col gap-4 w-full max-w-4xl mx-auto">
-      {/* Поле заголовка */}
-      <Input
-        ref={titleInputRef}
-        type="text"
-        value={title}
-        onChange={handleTitleChange}
-        className="border-none text-3xl font-bold focus-visible:ring-0 px-0 bg-transparent"
-        placeholder="Без заголовка"
-      />
-      
-      {/* Контейнер для EditorJS */}
-      <div ref={editorRef} className="w-full min-h-[200px]" />
-    </div>
-  );
-}
+                fetch(`// Заглушка

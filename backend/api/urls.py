@@ -6,11 +6,10 @@ from users.views import UserViewSet, RegisterView, VerifyEmailView
 from documents.views import DocumentViewSet
 from tasks.views import TaskViewSet
 
-# Создаем роутер для API
+# Создаем маршрутизатор
 router = DefaultRouter()
-router.register(r'users', UserViewSet)
-router.register(r'documents', DocumentViewSet)
-router.register(r'tasks', TaskViewSet)
+router.register(r'documents', DocumentViewSet, basename='document')
+router.register(r'users', UserViewSet, basename='user')
 
 urlpatterns = [
     # Маршруты для аутентификации
@@ -21,4 +20,7 @@ urlpatterns = [
     
     # Включаем URL-адреса из роутера
     path('', include(router.urls)),
+    # Убираем несуществующие импорты
+    # path('', include('documents.urls')),
+    # path('', include('users.urls')),
 ] 
