@@ -41,28 +41,69 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
   useEffect(() => {
     const fetchFavorites = async () => {
       try {
-        // Проверяем, доступно ли API избранных документов
-        try {
-          const response = await api.get("/documents/favorites/");
+        console.log("Загрузка избранных документов...");
+        
+        // Получаем список избранных документов
+        const response = await api.get("/documents/favorites/");
+        console.log("Ответ API избранных документов:", response.data);
+        
+        if (Array.isArray(response.data)) {
           setFavoriteDocuments(response.data);
-        } catch (err: any) {
-          // Если API не поддерживает избранные (404), создаем заглушку
-          if (err.response && err.response.status === 404) {
-            console.log("API избранных документов недоступно, используем заглушку");
-            // Пока API не готово, можно использовать пустой массив
-            setFavoriteDocuments([]);
-          } else {
-            throw err; // Пробрасываем другие ошибки
-          }
+          console.log(`Загружено ${response.data.length} избранных документов`);
+        } else {
+          console.warn("Неожиданный формат данных от API избранных:", response.data);
+          setFavoriteDocuments([]);
         }
       } catch (err) {
         console.error("Ошибка при загрузке избранных документов:", err);
-        setFavoriteDocuments([]); // В случае ошибки устанавливаем пустой массив
+        setFavoriteDocuments([]);
       }
     };
 
-    fetchFavorites();
-  }, [pathname]); // Обновляем при изменении пути
+    // Загружаем избранные только если пользователь авторизован
+    if (user) {
+      fetchFavorites();
+    }
+  }, [user, pathname]); // Обновляем при изменении пользователя или пути
+  
+  // Обработка обновлений избранных документов в реальном времени
+  useEffect(() => {
+    const handleFavoriteUpdated = (event: StorageEvent) => {
+      if (event.key === 'favorite_document_updated' && event.newValue) {
+        try {
+          const data = JSON.parse(event.newValue);
+          console.log('Обновление избранных документов:', data);
+          
+          if (data.isFavorite) {
+            // Добавляем документ в избранное (если его еще нет)
+            setFavoriteDocuments(prev => {
+              // Проверяем, нет ли уже этого документа в списке
+              const exists = prev.some(doc => doc.id === data.documentId);
+              if (exists) return prev;
+              
+              // Добавляем новый документ в список избранных
+              return [...prev, { id: data.documentId, title: data.title }];
+            });
+          } else {
+            // Удаляем документ из избранного
+            setFavoriteDocuments(prev => 
+              prev.filter(doc => doc.id !== data.documentId)
+            );
+          }
+        } catch (err) {
+          console.error('Ошибка при обработке обновления избранных:', err);
+        }
+      }
+    };
+    
+    // Добавляем обработчик события storage
+    window.addEventListener('storage', handleFavoriteUpdated);
+    
+    return () => {
+      // Удаляем обработчик при размонтировании компонента
+      window.removeEventListener('storage', handleFavoriteUpdated);
+    };
+  }, []);
 
   // Поиск по документам
   useEffect(() => {
@@ -206,7 +247,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
         {favoriteDocuments.length > 0 && (
           <div className="py-2">
             <h2 className="flex items-center gap-2 px-2 py-1.5 text-sm font-semibold">
-              <Star className="h-4 w-4 text-yellow-400" />
+              <Star className="mr-2 h-4 w-4" />
               Избранное
             </h2>
             <div className="space-y-1">
@@ -215,11 +256,10 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                   key={doc.id} 
                   href={`/documents/${doc.id}`}
                   className={cn(
-                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent/50",
+                    "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium hover:bg-accent/50 ml-6",
                     pathname === `/documents/${doc.id}` && "bg-accent/50"
                   )}
                 >
-                  <File className="h-4 w-4" />
                   <span className="truncate">{doc.title || "Без названия"}</span>
                 </Link>
               ))}

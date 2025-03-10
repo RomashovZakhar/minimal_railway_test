@@ -2,6 +2,7 @@ from django.shortcuts import render
 from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
 from django.db.models import Q
 from .models import Document, AccessRight
 from .serializers import DocumentSerializer, DocumentDetailSerializer, AccessRightSerializer
@@ -18,6 +19,13 @@ class DocumentViewSet(viewsets.ModelViewSet):
     """
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
+    
+    def get_permissions(self):
+        """
+        Настраиваем разрешения в зависимости от действия
+        Для всех действий требуется аутентификация
+        """
+        return [IsAuthenticated()]
     
     def get_serializer_class(self):
         """
@@ -54,35 +62,158 @@ class DocumentViewSet(viewsets.ModelViewSet):
         # Объединяем и исключаем дубликаты
         return Document.objects.filter(own_documents | access_documents).distinct()
     
-    def perform_create(self, serializer):
+    @action(detail=False, methods=['get'])
+    def favorites(self, request):
         """
-        Устанавливаем текущего пользователя как владельца при создании
+        Получение списка избранных документов пользователя
         """
-        # Если создается корневой документ (is_root=True), проверяем, нет ли уже такого
-        is_root = serializer.validated_data.get('is_root', False)
-        if is_root:
-            # Проверяем, существует ли уже корневой документ у этого пользователя
-            existing_root = Document.objects.filter(owner=self.request.user, is_root=True).first()
-            if existing_root:
-                # Если уже есть корневой документ, отменяем флаг is_root для нового документа
-                serializer.validated_data['is_root'] = False
-                # Логируем информацию
-                logger.info(f"Попытка создать второй корневой документ для пользователя {self.request.user.id}: отменено")
+        user = request.user
         
-        # Если создается документ с parent=None (верхнего уровня)
-        parent = serializer.validated_data.get('parent', None)
+        # Получаем документы, отмеченные как избранные для текущего пользователя
+        favorite_docs = Document.objects.filter(
+            owner=user,
+            is_favorite=True
+        ).order_by('title')
+        
+        logger.info(f"Получены избранные документы для пользователя {user.id}, найдено: {favorite_docs.count()}")
+        
+        # Используем базовый сериализатор для списка документов
+        serializer = self.get_serializer(favorite_docs, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'])
+    def toggle_favorite(self, request, pk=None):
+        """
+        Добавление/удаление документа из избранного
+        """
+        document = self.get_object()
+        document.is_favorite = not document.is_favorite
+        document.save()
+        
+        # Логируем действие
+        action_type = "добавлен в избранное" if document.is_favorite else "удален из избранного"
+        logger.info(f"Документ {document.id} {action_type} пользователем {request.user.id}")
+        
+        serializer = self.get_serializer(document)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['get'])
+    def search(self, request):
+        """
+        Поиск документов по названию
+        """
+        query = request.query_params.get('q', '')
+        if not query:
+            return Response([])
+        
+        # Поиск документов по названию
+        user = request.user
+        found_docs = Document.objects.filter(
+            Q(owner=user) | Q(access_rights__user=user),
+            title__icontains=query
+        ).distinct().order_by('title')
+        
+        logger.info(f"Поиск документов по запросу '{query}', найдено: {found_docs.count()}")
+        
+        serializer = self.get_serializer(found_docs, many=True)
+        return Response(serializer.data)
+    
+    def create(self, request, *args, **kwargs):
+        """
+        Полностью переопределяем метод создания документа для правильной обработки контента
+        """
+        logger.info("Создание нового документа...")
+        
+        # Получаем данные из запроса
+        data = copy.deepcopy(request.data)
+        
+        # Логируем информацию о запросе на создание
+        if 'content' in data:
+            content_data = data['content']
+            logger.info(f"content в запросе на создание: тип {type(content_data)}, пустой: {not bool(content_data)}")
+            
+            if isinstance(content_data, dict):
+                logger.info(f"Ключи в content при создании: {', '.join(content_data.keys())}")
+                if 'blocks' in content_data:
+                    blocks = content_data.get('blocks', [])
+                    logger.info(f"Блоков в запросе: {len(blocks)}")
+        else:
+            logger.warning("В запросе нет поля content")
+        
+        # Проверяем, является ли документ корневым
+        is_root = data.get('is_root', False)
+        if is_root:
+            # Проверяем, существует ли уже корневой документ
+            existing_root = Document.objects.filter(owner=request.user, is_root=True).first()
+            if existing_root:
+                # Если уже есть корневой документ, отменяем флаг is_root
+                data['is_root'] = False
+                logger.info(f"Попытка создать второй корневой документ для пользователя {request.user.id}: отменено")
+        
+        # Обрабатываем документы верхнего уровня
+        parent = data.get('parent', None)
         if parent is None and not is_root:
-            # Проверяем, есть ли уже корневой документ (is_root=True)
-            existing_root = Document.objects.filter(owner=self.request.user, is_root=True).first()
+            # Проверяем, есть ли уже корневой документ
+            existing_root = Document.objects.filter(owner=request.user, is_root=True).first()
             if not existing_root:
                 # Если нет явного корневого документа, проверяем документы верхнего уровня
-                root_docs = Document.objects.filter(owner=self.request.user, parent=None)
+                root_docs = Document.objects.filter(owner=request.user, parent=None)
                 if not root_docs.exists():
                     # Если нет других документов верхнего уровня, помечаем этот как корневой
-                    serializer.validated_data['is_root'] = True
-                    logger.info(f"Автоматически установлен флаг is_root=True для документа пользователя {self.request.user.id}")
+                    data['is_root'] = True
+                    logger.info(f"Автоматически установлен флаг is_root=True для документа пользователя {request.user.id}")
         
-        serializer.save(owner=self.request.user)
+        # Извлекаем content для ручного сохранения
+        content = None
+        if 'content' in data:
+            content = data['content']
+            # Проверяем формат контента
+            if isinstance(content, str):
+                try:
+                    content = json.loads(content)
+                    logger.info("Преобразовали строку JSON в объект")
+                except json.JSONDecodeError as e:
+                    logger.error(f"Ошибка декодирования JSON: {e}")
+        
+        # Создаем сериализатор для валидации данных
+        serializer = self.get_serializer(data=data)
+        
+        if not serializer.is_valid():
+            logger.error(f"Ошибка валидации: {serializer.errors}")
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Создаем новый документ с минимальными данными
+        serializer.validated_data['owner'] = request.user
+        
+        # Сохраняем объект, исключая поле content
+        if 'content' in serializer.validated_data:
+            # Временно убираем content, чтобы сохранить его отдельно
+            del serializer.validated_data['content']
+        
+        # Создаем документ с базовыми полями
+        document = Document.objects.create(**serializer.validated_data)
+        logger.info(f"Создан документ ID: {document.id}")
+        
+        # Теперь напрямую сохраняем content
+        if content is not None:
+            document.content = content
+            document.save(update_fields=['content'])
+            logger.info(f"Напрямую сохранили content для документа ID: {document.id}")
+            
+            # Проверяем результат
+            saved_document = Document.objects.get(id=document.id)
+            logger.info(f"Content после прямого сохранения: тип {type(saved_document.content)}, пустой: {not bool(saved_document.content)}")
+            
+            if isinstance(saved_document.content, dict):
+                logger.info(f"Ключи в content: {', '.join(saved_document.content.keys())}")
+                if 'blocks' in saved_document.content:
+                    blocks = saved_document.content.get('blocks', [])
+                    logger.info(f"Блоков после сохранения: {len(blocks)}")
+        
+        # Возвращаем ответ с созданным документом
+        serializer = self.get_serializer(document)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     def update(self, request, *args, **kwargs):
         """
@@ -150,18 +281,6 @@ class DocumentViewSet(viewsets.ModelViewSet):
         
         logger.error(f"Ошибка валидации: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    @action(detail=True, methods=['post'])
-    def toggle_favorite(self, request, pk=None):
-        """
-        Добавление/удаление документа из избранного
-        """
-        document = self.get_object()
-        document.is_favorite = not document.is_favorite
-        document.save()
-        
-        serializer = self.get_serializer(document)
-        return Response(serializer.data)
     
     @action(detail=True, methods=['post'])
     def share(self, request, pk=None):

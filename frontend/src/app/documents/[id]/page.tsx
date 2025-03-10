@@ -309,14 +309,32 @@ export default function DocumentPage() {
     if (!document) return
 
     try {
-      setDocument({ ...document, is_favorite: !document.is_favorite })
+      // Обновляем UI локально
+      const newFavoriteState = !document.is_favorite
+      setDocument({ ...document, is_favorite: newFavoriteState })
 
-      await api.post(`/documents/${document.id}/favorite/`, {
-        is_favorite: !document.is_favorite
-      })
+      // Отправляем запрос на сервер
+      await api.post(`/documents/${document.id}/toggle_favorite/`, {})
 
-      toast(document.is_favorite ? "Удалено из избранного" : "Добавлено в избранное")
+      // Показываем сообщение
+      toast(newFavoriteState ? "Добавлено в избранное" : "Удалено из избранного")
+      
+      // Обновляем список избранных в localStorage для синхронизации с сайдбаром
+      const favoriteUpdatedEvent = {
+        documentId: document.id,
+        title: document.title,
+        isFavorite: newFavoriteState,
+        timestamp: new Date().getTime()
+      }
+      localStorage.setItem('favorite_document_updated', JSON.stringify(favoriteUpdatedEvent))
+      
+      // Вызываем событие storage вручную для текущей вкладки
+      window.dispatchEvent(new StorageEvent('storage', {
+        key: 'favorite_document_updated',
+        newValue: JSON.stringify(favoriteUpdatedEvent)
+      }))
     } catch (err) {
+      // В случае ошибки восстанавливаем предыдущее состояние
       setDocument({ ...document, is_favorite: document.is_favorite })
       toast.error("Не удалось изменить статус избранного")
     }
@@ -441,7 +459,10 @@ export default function DocumentPage() {
               onClick={toggleFavorite}
               className={cn(document.is_favorite ? "text-yellow-500" : "")}
             >
-              <Star className="h-5 w-5" />
+              {document.is_favorite ? 
+                <Star className="h-5 w-5 fill-current" /> :
+                <Star className="h-5 w-5" />
+              }
             </Button>
             
             <Button 
