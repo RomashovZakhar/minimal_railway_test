@@ -17,3 +17,25 @@ class User(AbstractUser):
     
     def __str__(self):
         return self.email
+
+class Notification(models.Model):
+    """
+    Модель для хранения уведомлений пользователей
+    """
+    DOCUMENT_INVITATION = 'document_invitation'
+    NOTIFICATION_TYPES = [
+        (DOCUMENT_INVITATION, 'Приглашение к документу'),
+    ]
+    
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name='notifications')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE, related_name='sent_notifications')
+    type = models.CharField(max_length=50, choices=NOTIFICATION_TYPES)
+    content = models.JSONField(default=dict)  # Для хранения доп. информации (ID документа, название и т.д.)
+    is_read = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+    
+    def __str__(self):
+        return f"Уведомление для {self.recipient.username} от {self.sender.username} ({self.type})"

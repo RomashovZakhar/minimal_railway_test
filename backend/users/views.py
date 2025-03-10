@@ -4,9 +4,14 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, RegisterSerializer, VerifyEmailSerializer
+from .serializers import UserSerializer, RegisterSerializer, VerifyEmailSerializer, UserUpdateSerializer, NotificationSerializer
+from .models import Notification
 import random
 import string
+import logging
+
+# Настройка логера
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 
@@ -35,6 +40,24 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(request.user)
         return Response(serializer.data)
     
+    @action(detail=False, methods=['put', 'patch'], permission_classes=[IsAuthenticated])
+    def update_profile(self, request):
+        """
+        Endpoint для обновления профиля текущего пользователя
+        """
+        user = request.user
+        serializer = UserUpdateSerializer(user, data=request.data, partial=True, context={'request': request})
+        
+        if serializer.is_valid():
+            serializer.save()
+            logger.info(f"Пользователь ID {user.id} обновил свой профиль")
+            
+            # Возвращаем обновленные данные пользователя с полным сериализатором
+            updated_serializer = UserSerializer(user)
+            return Response(updated_serializer.data)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
     @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
     def connect_telegram(self, request, pk=None):
         """
@@ -57,7 +80,93 @@ class UserViewSet(viewsets.ModelViewSet):
         user.telegram_id = telegram_id
         user.save()
         
+        logger.info(f"Пользователь ID {user.id} подключил Telegram ID {telegram_id}")
         return Response({"detail": "Telegram успешно подключен"})
+    
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
+    def toggle_telegram_notifications(self, request):
+        """
+        Включение/отключение уведомлений в Telegram
+        """
+        user = request.user
+        
+        # Проверяем, что пользователь подключил Telegram
+        if not user.telegram_id:
+            return Response(
+                {"detail": "Сначала подключите Telegram"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Получаем настройки из запроса
+        # В реальном проекте здесь нужно использовать модель настроек пользователя
+        tasks_notifications = request.data.get('tasks_notifications')
+        invites_notifications = request.data.get('invites_notifications')
+        
+        # Временная заглушка - в реальности здесь будет сохранение в БД
+        logger.info(f"Пользователь ID {user.id} изменил настройки уведомлений: "
+                   f"задачи - {tasks_notifications}, приглашения - {invites_notifications}")
+        
+        return Response({
+            "detail": "Настройки уведомлений обновлены",
+            "tasks_notifications": tasks_notifications,
+            "invites_notifications": invites_notifications
+        })
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def notifications(self, request):
+        """
+        Получение списка уведомлений текущего пользователя
+        """
+        notifications = Notification.objects.filter(recipient=request.user)
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=True, methods=['post'], permission_classes=[IsAuthenticated])
+    def mark_as_read(self, request, pk=None):
+        """
+        Отметка уведомления как прочитанного
+        """
+        try:
+            notification = Notification.objects.get(id=pk, recipient=request.user)
+            notification.is_read = True
+            notification.save()
+            return Response({'status': 'success'})
+        except Notification.DoesNotExist:
+            return Response(
+                {"detail": "Уведомление не найдено"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def check_email(self, request):
+        """
+        Проверяет, существует ли пользователь с указанным email
+        """
+        email = request.query_params.get('email')
+        logger.info(f"Проверка email: {email}")
+        
+        if not email:
+            logger.error("Email не указан в запросе")
+            return Response(
+                {"detail": "Email не указан"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        try:
+            user = User.objects.get(email=email)
+            logger.info(f"Найден пользователь: ID {user.id}, email {user.email}")
+            
+            # Не возвращаем все данные пользователя из соображений безопасности
+            return Response({
+                "exists": True,
+                "user_id": user.id
+            })
+        except User.DoesNotExist:
+            logger.warning(f"Пользователь с email {email} не найден")
+            return Response({
+                "exists": False,
+                "user_id": None
+            })
 
 class RegisterView(generics.CreateAPIView):
     """
@@ -78,6 +187,8 @@ class RegisterView(generics.CreateAPIView):
         otp = ''.join(random.choices(string.digits, k=6))
         user.otp = otp  # В реальном проекте нужно добавить это поле или использовать кэш/Redis
         user.save()
+        
+        logger.info(f"Создан новый пользователь: {user.email}")
         
         return Response({
             "detail": "Пользователь создан. Проверьте email для подтверждения.",
@@ -106,6 +217,7 @@ class VerifyEmailView(generics.GenericAPIView):
             if user.otp == otp:  # Используем поле otp, которое мы добавили в RegisterView
                 user.is_email_verified = True
                 user.save()
+                logger.info(f"Пользователь {email} подтвердил свой email")
                 return Response({"detail": "Email успешно подтвержден."}, status=status.HTTP_200_OK)
             else:
                 return Response({"detail": "Неверный код подтверждения."}, status=status.HTTP_400_BAD_REQUEST)

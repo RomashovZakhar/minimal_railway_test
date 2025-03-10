@@ -32,6 +32,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { toast } from "sonner"
 import { cn } from "@/lib/utils"
+import { ShareDocument } from "@/components/document/share-document"
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
 
 // Тип для документа
 interface Document {
@@ -453,16 +455,18 @@ export default function DocumentPage() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <ShareDocument documentId={params.id as string} />
+            <NotificationDropdown />
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={toggleFavorite}
-              className={cn(document.is_favorite ? "text-yellow-500" : "")}
+              className={cn(
+                "rounded-full",
+                document?.is_favorite && "text-yellow-500"
+              )}
             >
-              {document.is_favorite ? 
-                <Star className="h-5 w-5 fill-current" /> :
-                <Star className="h-5 w-5" />
-              }
+              {document?.is_favorite ? <Star className="h-5 w-5 fill-yellow-500" /> : <Star className="h-5 w-5" />}
             </Button>
             
             <Button 

@@ -273,22 +273,10 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
         <Button 
           variant="ghost" 
           className="w-full justify-start px-2 py-1.5"
-          asChild
+          onClick={() => window.dispatchEvent(new CustomEvent('open-settings'))}
         >
-          <Link href="/settings">
-            <Settings className="mr-2 h-4 w-4" />
-            <span>Настройки</span>
-          </Link>
-        </Button>
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start px-2 py-1.5"
-          asChild
-        >
-          <Link href="/profile">
-            <User className="mr-2 h-4 w-4" />
-            <span>Профиль</span>
-          </Link>
+          <Settings className="mr-2 h-4 w-4" />
+          <span>Настройки</span>
         </Button>
         <Button 
           variant="ghost" 

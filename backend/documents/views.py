@@ -296,12 +296,68 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        # Создаем сериализатор для данных запроса
-        serializer = AccessRightSerializer(data=request.data)
+        # Выводим полученные данные для отладки
+        logger.info(f"Получены данные для предоставления доступа: {request.data}")
+        
+        # Проверяем наличие поля user в данных
+        if 'user' not in request.data:
+            logger.error("Отсутствует поле 'user' в запросе")
+            return Response(
+                {"user": "Это поле обязательно"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+            
+        # Базовая проверка формата ID пользователя
+        try:
+            user_id = request.data['user']
+            from django.contrib.auth import get_user_model
+            User = get_user_model()
+            
+            # Пытаемся преобразовать ID в правильный формат
+            user_id = int(user_id) if isinstance(user_id, str) and user_id.isdigit() else user_id
+            
+            # Обновляем данные запроса с корректным типом ID и явно добавляем ID документа
+            mutable_data = request.data.copy()
+            mutable_data['user'] = user_id
+            
+            # Убедимся, что document_id передан и совпадает с URL
+            if 'document' not in mutable_data or str(mutable_data['document']) != str(pk):
+                mutable_data['document'] = pk
+                logger.info(f"Добавлен document_id в запрос: {pk}")
+            
+        except (ValueError, TypeError):
+            logger.error(f"Неверный формат ID пользователя: {request.data['user']}")
+            return Response(
+                {"user": "Неверный формат ID пользователя"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        # Создаем сериализатор для данных запроса с правильным контекстом
+        serializer = AccessRightSerializer(data=mutable_data, context={'view': self})
         if serializer.is_valid():
-            serializer.save(document=document)
+            access_right = serializer.save(document=document)
+            
+            # Импортируем модель Notification
+            from users.models import Notification
+            
+            # Создаем уведомление для пользователя
+            Notification.objects.create(
+                recipient=access_right.user,
+                sender=request.user,
+                type=Notification.DOCUMENT_INVITATION,
+                content={
+                    'document_id': str(document.id),
+                    'document_title': document.title,
+                    'role': access_right.role,
+                    'include_children': access_right.include_children
+                }
+            )
+            
+            logger.info(f"Предоставлен доступ к документу ID {document.id} пользователю {access_right.user.email}")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
+        # Подробно логируем ошибки валидации
+        logger.error(f"Ошибка валидации при предоставлении доступа: {serializer.errors}")
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=True, methods=['get'])

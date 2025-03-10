@@ -3,6 +3,8 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import api from "@/lib/api"
+import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
+import { Button } from "@/components/ui/button"
 
 // Шаблон приветственного контента для нового пользователя
 const welcomeContent = {
@@ -224,11 +226,37 @@ export default function Home() {
     fetchRootDocument()
   }, [router])
 
+  // Функция для создания нового документа
+  const createDocument = async () => {
+    try {
+      const response = await api.post('/documents/', {
+        title: 'Новый документ',
+        content: { blocks: [] }
+      })
+      
+      // Перенаправляем на страницу созданного документа
+      router.push(`/documents/${response.data.id}`)
+    } catch (error) {
+      console.error('Ошибка при создании документа:', error)
+    }
+  }
+
   // Показываем индикатор загрузки, пока идет перенаправление
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-      <p className="text-lg text-muted-foreground">Загрузка документа...</p>
-    </div>
+    <main className="flex min-h-screen flex-col items-start p-6 max-w-7xl mx-auto">
+      <div className="mb-6 w-full flex justify-between items-center">
+        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight">
+          Мои документы
+        </h1>
+        <div className="flex items-center gap-2">
+          <NotificationDropdown />
+          <Button onClick={createDocument}>Создать документ</Button>
+        </div>
+      </div>
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+        <p className="text-lg text-muted-foreground">Загрузка документа...</p>
+      </div>
+    </main>
   )
 }

@@ -3,6 +3,7 @@ import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "@/components/auth";
 import { Toaster } from "@/components/ui/sonner";
+import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { cn } from "@/lib/utils";
 
 const fontSans = FontSans({
@@ -11,18 +12,17 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "Notion + Things 3 Clone",
-  description: "Платформа управления документами, задачами и командной работой",
+  title: "Documentea",
+  description: "Управление задачами и документами",
 };
 
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
-    <html lang="ru" suppressHydrationWarning>
-      <head />
+    <html lang="ru">
       <body
         className={cn(
           "min-h-screen bg-background font-sans antialiased",
@@ -31,6 +31,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           {children}
+          <SettingsDialog />
           <Toaster />
         </AuthProvider>
       </body>

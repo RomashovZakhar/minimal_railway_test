@@ -160,12 +160,27 @@ class AccessRightSerializer(serializers.ModelSerializer):
         """
         Проверяем, что пользователь существует и не является владельцем документа
         """
-        document_id = self.initial_data.get('document')
+        # Пытаемся получить document_id из URL или из данных запроса
+        document_id = None
+        
+        # Проверяем наличие document_id в контексте (из URL)
+        if self.context.get('view'):
+            document_id = self.context.get('view').kwargs.get('pk')
+            
+        # Если нет в контексте, пробуем получить из данных запроса
+        if not document_id and 'document' in self.initial_data:
+            document_id = self.initial_data.get('document')
+        
         if document_id:
             try:
                 document = Document.objects.get(id=document_id)
                 if document.owner == value:
                     raise serializers.ValidationError("Нельзя предоставить доступ владельцу документа")
+                
+                # Проверяем, есть ли уже доступ у этого пользователя
+                existing_access = AccessRight.objects.filter(document=document, user=value).exists()
+                if existing_access:
+                    raise serializers.ValidationError("У пользователя уже есть доступ к этому документу")
             except Document.DoesNotExist:
                 pass  # Валидация document_id выполняется отдельно
         

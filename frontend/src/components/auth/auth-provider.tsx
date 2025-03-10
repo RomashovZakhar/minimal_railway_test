@@ -9,6 +9,9 @@ type User = {
   username: string;
   email: string;
   is_email_verified: boolean;
+  first_name?: string;
+  last_name?: string;
+  telegram_id?: string;
 };
 
 type AuthContextType = {

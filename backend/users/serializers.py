@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.contrib.auth.password_validation import validate_password
+from .models import Notification
 
 User = get_user_model()
 
@@ -12,6 +13,41 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ['id', 'username', 'email', 'first_name', 'last_name', 'is_email_verified', 'telegram_id', 'avatar']
         read_only_fields = ['is_email_verified']
+
+class UserUpdateSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для обновления информации о пользователе
+    """
+    class Meta:
+        model = User
+        fields = ['username', 'first_name', 'last_name']
+        
+    def validate_username(self, value):
+        """
+        Проверка уникальности имени пользователя
+        """
+        user = self.context['request'].user
+        
+        # Если пользователь не меняет свое имя, проверка не нужна
+        if user.username == value:
+            return value
+            
+        # Проверяем, существует ли пользователь с таким именем
+        if User.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Пользователь с таким именем уже существует")
+        
+        return value
+
+class NotificationSerializer(serializers.ModelSerializer):
+    """
+    Сериализатор для уведомлений
+    """
+    sender_username = serializers.ReadOnlyField(source='sender.username')
+    
+    class Meta:
+        model = Notification
+        fields = ['id', 'sender', 'sender_username', 'type', 'content', 'is_read', 'created_at']
+        read_only_fields = ['sender', 'type', 'content', 'created_at']
 
 class RegisterSerializer(serializers.ModelSerializer):
     """
