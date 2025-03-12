@@ -94,11 +94,19 @@ DATABASES = {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "notion_things_db",
         "USER": "postgres",
-        "PASSWORD": "postgres",
+        "PASSWORD": "123qqq567",
         "HOST": "localhost",
         "PORT": "5432",
     }
 }
+
+# Закомментированные настройки SQLite для отладки
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
 
 
 # Password validation
