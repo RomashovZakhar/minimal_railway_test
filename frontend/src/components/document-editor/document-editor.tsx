@@ -16,6 +16,8 @@ import CursorOverlay from "./CursorOverlay"
 
 // Добавляем глобальные стили для курсоров
 import "./remote-cursor.css"
+// Добавляем стили для редактора
+import "./editor-styles.css"
 
 // Типы для документа
 interface Document {
@@ -511,7 +513,10 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       icon: "H2",
       action: () => {
         if (editorInstanceRef.current) {
-          editorInstanceRef.current.blocks.insert("header", { level: 2, text: "" })
+          editorInstanceRef.current.blocks.insert("header", { 
+            text: "",
+            level: 2
+          })
         }
       }
     },
@@ -520,7 +525,10 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       icon: "H3",
       action: () => {
         if (editorInstanceRef.current) {
-          editorInstanceRef.current.blocks.insert("header", { level: 3, text: "" })
+          editorInstanceRef.current.blocks.insert("header", {
+            text: "",
+            level: 3
+          })
         }
       }
     },
@@ -529,7 +537,10 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       icon: "H4",
       action: () => {
         if (editorInstanceRef.current) {
-          editorInstanceRef.current.blocks.insert("header", { level: 4, text: "" })
+          editorInstanceRef.current.blocks.insert("header", {
+            text: "",
+            level: 4
+          })
         }
       }
     },
@@ -1301,12 +1312,34 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
             header: {
               class: Header,
               inlineToolbar: true,
-              shortcut: 'CMD+SHIFT+H',
               config: {
-                placeholder: 'Введите заголовок',
                 levels: [2, 3, 4],
-                defaultLevel: 3
-              }
+                defaultLevel: 2,
+                placeholder: 'Введите заголовок',
+                defaultStyle: {
+                  2: 'text-2xl font-bold mb-4 !font-inherit !text-inherit',
+                  3: 'text-xl font-semibold mb-3 !font-inherit !text-inherit',
+                  4: 'text-lg font-medium mb-2 !font-inherit !text-inherit'
+                }
+              },
+              shortcut: 'CMD+SHIFT+H',
+              toolbox: [
+                {
+                  title: 'Заголовок 2',
+                  icon: 'H2',
+                  data: { level: 2 }
+                },
+                {
+                  title: 'Заголовок 3',
+                  icon: 'H3',
+                  data: { level: 3 }
+                },
+                {
+                  title: 'Заголовок 4',
+                  icon: 'H4',
+                  data: { level: 4 }
+                }
+              ]
             },
             list: {
               class: List,
@@ -1346,7 +1379,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
               },
               toolNames: {
                 "Text": "Текст",
-                "Heading": "Заголовок",
+                "Header": "Заголовок",
                 "List": "Список",
                 "Checklist": "Чек-лист",
                 "Image": "Изображение",
@@ -1354,9 +1387,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
               },
               tools: {
                 "header": {
-                  "Heading 2": "Заголовок 2-го уровня",
-                  "Heading 3": "Заголовок 3-го уровня",
-                  "Heading 4": "Заголовок 4-го уровня"
+                  "Heading": "Заголовок"
                 },
                 "list": {
                   "Unordered": "Маркированный список",
@@ -1607,10 +1638,10 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
   }, [documentData.id, setupWs]);
 
   return (
-    <div className="flex flex-col w-full h-full bg-white">
-      <div className="border-b p-4 flex items-center justify-between">
+    <div className="flex flex-col w-full h-full bg-white overflow-y-auto">
+      <div className="flex items-center justify-between mx-auto w-full" style={{ maxWidth: '650px', padding: '20px 0' }}>
         <Input
-          className="border-none text-xl font-semibold focus-visible:ring-0 p-0 h-auto"
+          className="border-none text-3xl font-bold focus-visible:ring-0 p-0 h-auto"
           placeholder="Untitled"
           value={title}
           onChange={handleTitleChange}
@@ -1622,22 +1653,16 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       {/* Контейнер редактора с ref и оверлеем курсоров */}
       <div 
         ref={editorContainerRef}
-        className="flex-1 overflow-auto editor-container relative" 
+        className="flex-1 editor-container relative" 
         style={{ position: 'relative', minHeight: '300px' }}
       >
-        <div ref={editorRef} className="p-4 min-h-full" />
+        <div ref={editorRef} className="min-h-full" />
         
         {/* Компонент для отображения курсоров */}
         <CursorOverlay 
           cursors={remoteCursors} 
           containerRef={editorContainerRef} 
         />
-      </div>
-      
-      {/* Информация о WebSocket */}
-      <div className="p-2 text-xs text-gray-500 border-t">
-        WebSocket: {wsConnectionStatus === 'connected' ? 'Соединение установлено' : 'Соединение не установлено'} | 
-        Активных пользователей: {remoteCursors.length}
       </div>
     </div>
   );

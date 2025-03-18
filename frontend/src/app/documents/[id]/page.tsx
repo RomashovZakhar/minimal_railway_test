@@ -22,6 +22,7 @@ import {
   ChevronRight,
   BarChart3,
   Trash,
+  Menu,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { 
@@ -34,6 +35,11 @@ import { toast } from "sonner"
 import { cn } from "@/lib/utils"
 import { ShareDocument } from "@/components/document/share-document"
 import { NotificationDropdown } from "@/components/notifications/notification-dropdown"
+import {
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarInset
+} from "@/components/ui/sidebar"
 
 // Тип для документа
 interface Document {
@@ -413,94 +419,114 @@ export default function DocumentPage() {
   };
 
   if (loading) {
-    return <div className="flex items-center justify-center h-screen">Загрузка...</div>
+    return (
+      <SidebarProvider>
+        <div className="flex h-screen">
+          <AppSidebar />
+          <SidebarInset>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
+              <p className="text-lg text-muted-foreground">Загрузка документа...</p>
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    )
   }
 
   if (error || !document) {
-    return <div className="flex items-center justify-center h-screen text-red-500">{error}</div>
+    return (
+      <SidebarProvider>
+        <div className="flex h-screen">
+          <AppSidebar />
+          <SidebarInset>
+            <div className="flex flex-col items-center justify-center min-h-screen">
+              <p className="text-lg text-red-500">{error || "Документ не найден"}</p>
+            </div>
+          </SidebarInset>
+        </div>
+      </SidebarProvider>
+    )
   }
 
   return (
-    <div className="flex h-screen w-full">
-      <AppSidebar className="w-64 h-full" />
-      <div className="flex flex-col flex-1 overflow-hidden">
-        <header className="flex h-16 shrink-0 items-center justify-between gap-4 border-b px-6">
-          <div className="flex items-center gap-2">
+    <SidebarProvider>
+      <div className="flex h-screen">
+        <AppSidebar />
+        <SidebarInset>
+          <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="h-9 w-9 shrink-0 -ml-1">
+              <Menu className="h-4 w-4" />
+            </SidebarTrigger>
+            <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                {breadcrumbs.length > 0 && breadcrumbs.map((item, index) => {
-                  const isCurrentDocument = index === breadcrumbs.length - 1;
-                  
-                  return (
-                    <React.Fragment key={item.id}>
-                      {index > 0 && (
-                        <BreadcrumbSeparator>
-                          <ChevronRight className="h-4 w-4" />
-                        </BreadcrumbSeparator>
-                      )}
+                {breadcrumbs.map((item, index) => (
+                  <React.Fragment key={item.id}>
+                    {index > 0 && <BreadcrumbSeparator />}
+                    {index === breadcrumbs.length - 1 ? (
                       <BreadcrumbItem>
-                        {isCurrentDocument ? (
-                          <BreadcrumbPage>{item.title}</BreadcrumbPage>
-                        ) : (
-                          <BreadcrumbLink href={`/documents/${item.id}`}>
-                            {item.title}
-                          </BreadcrumbLink>
-                        )}
+                        <BreadcrumbPage>{item.title || "Без названия"}</BreadcrumbPage>
                       </BreadcrumbItem>
-                    </React.Fragment>
-                  );
-                })}
+                    ) : (
+                      <BreadcrumbItem>
+                        <BreadcrumbLink href={`/documents/${item.id}`}>
+                          {item.title || "Без названия"}
+                        </BreadcrumbLink>
+                      </BreadcrumbItem>
+                    )}
+                  </React.Fragment>
+                ))}
               </BreadcrumbList>
             </Breadcrumb>
+
+            <div className="ml-auto flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleFavorite}
+                className={cn(
+                  document.is_favorite && "text-yellow-500"
+                )}
+              >
+                <Star className="h-4 w-4" />
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={shareDocument}
+              >
+                <Share className="h-4 w-4" />
+              </Button>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon">
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={deleteDocument}>
+                    <Trash className="mr-2 h-4 w-4" />
+                    Удалить
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+
+              <NotificationDropdown />
+            </div>
+          </header>
+
+          <div className="flex-1 overflow-y-auto">
+            <DocumentEditor
+              document={document}
+              onChange={handleDocumentChange}
+              titleInputRef={titleInputRef}
+            />
           </div>
-          
-          <div className="flex items-center gap-2">
-            <ShareDocument documentId={params.id as string} />
-            <NotificationDropdown />
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={toggleFavorite}
-              className={cn(
-                "rounded-full",
-                document?.is_favorite && "text-yellow-500"
-              )}
-            >
-              {document?.is_favorite ? <Star className="h-5 w-5 fill-yellow-500" /> : <Star className="h-5 w-5" />}
-            </Button>
-            
-            <Button 
-              variant="ghost" 
-              size="icon"
-              onClick={shareDocument}
-            >
-              <Share className="h-5 w-5" />
-            </Button>
-            
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => console.log("Статистика")}>
-                  <BarChart3 className="mr-2 h-4 w-4" />
-                  Статистика
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={deleteDocument}>
-                  <Trash className="mr-2 h-4 w-4" />
-                  Удалить
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </header>
-        
-        <div className="flex-1 p-4 overflow-auto border-l">
-          <DocumentEditor document={document} onChange={handleDocumentChange} titleInputRef={titleInputRef} />
-        </div>
+        </SidebarInset>
       </div>
-    </div>
+    </SidebarProvider>
   )
 } 

@@ -35,25 +35,20 @@ export function useSidebar() {
   return context
 }
 
-export const Sidebar = React.forwardRef<
-  HTMLDivElement,
-  React.HTMLAttributes<HTMLDivElement>
->(({ className, ...props }, ref) => {
+export function Sidebar({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
   const { expanded } = useSidebar()
 
   return (
-    <div
-      ref={ref}
+    <aside
+      data-expanded={expanded}
       className={cn(
-        "flex h-full flex-col border-r bg-background transition-all",
-        expanded ? "w-64" : "w-16",
+        "relative h-full flex-col bg-background data-[expanded=true]:w-[var(--sidebar-width)] data-[expanded=false]:w-0 overflow-hidden transition-all duration-300",
         className
       )}
       {...props}
     />
   )
-})
-Sidebar.displayName = "Sidebar"
+}
 
 export const SidebarHeader = React.forwardRef<
   HTMLDivElement,
@@ -251,7 +246,6 @@ export const SidebarInset = React.forwardRef<
       ref={ref}
       className={cn(
         "flex flex-1 flex-col overflow-hidden transition-all",
-        expanded ? "ml-64" : "ml-16",
         className
       )}
       {...props}
