@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 import { useAuth } from "@/components/auth"
 import { useEffect, useState } from "react"
 import api from "@/lib/api"
+import { AcmeLogo } from "@/components/ui/acme-logo"
 import {
   Sidebar,
   SidebarContent,
@@ -139,11 +140,15 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
 
   return (
     <Sidebar 
-      className={cn("border-r bg-background flex flex-col", className)} 
+      className={cn("border-r bg-background flex flex-col", className)}
       style={{ "--sidebar-width": "16rem" } as React.CSSProperties}
       {...props}
     >
       <SidebarContent className="flex flex-col flex-1">
+        <div className="flex h-14 items-center border-b px-6">
+          <AcmeLogo />
+          <span className="ml-2 text-lg font-semibold">Acme Inc.</span>
+        </div>
         <ScrollArea className="flex-1">
           <SidebarMenu>
             {/* Главная / Рабочее пространство */}
@@ -212,14 +217,16 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
         </ScrollArea>
 
         {/* Нижняя часть с настройками и выходом */}
-        <SidebarMenu className="mt-auto border-t">
-          <SidebarMenuItem onClick={() => window.dispatchEvent(new CustomEvent('open-settings'))}>
-            Настройки
-          </SidebarMenuItem>
-          <SidebarMenuItem onClick={logout}>
-            Выйти
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <div className="mt-auto border-t">
+          <SidebarMenu>
+            <SidebarMenuItem onClick={() => window.dispatchEvent(new CustomEvent('open-settings'))}>
+              Настройки
+            </SidebarMenuItem>
+            <SidebarMenuItem onClick={logout}>
+              Выйти
+            </SidebarMenuItem>
+          </SidebarMenu>
+        </div>
       </SidebarContent>
     </Sidebar>
   )

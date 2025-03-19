@@ -480,25 +480,23 @@ export default function DocumentPage() {
               </BreadcrumbList>
             </Breadcrumb>
 
-            <div className="ml-auto flex items-center gap-2">
+            <div className="flex items-center gap-2 ml-auto">
+
+            <ShareDocument documentId={document.id} />
+
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleFavorite}
                 className={cn(
+                  "hover:bg-background/60",
                   document.is_favorite && "text-yellow-500"
                 )}
               >
                 <Star className="h-4 w-4" />
               </Button>
 
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={shareDocument}
-              >
-                <Share className="h-4 w-4" />
-              </Button>
+              <NotificationDropdown />
 
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -514,7 +512,7 @@ export default function DocumentPage() {
                 </DropdownMenuContent>
               </DropdownMenu>
 
-              <NotificationDropdown />
+              
             </div>
           </header>
 

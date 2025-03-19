@@ -122,7 +122,7 @@ export function ShareDocument({ documentId }: ShareDocumentProps) {
             </p>
           </div>
           
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <Label htmlFor="email">Email пользователя</Label>
             <Input
               id="email"
@@ -133,7 +133,7 @@ export function ShareDocument({ documentId }: ShareDocumentProps) {
             />
           </div>
           
-          <div className="space-y-2">
+          <div className="grid gap-2">
             <Label htmlFor="role">Роль</Label>
             <Select value={role} onValueChange={setRole}>
               <SelectTrigger id="role">
@@ -146,7 +146,7 @@ export function ShareDocument({ documentId }: ShareDocumentProps) {
             </Select>
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between gap-4">
             <div className="space-y-0.5">
               <Label htmlFor="child-docs">Вложенные документы</Label>
               <p className="text-xs text-muted-foreground">

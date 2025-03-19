@@ -120,7 +120,7 @@ export function NotificationDropdown() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" size="icon" className="relative">
-          <Bell className="h-5 w-5" />
+          <Bell className="h-4 w-4" />
           {unreadCount > 0 && (
             <Badge 
               className="absolute -top-1 -right-1 px-1.5 py-0.5 min-w-[18px] h-[18px] text-xs flex items-center justify-center"

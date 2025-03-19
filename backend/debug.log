@@ -16447,3 +16447,2154 @@ INFO 2025-03-18 23:07:16,177 views Блоков после сохранения:
 INFO 2025-03-18 23:07:16,177 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
 INFO 2025-03-18 23:07:23,158 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
 INFO 2025-03-18 23:07:23,167 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:33:48,661 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 06:33:52,923 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+WARNING 2025-03-19 06:33:52,946 log Unauthorized: /api/users/notifications/
+WARNING 2025-03-19 06:33:52,946 basehttp "GET /api/users/notifications/ HTTP/1.1" 401 172
+INFO 2025-03-19 06:33:52,966 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:33:52,975 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 06:33:52,981 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:33:53,002 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:34:09,489 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:09,490 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:09,495 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:09,499 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:09,717 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 06:34:09,722 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 06:34:09,727 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 06:34:09,727 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 06:34:09,729 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:09,729 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1308
+INFO 2025-03-19 06:34:09,749 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:09,749 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:09,764 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:34:09,787 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:34:13,206 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:13,217 views UPDATE запрос для документа ID: 135
+INFO 2025-03-19 06:34:13,217 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:13,217 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:13,217 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:13,223 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:13,232 views Сохранили content напрямую в модель. Размер: 1622
+INFO 2025-03-19 06:34:13,234 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:13,234 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:13,234 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:13,235 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
+INFO 2025-03-19 06:34:14,204 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:14,211 views UPDATE запрос для документа ID: 135
+INFO 2025-03-19 06:34:14,211 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:14,211 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:14,211 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:14,215 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:14,218 views Сохранили content напрямую в модель. Размер: 1622
+INFO 2025-03-19 06:34:14,219 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:14,219 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:14,219 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:14,220 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
+INFO 2025-03-19 06:34:16,176 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:16,195 views UPDATE запрос для документа ID: 135
+INFO 2025-03-19 06:34:16,195 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:16,195 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:16,195 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:34:16,200 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:16,202 views Сохранили content напрямую в модель. Размер: 1689
+INFO 2025-03-19 06:34:16,203 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:16,204 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:16,204 views Блоков после сохранения: 12
+INFO 2025-03-19 06:34:16,204 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
+INFO 2025-03-19 06:34:16,943 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:16,950 views UPDATE запрос для документа ID: 135
+INFO 2025-03-19 06:34:16,950 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:16,950 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:16,950 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:16,952 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:16,954 views Сохранили content напрямую в модель. Размер: 1622
+INFO 2025-03-19 06:34:16,999 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:16,999 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:16,999 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:17,000 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
+INFO 2025-03-19 06:34:18,230 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:18,238 views UPDATE запрос для документа ID: 135
+INFO 2025-03-19 06:34:18,238 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:18,238 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:18,238 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:34:18,241 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:18,243 views Сохранили content напрямую в модель. Размер: 1692
+INFO 2025-03-19 06:34:18,246 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:18,246 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:18,246 views Блоков после сохранения: 12
+INFO 2025-03-19 06:34:18,246 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
+INFO 2025-03-19 06:34:19,229 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:19,236 views UPDATE запрос для документа ID: 135
+INFO 2025-03-19 06:34:19,236 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:19,236 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:19,237 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:34:19,240 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:19,242 views Сохранили content напрямую в модель. Размер: 1692
+INFO 2025-03-19 06:34:19,244 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:19,244 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:19,244 views Блоков после сохранения: 12
+INFO 2025-03-19 06:34:19,245 basehttp "PUT /api/documents/135/ HTTP/1.1" 200 203
+INFO 2025-03-19 06:34:20,674 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:20,685 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:20,688 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:20,688 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:20,703 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 06:34:20,709 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 06:34:20,709 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 06:34:20,709 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 06:34:20,714 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:20,715 basehttp "GET /api/documents/119/ HTTP/1.1" 200 2784
+INFO 2025-03-19 06:34:20,732 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:20,733 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:20,741 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:34:20,771 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:34:21,058 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:21,069 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:21,069 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 06:34:23,392 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:23,399 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:23,399 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:23,399 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:23,399 views Найдено 8 блоков в словаре content
+INFO 2025-03-19 06:34:23,403 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:23,405 views Сохранили content напрямую в модель. Размер: 4334
+INFO 2025-03-19 06:34:23,407 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:23,408 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:23,408 views Блоков после сохранения: 8
+INFO 2025-03-19 06:34:23,408 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:24,004 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:24,011 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:24,011 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:24,012 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:24,012 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 06:34:24,014 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:24,017 views Сохранили content напрямую в модель. Размер: 4400
+INFO 2025-03-19 06:34:24,018 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:24,018 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:24,018 views Блоков после сохранения: 9
+INFO 2025-03-19 06:34:24,019 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:25,007 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:25,015 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:25,016 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:25,016 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:25,016 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 06:34:25,019 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:25,021 views Сохранили content напрямую в модель. Размер: 4400
+INFO 2025-03-19 06:34:25,023 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:25,023 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:25,023 views Блоков после сохранения: 9
+INFO 2025-03-19 06:34:25,024 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:26,304 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:26,314 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:26,314 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:26,314 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:26,314 views Найдено 8 блоков в словаре content
+INFO 2025-03-19 06:34:26,318 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:26,319 views Сохранили content напрямую в модель. Размер: 4334
+INFO 2025-03-19 06:34:26,321 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:26,322 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:26,322 views Блоков после сохранения: 8
+INFO 2025-03-19 06:34:26,322 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:27,306 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:27,313 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:27,314 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:27,314 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:27,314 views Найдено 8 блоков в словаре content
+INFO 2025-03-19 06:34:27,318 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:27,322 views Сохранили content напрямую в модель. Размер: 4334
+INFO 2025-03-19 06:34:27,323 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:27,323 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:27,323 views Блоков после сохранения: 8
+INFO 2025-03-19 06:34:27,324 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:28,435 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:28,441 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:28,442 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:28,442 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:28,442 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 06:34:28,445 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:28,446 views Сохранили content напрямую в модель. Размер: 4421
+INFO 2025-03-19 06:34:28,449 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:28,449 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:28,449 views Блоков после сохранения: 9
+INFO 2025-03-19 06:34:28,450 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:29,432 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:29,438 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:29,438 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:29,438 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:29,438 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 06:34:29,443 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:29,445 views Сохранили content напрямую в модель. Размер: 4421
+INFO 2025-03-19 06:34:29,448 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:29,448 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:29,448 views Блоков после сохранения: 9
+INFO 2025-03-19 06:34:29,449 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:30,084 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:30,091 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:30,091 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:30,092 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:30,092 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 06:34:30,094 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:30,095 views Сохранили content напрямую в модель. Размер: 4421
+INFO 2025-03-19 06:34:30,097 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:30,097 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:30,097 views Блоков после сохранения: 9
+INFO 2025-03-19 06:34:30,098 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:30,651 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:30,657 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:30,657 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:30,657 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:30,657 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 06:34:30,660 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:30,662 views Сохранили content напрямую в модель. Размер: 4487
+INFO 2025-03-19 06:34:30,664 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:30,664 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:30,664 views Блоков после сохранения: 10
+INFO 2025-03-19 06:34:30,665 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:31,646 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:31,653 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:31,654 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:31,654 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:31,654 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 06:34:31,656 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:31,658 views Сохранили content напрямую в модель. Размер: 4487
+INFO 2025-03-19 06:34:31,659 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:31,659 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:31,659 views Блоков после сохранения: 10
+INFO 2025-03-19 06:34:31,660 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:35,518 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:35,525 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:35,525 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:35,525 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:35,525 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 06:34:35,528 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:35,529 views Сохранили content напрямую в модель. Размер: 4658
+INFO 2025-03-19 06:34:35,532 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:35,532 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:35,532 views Блоков после сохранения: 10
+INFO 2025-03-19 06:34:35,534 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:36,506 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:36,513 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:36,513 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:36,513 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:36,513 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:36,516 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:36,524 views Сохранили content напрямую в модель. Размер: 4682
+INFO 2025-03-19 06:34:36,531 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:36,531 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:36,531 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:36,533 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:37,508 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:37,515 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:37,515 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:37,515 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:37,515 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:37,518 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:37,521 views Сохранили content напрямую в модель. Размер: 4682
+INFO 2025-03-19 06:34:37,523 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:37,523 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:37,523 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:37,524 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:39,100 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:39,107 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:39,107 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:39,108 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:39,108 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:39,110 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:39,112 views Сохранили content напрямую в модель. Размер: 4773
+INFO 2025-03-19 06:34:39,114 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:39,114 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:39,114 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:39,114 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:39,558 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:39,565 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:39,565 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:39,565 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:39,565 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:39,570 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:39,572 views Сохранили content напрямую в модель. Размер: 4774
+INFO 2025-03-19 06:34:39,573 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:39,573 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:39,573 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:39,574 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:40,050 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:40,058 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:40,058 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:40,058 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:40,058 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:40,061 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:40,062 views Сохранили content напрямую в модель. Размер: 4776
+INFO 2025-03-19 06:34:40,080 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:40,080 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:40,080 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:40,081 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:41,051 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:41,059 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:41,059 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:41,059 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:41,059 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:41,064 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:41,066 views Сохранили content напрямую в модель. Размер: 4776
+INFO 2025-03-19 06:34:41,068 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:41,068 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:41,068 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:41,069 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:41,564 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:41,569 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:41,570 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:41,570 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:41,570 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:41,574 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:41,576 views Сохранили content напрямую в модель. Размер: 4793
+INFO 2025-03-19 06:34:41,579 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:41,579 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:41,579 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:41,580 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:42,342 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:42,348 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:42,348 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:42,349 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:42,349 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:42,351 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:42,353 views Сохранили content напрямую в модель. Размер: 4793
+INFO 2025-03-19 06:34:42,354 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:42,354 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:42,354 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:42,355 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:43,345 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:43,352 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:43,353 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:43,353 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:43,353 views Найдено 11 блоков в словаре content
+INFO 2025-03-19 06:34:43,357 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:43,358 views Сохранили content напрямую в модель. Размер: 4793
+INFO 2025-03-19 06:34:43,370 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:43,370 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:43,370 views Блоков после сохранения: 11
+INFO 2025-03-19 06:34:43,371 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:50,781 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:50,794 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:34:58,914 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:58,935 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:58,935 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:58,935 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:58,935 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:34:58,939 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:58,941 views Сохранили content напрямую в модель. Размер: 4859
+INFO 2025-03-19 06:34:58,943 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:58,943 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:58,943 views Блоков после сохранения: 12
+INFO 2025-03-19 06:34:58,944 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:34:59,911 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:34:59,918 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:34:59,918 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:34:59,918 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:34:59,918 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:34:59,921 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:59,923 views Сохранили content напрямую в модель. Размер: 4859
+INFO 2025-03-19 06:34:59,926 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:34:59,926 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:34:59,926 views Блоков после сохранения: 12
+INFO 2025-03-19 06:34:59,927 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:35:20,786 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:35:20,831 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:35:50,782 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:35:50,809 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:36:16,273 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:16,287 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:36:16,287 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:36:16,287 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:36:16,287 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:36:16,291 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:16,295 views Сохранили content напрямую в модель. Размер: 4859
+INFO 2025-03-19 06:36:16,297 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:16,297 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:36:16,297 views Блоков после сохранения: 12
+INFO 2025-03-19 06:36:16,298 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:36:17,267 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:17,274 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:36:17,274 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:36:17,274 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:36:17,274 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:36:17,277 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:17,279 views Сохранили content напрямую в модель. Размер: 4859
+INFO 2025-03-19 06:36:17,281 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:17,281 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:36:17,281 views Блоков после сохранения: 12
+INFO 2025-03-19 06:36:17,282 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:36:20,728 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:20,737 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 06:36:21,015 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:21,022 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:36:21,022 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:36:21,022 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:36:21,022 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:36:21,025 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:21,026 views Сохранили content напрямую в модель. Размер: 4841
+INFO 2025-03-19 06:36:21,028 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:21,028 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:36:21,028 views Блоков после сохранения: 12
+INFO 2025-03-19 06:36:21,029 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:36:22,014 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:22,021 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:36:22,021 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:36:22,021 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:36:22,021 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:36:22,024 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:22,025 views Сохранили content напрямую в модель. Размер: 4841
+INFO 2025-03-19 06:36:22,026 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:22,027 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:36:22,027 views Блоков после сохранения: 12
+INFO 2025-03-19 06:36:22,027 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:36:24,532 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:24,540 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:36:24,540 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:36:24,540 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:36:24,540 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:36:24,543 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:24,545 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 06:36:24,547 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:24,547 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:36:24,548 views Блоков после сохранения: 12
+INFO 2025-03-19 06:36:24,548 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:36:25,532 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:25,539 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 06:36:25,539 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 06:36:25,539 views Ключи в content: time, blocks, version
+INFO 2025-03-19 06:36:25,539 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 06:36:25,542 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:25,544 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 06:36:25,546 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 06:36:25,547 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 06:36:25,547 views Блоков после сохранения: 12
+INFO 2025-03-19 06:36:25,547 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 06:36:50,775 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 06:36:50,788 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:29:34,447 autoreload Watching for file changes with StatReloader
+INFO 2025-03-19 09:29:35,718 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:29:35,776 log Unauthorized: /api/documents/119/
+WARNING 2025-03-19 09:29:35,777 basehttp "PUT /api/documents/119/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:29:35,787 basehttp "OPTIONS /api/token/refresh/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:35,831 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:29:35,839 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:35,846 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:29:35,846 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:29:35,846 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:29:35,846 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:29:35,858 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:35,872 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:29:35,875 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:35,875 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:29:35,875 views Блоков после сохранения: 12
+INFO 2025-03-19 09:29:35,877 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:29:41,731 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:42,265 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:29:42,266 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:29:42,266 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:29:42,266 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:29:42,270 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:42,273 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:29:42,275 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:42,275 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:29:42,276 views Блоков после сохранения: 12
+INFO 2025-03-19 09:29:42,277 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:29:43,259 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:43,260 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:43,280 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:29:43,281 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:29:43,281 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:29:43,281 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:29:43,319 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:43,320 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:29:43,322 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:43,322 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:29:43,323 views Блоков после сохранения: 12
+INFO 2025-03-19 09:29:43,323 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:29:43,361 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:29:49,473 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:49,474 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:49,474 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:49,475 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:49,521 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:29:49,531 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:49,531 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:29:49,603 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:29:49,605 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:29:49,623 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:49,624 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:49,662 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:29:49,668 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:29:49,678 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:29:49,992 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:29:50,003 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:29:50,003 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:30:19,628 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:30:19,645 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:30:49,638 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:30:49,653 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:31:19,716 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:31:19,744 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:31:49,718 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:31:49,746 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:32:19,728 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:19,755 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:32:31,606 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:31,612 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:31,627 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:31,638 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:31,674 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:32:31,674 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:32:31,678 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:32:31,684 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:32:31,685 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:32:31,686 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:32:31,702 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:31,703 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:31,715 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:32:31,740 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:32:32,032 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:32,100 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:32:32,100 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:32:32,816 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:32,822 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:32:32,822 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:32:32,822 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:32:32,822 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:32:32,825 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:32:32,829 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:32:32,832 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:32:32,832 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:32:32,832 views Блоков после сохранения: 12
+INFO 2025-03-19 09:32:32,833 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:32:33,814 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:32:33,822 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:32:33,823 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:32:33,823 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:32:33,823 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:32:33,827 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:32:33,842 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:32:33,844 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:32:33,844 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:32:33,844 views Блоков после сохранения: 12
+INFO 2025-03-19 09:32:33,845 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:33:01,717 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:01,752 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:33:31,721 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:31,749 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:33:58,168 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,168 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,188 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,188 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,391 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:33:58,396 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:33:58,407 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:33:58,421 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:33:58,424 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:33:58,424 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:33:58,441 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,443 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,508 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:33:58,529 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:33:58,777 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:33:58,789 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:33:58,790 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:34:01,076 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:01,118 views Документ 119 удален из избранного пользователем 36
+INFO 2025-03-19 09:34:01,120 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 233
+INFO 2025-03-19 09:34:01,824 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:01,835 views Документ 119 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:34:01,836 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:34:02,907 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:02,921 views Документ 119 удален из избранного пользователем 36
+INFO 2025-03-19 09:34:02,922 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 233
+INFO 2025-03-19 09:34:03,774 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:03,784 views Документ 119 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:34:03,785 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:34:28,709 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:28,726 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:34:43,379 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,387 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:34:43,416 log Unauthorized: /api/documents/shared_with_me/
+WARNING 2025-03-19 09:34:43,417 log Unauthorized: /api/documents/favorites/
+WARNING 2025-03-19 09:34:43,418 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:34:43,419 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,419 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:34:43,419 basehttp "GET /api/documents/favorites/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:34:43,421 log Unauthorized: /api/documents/119/
+WARNING 2025-03-19 09:34:43,422 log Unauthorized: /api/users/me/
+WARNING 2025-03-19 09:34:43,427 basehttp "GET /api/users/me/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:34:43,427 basehttp "GET /api/documents/119/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:34:43,523 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:34:43,523 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:34:43,523 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:34:43,524 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:34:43,528 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,529 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,529 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,529 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,546 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:34:43,546 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:34:43,555 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:34:43,557 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:34:43,569 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:34:43,569 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:34:43,596 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,596 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:43,630 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:34:43,666 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:34:44,949 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:34:45,005 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:34:45,005 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:35:09,306 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:09,310 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:09,314 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:09,315 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:09,477 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:35:09,477 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:35:09,482 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:35:09,488 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:35:09,494 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:35:09,495 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:35:09,533 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:09,534 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:09,573 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:35:09,599 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:35:10,779 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:10,804 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:35:10,804 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:35:34,316 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,319 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,320 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,321 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,352 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:35:34,353 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:35:34,359 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:35:34,359 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:35:34,359 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:35:34,360 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:35:34,393 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,393 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,430 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:35:34,466 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:35:34,761 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:35:34,771 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:35:34,772 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:36:04,715 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:04,744 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:36:34,736 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:34,752 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:36:50,893 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:50,896 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:50,904 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:50,906 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:50,956 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:36:50,958 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:36:50,975 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:36:50,978 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:36:50,983 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:36:50,984 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:36:51,032 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:51,033 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:51,052 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:36:51,085 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:36:51,767 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:36:51,780 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:36:51,781 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:37:21,717 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:37:21,747 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:37:51,717 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:37:51,746 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:38:21,712 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:38:21,731 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:38:51,032 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:38:51,047 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:39:21,726 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:39:21,761 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:39:24,684 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:39:24,685 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:39:24,705 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:39:24,714 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:39:29,391 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:39:29,433 views Документ 119 удален из избранного пользователем 36
+INFO 2025-03-19 09:39:29,435 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 233
+INFO 2025-03-19 09:39:30,570 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:39:30,579 views Документ 119 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:39:30,580 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:39:54,719 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:39:54,722 log Unauthorized: /api/users/notifications/
+WARNING 2025-03-19 09:39:54,722 basehttp "GET /api/users/notifications/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:39:54,744 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:39:54,746 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:39:54,754 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:40:24,738 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:40:24,763 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:40:54,701 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:40:54,729 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:41:24,689 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:41:24,736 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:41:54,734 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:41:54,755 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:42:24,724 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:42:24,740 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:42:54,687 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:42:54,704 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:43:24,691 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:43:24,723 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:43:54,691 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:43:54,721 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:44:24,722 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:24,738 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:44:39,166 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,168 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,189 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,192 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,252 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:44:39,255 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:44:39,259 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:44:39,259 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:44:39,263 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:44:39,263 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:44:39,285 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,286 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,359 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:44:39,389 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:44:39,616 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:39,629 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:44:39,629 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:44:40,397 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:40,403 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:44:40,404 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:44:40,404 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:44:40,404 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:44:40,407 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:44:40,414 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:44:40,416 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:44:40,416 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:44:40,416 views Блоков после сохранения: 12
+INFO 2025-03-19 09:44:40,417 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:44:41,358 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:44:41,364 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:44:41,365 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:44:41,365 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:44:41,365 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:44:41,370 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:44:41,373 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:44:41,376 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:44:41,377 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:44:41,377 views Блоков после сохранения: 12
+INFO 2025-03-19 09:44:41,378 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:45:09,293 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:45:09,296 log Unauthorized: /api/users/notifications/
+WARNING 2025-03-19 09:45:09,296 basehttp "GET /api/users/notifications/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:45:09,309 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:45:09,311 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:45:09,319 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:45:39,731 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:45:39,781 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:46:09,738 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:09,756 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:46:39,725 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:39,745 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:46:56,280 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,288 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,289 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,290 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,343 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:46:56,346 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:46:56,352 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:46:56,352 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:46:56,356 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:46:56,356 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:46:56,376 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,377 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,388 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:46:56,402 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:46:56,709 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:56,754 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:46:56,755 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:46:57,529 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:57,535 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:46:57,535 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:46:57,535 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:46:57,535 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:46:57,538 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:46:57,545 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:46:57,547 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:46:57,547 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:46:57,547 views Блоков после сохранения: 12
+INFO 2025-03-19 09:46:57,547 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:46:58,479 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:46:58,486 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:46:58,487 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:46:58,487 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:46:58,487 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:46:58,490 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:46:58,492 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:46:58,494 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:46:58,494 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:46:58,494 views Блоков после сохранения: 12
+INFO 2025-03-19 09:46:58,495 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:26,386 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:26,419 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:47:37,535 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,540 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,540 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,544 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,562 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:47:37,564 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:47:37,565 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:47:37,567 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:47:37,569 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:37,570 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:47:37,589 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,590 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,600 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:47:37,610 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:47:37,919 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:37,949 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:37,950 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:47:38,672 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:38,702 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:38,703 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:38,703 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:38,703 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:38,705 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:38,713 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:38,715 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:38,716 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:38,716 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:38,716 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:39,677 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:39,683 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:39,683 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:39,683 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:39,683 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:39,688 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:39,689 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:39,691 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:39,691 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:39,691 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:39,692 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:48,679 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:48,702 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:48,702 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:48,702 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:48,702 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:48,705 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:48,710 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:48,712 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:48,712 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:48,712 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:48,713 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:49,681 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:49,701 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:49,701 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:49,701 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:49,701 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:49,704 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:49,707 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:49,710 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:49,710 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:49,710 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:49,711 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:50,956 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:50,962 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:50,962 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:50,962 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:50,963 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:50,965 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:50,967 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:50,969 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:50,969 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:50,969 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:50,970 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:51,959 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:51,978 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:51,978 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:51,978 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:51,978 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:51,981 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:51,983 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:51,985 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:51,985 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:51,985 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:51,986 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:52,819 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:52,825 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:52,826 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:52,826 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:52,826 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:52,828 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:52,830 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:52,831 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:52,831 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:52,831 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:52,832 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:53,824 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:53,831 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:47:53,832 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:47:53,832 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:47:53,832 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:47:53,835 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:53,837 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:47:53,839 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:47:53,839 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:47:53,839 views Блоков после сохранения: 12
+INFO 2025-03-19 09:47:53,840 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:47:56,837 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:56,850 views Документ 119 удален из избранного пользователем 36
+INFO 2025-03-19 09:47:56,851 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 233
+INFO 2025-03-19 09:47:59,322 basehttp "OPTIONS /api/documents/119/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:47:59,350 views Документ 119 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:47:59,352 basehttp "POST /api/documents/119/toggle_favorite/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:05,018 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:05,027 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:05,027 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:05,027 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:05,027 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:05,030 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:05,031 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:48:05,033 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:05,033 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:05,033 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:05,034 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:06,023 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:06,029 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:06,029 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:06,030 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:06,030 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:06,043 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,045 views Сохранили content напрямую в модель. Размер: 4827
+INFO 2025-03-19 09:48:06,046 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,046 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:06,046 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:06,047 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:06,491 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:06,504 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,504 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3227
+INFO 2025-03-19 09:48:06,507 basehttp "OPTIONS /api/documents/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:06,514 views Создание нового документа...
+INFO 2025-03-19 09:48:06,514 views content в запросе на создание: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,514 views Ключи в content при создании: time, version, blocks
+INFO 2025-03-19 09:48:06,514 views Блоков в запросе: 0
+INFO 2025-03-19 09:48:06,527 views Создан документ ID: 136
+INFO 2025-03-19 09:48:06,528 views Напрямую сохранили content для документа ID: 136
+INFO 2025-03-19 09:48:06,528 views Content после прямого сохранения: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,528 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:06,528 views Блоков после сохранения: 0
+INFO 2025-03-19 09:48:06,529 basehttp "POST /api/documents/ HTTP/1.1" 201 213
+INFO 2025-03-19 09:48:06,532 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:06,538 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:06,539 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:06,539 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:06,539 views Найдено 13 блоков в словаре content
+INFO 2025-03-19 09:48:06,541 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,543 views Сохранили content напрямую в модель. Размер: 4968
+INFO 2025-03-19 09:48:06,601 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:06,601 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:06,601 views Блоков после сохранения: 13
+INFO 2025-03-19 09:48:06,602 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:07,200 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:07,207 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:07,208 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:07,208 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:07,208 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:07,210 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:07,212 views Сохранили content напрямую в модель. Размер: 4922
+INFO 2025-03-19 09:48:07,214 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:07,214 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:07,214 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:07,215 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:07,589 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:07,597 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:48:08,006 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:08,008 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:08,020 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:08,025 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:08,042 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:48:08,047 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:48:08,047 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:48:08,048 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:48:08,048 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:08,049 basehttp "GET /api/documents/136/ HTTP/1.1" 200 386
+INFO 2025-03-19 09:48:08,079 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:08,080 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:08,118 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:48:08,159 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:48:11,783 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:11,796 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:11,796 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3482
+INFO 2025-03-19 09:48:11,798 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:11,803 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:11,803 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:11,803 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:11,803 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:11,807 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:11,809 views Сохранили content напрямую в модель. Размер: 4849
+INFO 2025-03-19 09:48:11,811 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:11,811 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:11,811 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:11,812 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:12,003 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,022 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,023 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3457
+INFO 2025-03-19 09:48:12,025 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,031 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:12,031 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:12,031 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:12,031 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:12,034 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,035 views Сохранили content напрямую в модель. Размер: 4855
+INFO 2025-03-19 09:48:12,037 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,037 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:12,037 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:12,038 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:12,173 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,188 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,188 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3459
+INFO 2025-03-19 09:48:12,190 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,196 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:12,196 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:12,196 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:12,196 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:12,199 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,201 views Сохранили content напрямую в модель. Размер: 4861
+INFO 2025-03-19 09:48:12,203 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,203 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:12,203 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:12,204 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:12,529 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,540 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,541 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3461
+INFO 2025-03-19 09:48:12,542 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,548 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:12,548 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:12,548 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:12,548 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:12,552 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,554 views Сохранили content напрямую в модель. Размер: 4855
+INFO 2025-03-19 09:48:12,557 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,557 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:12,557 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:12,558 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:12,675 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,686 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,686 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3459
+INFO 2025-03-19 09:48:12,688 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,694 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:12,694 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:12,694 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:12,694 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:12,696 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,698 views Сохранили content напрямую в модель. Размер: 4849
+INFO 2025-03-19 09:48:12,699 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,699 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:12,700 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:12,700 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:12,810 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,822 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,823 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3457
+INFO 2025-03-19 09:48:12,824 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:12,830 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:12,831 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:12,831 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:12,831 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:12,835 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,837 views Сохранили content напрямую в модель. Размер: 4843
+INFO 2025-03-19 09:48:12,839 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:12,839 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:12,839 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:12,839 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:13,287 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:13,302 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:13,303 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3455
+INFO 2025-03-19 09:48:13,305 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:13,310 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:13,310 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:13,310 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:13,310 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:13,314 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:13,316 views Сохранили content напрямую в модель. Размер: 4849
+INFO 2025-03-19 09:48:13,318 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:13,318 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:13,318 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:13,319 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:13,988 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:14,002 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:14,002 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3457
+INFO 2025-03-19 09:48:14,004 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:14,009 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:14,009 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:14,009 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:14,009 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:14,014 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:14,016 views Сохранили content напрямую в модель. Размер: 4843
+INFO 2025-03-19 09:48:14,018 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:14,018 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:14,018 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:14,019 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:14,583 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:14,595 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:14,596 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3455
+INFO 2025-03-19 09:48:14,598 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:14,603 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:14,603 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:14,603 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:14,603 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:14,606 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:14,608 views Сохранили content напрямую в модель. Размер: 4844
+INFO 2025-03-19 09:48:14,610 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:14,610 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:14,610 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:14,611 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:15,518 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:15,529 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,529 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3456
+INFO 2025-03-19 09:48:15,531 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:15,537 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:15,537 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:15,537 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:15,537 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:15,539 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,542 views Сохранили content напрямую в модель. Размер: 4845
+INFO 2025-03-19 09:48:15,544 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,544 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:15,544 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:15,545 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:15,623 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:15,635 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,636 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3457
+INFO 2025-03-19 09:48:15,637 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:15,643 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:15,644 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:15,644 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:15,644 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:15,646 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,648 views Сохранили content напрямую в модель. Размер: 4846
+INFO 2025-03-19 09:48:15,650 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,650 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:15,650 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:15,651 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:15,795 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:15,806 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,806 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3458
+INFO 2025-03-19 09:48:15,808 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:15,813 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:15,813 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:15,813 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:15,813 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:15,816 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,818 views Сохранили content напрямую в модель. Размер: 4847
+INFO 2025-03-19 09:48:15,820 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:15,820 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:15,820 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:15,821 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:16,184 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:16,208 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,208 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3459
+INFO 2025-03-19 09:48:16,212 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:16,218 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:16,218 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:16,218 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:16,218 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:16,220 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,222 views Сохранили content напрямую в модель. Размер: 4848
+INFO 2025-03-19 09:48:16,223 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,223 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:16,223 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:16,224 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:16,242 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:16,254 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,254 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3460
+INFO 2025-03-19 09:48:16,257 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:16,262 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:16,262 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:16,262 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:16,263 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:16,265 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,266 views Сохранили content напрямую в модель. Размер: 4849
+INFO 2025-03-19 09:48:16,269 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,269 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:16,269 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:16,270 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:16,326 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:16,343 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,343 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3461
+INFO 2025-03-19 09:48:16,345 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:16,350 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:16,350 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:16,350 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:16,350 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:16,353 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,355 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:48:16,357 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:16,357 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:16,357 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:16,358 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:17,321 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:17,343 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:48:17,343 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:17,343 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:17,343 views Найдено 0 блоков в словаре content
+INFO 2025-03-19 09:48:17,346 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:17,348 views Сохранили content напрямую в модель. Размер: 58
+INFO 2025-03-19 09:48:17,351 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:17,351 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:17,351 views Блоков после сохранения: 0
+INFO 2025-03-19 09:48:17,352 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:48:17,357 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:17,370 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:17,371 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:48:17,375 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:17,382 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:48:17,382 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:48:17,382 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:48:17,382 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:48:17,385 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:17,387 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:48:17,389 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:17,389 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:48:17,389 views Блоков после сохранения: 12
+INFO 2025-03-19 09:48:17,390 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:48:18,856 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:18,857 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:18,862 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:18,865 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:18,891 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:48:18,891 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:48:18,896 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:48:18,898 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:48:18,904 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:48:18,904 basehttp "GET /api/documents/136/ HTTP/1.1" 200 366
+INFO 2025-03-19 09:48:18,924 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:18,924 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:18,934 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:48:18,985 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:48:24,752 basehttp "OPTIONS /api/documents/136/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:24,784 views Документ 136 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:48:24,786 basehttp "POST /api/documents/136/toggle_favorite/ HTTP/1.1" 200 192
+INFO 2025-03-19 09:48:49,721 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:48:49,754 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:10,912 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:10,941 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:10,941 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:10,941 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:10,941 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:10,947 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:10,954 views Сохранили content напрямую в модель. Размер: 141
+INFO 2025-03-19 09:49:10,955 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:10,956 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:10,956 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:10,956 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:11,904 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:11,910 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:11,910 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:11,910 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:11,910 views Найдено 0 блоков в словаре content
+INFO 2025-03-19 09:49:11,913 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:11,914 views Сохранили content напрямую в модель. Размер: 63
+INFO 2025-03-19 09:49:11,915 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:11,915 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:11,916 views Блоков после сохранения: 0
+INFO 2025-03-19 09:49:11,916 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:12,914 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:12,920 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:12,920 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:12,920 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:12,920 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:12,923 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:12,925 views Сохранили content напрямую в модель. Размер: 130
+INFO 2025-03-19 09:49:12,926 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:12,926 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:12,926 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:12,927 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:13,630 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:13,637 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:13,637 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:13,637 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:13,637 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:13,640 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:13,643 views Сохранили content напрямую в модель. Размер: 133
+INFO 2025-03-19 09:49:13,644 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:13,644 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:13,644 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:13,645 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:14,744 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:14,751 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:14,751 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:14,752 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:14,752 views Найдено 0 блоков в словаре content
+INFO 2025-03-19 09:49:14,754 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:14,756 views Сохранили content напрямую в модель. Размер: 63
+INFO 2025-03-19 09:49:14,758 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:14,758 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:14,758 views Блоков после сохранения: 0
+INFO 2025-03-19 09:49:14,759 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:15,797 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:15,803 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:15,803 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:15,803 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:15,803 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:15,806 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:15,807 views Сохранили content напрямую в модель. Размер: 127
+INFO 2025-03-19 09:49:15,809 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:15,809 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:15,809 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:15,809 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:16,800 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:16,807 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:16,807 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:16,807 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:16,807 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:16,809 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:16,811 views Сохранили content напрямую в модель. Размер: 127
+INFO 2025-03-19 09:49:16,813 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:16,813 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:16,813 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:16,813 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:17,685 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:17,692 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:17,692 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:17,692 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:17,692 views Найдено 7 блоков в словаре content
+INFO 2025-03-19 09:49:17,694 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:17,696 views Сохранили content напрямую в модель. Размер: 523
+INFO 2025-03-19 09:49:17,698 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:17,698 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:17,698 views Блоков после сохранения: 7
+INFO 2025-03-19 09:49:17,699 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:18,686 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:18,694 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:18,694 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:18,694 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:18,694 views Найдено 7 блоков в словаре content
+INFO 2025-03-19 09:49:18,698 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:18,700 views Сохранили content напрямую в модель. Размер: 523
+INFO 2025-03-19 09:49:18,702 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:18,702 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:18,702 views Блоков после сохранения: 7
+INFO 2025-03-19 09:49:18,703 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:18,922 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:18,930 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:20,785 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:20,791 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:20,791 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:20,791 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:20,791 views Найдено 0 блоков в словаре content
+INFO 2025-03-19 09:49:20,794 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:20,795 views Сохранили content напрямую в модель. Размер: 63
+INFO 2025-03-19 09:49:20,796 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:20,797 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:20,797 views Блоков после сохранения: 0
+INFO 2025-03-19 09:49:20,797 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:21,709 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:21,715 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:21,716 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:21,716 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:21,716 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:21,719 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:21,721 views Сохранили content напрямую в модель. Размер: 130
+INFO 2025-03-19 09:49:21,722 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:21,722 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:21,722 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:21,723 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:22,898 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:22,906 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:22,907 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:22,907 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:22,907 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:22,909 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:22,911 views Сохранили content напрямую в модель. Размер: 131
+INFO 2025-03-19 09:49:22,912 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:22,912 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:22,912 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:22,913 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:23,899 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:23,906 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:23,907 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:23,907 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:23,907 views Найдено 1 блоков в словаре content
+INFO 2025-03-19 09:49:23,910 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:23,913 views Сохранили content напрямую в модель. Размер: 131
+INFO 2025-03-19 09:49:23,915 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:23,915 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:23,915 views Блоков после сохранения: 1
+INFO 2025-03-19 09:49:23,915 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:24,368 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:24,375 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:24,375 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:24,376 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:24,376 views Найдено 2 блоков в словаре content
+INFO 2025-03-19 09:49:24,378 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:24,381 views Сохранили content напрямую в модель. Размер: 201
+INFO 2025-03-19 09:49:24,383 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:24,383 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:24,383 views Блоков после сохранения: 2
+INFO 2025-03-19 09:49:24,384 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:25,370 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:25,389 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:25,389 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:25,389 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:25,389 views Найдено 2 блоков в словаре content
+INFO 2025-03-19 09:49:25,392 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:25,394 views Сохранили content напрямую в модель. Размер: 201
+INFO 2025-03-19 09:49:25,396 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:25,396 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:25,396 views Блоков после сохранения: 2
+INFO 2025-03-19 09:49:25,396 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:27,384 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,387 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,388 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,388 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,395 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,395 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,398 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,421 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:49:27,428 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:27,428 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:49:27,441 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:27,441 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:49:27,444 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,444 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:27,447 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:27,457 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:27,461 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:27,465 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:27,472 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:27,516 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:27,516 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:27,520 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:29,183 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,188 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,195 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,200 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,210 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,211 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,213 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,236 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:49:29,239 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:29,242 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:29,242 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:29,244 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:49:29,257 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:29,259 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,261 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,266 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:29,274 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:29,292 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:29,293 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:49:29,301 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:29,304 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:29,323 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:29,564 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,564 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:29,576 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:29,577 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:29,577 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:49:29,577 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:49:30,289 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:30,296 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:49:30,297 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:30,297 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:30,297 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:49:30,299 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:30,301 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:49:30,303 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:30,303 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:30,303 views Блоков после сохранения: 12
+INFO 2025-03-19 09:49:30,303 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:49:31,583 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:31,584 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:31,584 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:31,593 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:31,634 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:31,639 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:49:31,640 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:31,640 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:31,646 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:31,647 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:49:31,674 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:31,674 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:31,695 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:31,706 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:32,349 basehttp "OPTIONS /api/documents/136/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:32,361 views Документ 136 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:49:32,362 basehttp "POST /api/documents/136/toggle_favorite/ HTTP/1.1" 200 192
+INFO 2025-03-19 09:49:34,067 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:34,074 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:34,074 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:34,074 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:34,074 views Найдено 2 блоков в словаре content
+INFO 2025-03-19 09:49:34,077 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:34,079 views Сохранили content напрямую в модель. Размер: 201
+INFO 2025-03-19 09:49:34,080 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:34,080 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:34,080 views Блоков после сохранения: 2
+INFO 2025-03-19 09:49:34,081 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:35,064 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:35,074 views UPDATE запрос для документа ID: 136
+INFO 2025-03-19 09:49:35,074 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:35,074 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:35,074 views Найдено 2 блоков в словаре content
+INFO 2025-03-19 09:49:35,079 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:35,082 views Сохранили content напрямую в модель. Размер: 201
+INFO 2025-03-19 09:49:35,083 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:35,083 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:35,083 views Блоков после сохранения: 2
+INFO 2025-03-19 09:49:35,084 basehttp "PUT /api/documents/136/ HTTP/1.1" 200 193
+INFO 2025-03-19 09:49:54,259 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,261 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,266 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,266 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,382 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:49:54,383 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:54,386 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:54,387 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:54,392 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:54,392 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:49:54,411 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,411 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,439 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:54,476 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:54,747 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,747 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:54,775 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:54,775 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:54,776 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:49:54,777 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:49:55,489 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:55,496 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:49:55,497 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:55,497 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:55,497 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:49:55,499 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:55,501 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:49:55,503 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:55,503 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:55,503 views Блоков после сохранения: 12
+INFO 2025-03-19 09:49:55,504 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:49:56,492 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:56,499 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:49:56,499 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:56,499 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:56,499 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:49:56,503 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:56,505 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:49:56,507 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:56,507 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:56,507 views Блоков после сохранения: 12
+INFO 2025-03-19 09:49:56,508 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:49:57,052 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,060 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:49:57,060 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:57,060 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:57,060 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:49:57,063 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:57,064 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:49:57,066 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:57,066 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:57,066 views Блоков после сохранения: 12
+INFO 2025-03-19 09:49:57,067 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:49:57,761 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,762 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,764 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,765 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,768 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,772 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,778 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,788 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:49:57,788 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:57,796 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:57,798 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:57,800 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:57,801 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:49:57,818 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,823 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:57,825 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:49:57,830 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:49:57,837 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:49:57,843 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:57,843 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:49:57,847 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:57,856 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:49:58,049 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:58,058 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:49:58,058 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:58,058 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:58,058 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:49:58,062 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:58,064 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:49:58,066 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:58,066 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:58,066 views Блоков после сохранения: 12
+INFO 2025-03-19 09:49:58,066 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:49:59,785 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:49:59,792 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:49:59,792 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:49:59,792 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:49:59,792 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:49:59,795 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:59,797 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:49:59,798 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:49:59,798 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:49:59,798 views Блоков после сохранения: 9
+INFO 2025-03-19 09:49:59,799 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:00,783 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:00,799 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:00,799 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:00,799 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:00,800 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:50:00,803 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:00,804 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:50:00,806 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:00,806 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:00,806 views Блоков после сохранения: 9
+INFO 2025-03-19 09:50:00,807 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:02,220 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:02,226 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:02,226 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:02,226 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:02,226 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:50:02,229 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:02,231 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:50:02,233 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:02,233 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:02,233 views Блоков после сохранения: 9
+INFO 2025-03-19 09:50:02,234 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:03,218 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:03,224 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:03,224 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:03,224 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:03,224 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:50:03,227 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:03,229 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:50:03,230 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:03,230 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:03,230 views Блоков после сохранения: 9
+INFO 2025-03-19 09:50:03,231 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:05,171 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:05,179 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:05,179 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:05,179 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:05,179 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 09:50:05,183 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:05,187 views Сохранили content напрямую в модель. Размер: 1443
+INFO 2025-03-19 09:50:05,189 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:05,189 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:05,189 views Блоков после сохранения: 10
+INFO 2025-03-19 09:50:05,190 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:06,173 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:06,181 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:06,181 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:06,181 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:06,181 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 09:50:06,184 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:06,186 views Сохранили content напрямую в модель. Размер: 1443
+INFO 2025-03-19 09:50:06,200 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:06,201 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:06,201 views Блоков после сохранения: 10
+INFO 2025-03-19 09:50:06,202 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:06,592 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:06,600 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:06,600 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:06,600 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:06,600 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:50:06,604 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:06,607 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:50:06,609 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:06,609 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:06,609 views Блоков после сохранения: 9
+INFO 2025-03-19 09:50:06,610 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:07,259 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,263 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,263 basehttp "OPTIONS /api/documents/134/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,264 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,274 basehttp "OPTIONS /api/documents/134/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,286 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,286 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,297 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:50:07,297 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:50:07,301 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:07,302 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:50:07,305 serializers TO_REPRESENTATION (Document ID: 134): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:07,305 basehttp "GET /api/documents/134/ HTTP/1.1" 200 677
+INFO 2025-03-19 09:50:07,313 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:50:07,317 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:07,318 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:50:07,320 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,323 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,325 serializers TO_REPRESENTATION (Document ID: 134): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:07,325 basehttp "GET /api/documents/134/ HTTP/1.1" 200 677
+INFO 2025-03-19 09:50:07,391 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:50:07,402 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:50:07,591 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:07,597 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:50:07,598 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:07,598 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:07,598 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:50:07,600 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:07,602 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:50:07,603 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:07,603 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:07,603 views Блоков после сохранения: 9
+INFO 2025-03-19 09:50:07,604 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:50:10,137 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,138 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,138 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,139 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,139 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,139 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,139 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:50:10,143 log Unauthorized: /api/users/me/
+WARNING 2025-03-19 09:50:10,145 log Unauthorized: /api/documents/shared_with_me/
+WARNING 2025-03-19 09:50:10,145 log Unauthorized: /api/documents/119/
+WARNING 2025-03-19 09:50:10,146 log Unauthorized: /api/documents/favorites/
+WARNING 2025-03-19 09:50:10,146 basehttp "GET /api/users/me/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:50:10,146 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:50:10,147 basehttp "GET /api/documents/119/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:50:10,147 basehttp "GET /api/documents/favorites/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:50:10,150 log Unauthorized: /api/documents/shared_with_me/
+WARNING 2025-03-19 09:50:10,151 log Unauthorized: /api/documents/favorites/
+WARNING 2025-03-19 09:50:10,152 log Unauthorized: /api/documents/119/
+WARNING 2025-03-19 09:50:10,153 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:50:10,160 basehttp "GET /api/documents/favorites/ HTTP/1.1" 401 172
+WARNING 2025-03-19 09:50:10,164 basehttp "GET /api/documents/119/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:50:10,176 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,179 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,180 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,182 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,183 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,183 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,184 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,186 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,189 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,190 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,193 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,193 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,196 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:50:10,200 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,201 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:50:10,201 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:50:10,204 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:50:10,206 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:10,212 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:10,213 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:50:10,219 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:50:10,224 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:50:10,225 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:10,227 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,227 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,260 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:50:10,265 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:10,266 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:50:10,273 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:50:10,528 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,528 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:10,540 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:10,540 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:10,540 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:50:10,540 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:50:11,250 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:11,256 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:50:11,257 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:11,257 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:11,257 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:50:11,261 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:11,263 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:50:11,265 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:11,265 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:11,265 views Блоков после сохранения: 12
+INFO 2025-03-19 09:50:11,265 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:50:11,828 basehttp "OPTIONS /api/documents/?root=true HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:11,837 basehttp "GET /api/documents/?root=true HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:12,252 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:12,276 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:50:12,277 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:50:12,277 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:50:12,277 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:50:12,281 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:12,302 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:50:12,306 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:12,306 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:50:12,306 views Блоков после сохранения: 12
+INFO 2025-03-19 09:50:12,309 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:50:13,728 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,731 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,734 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,737 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,754 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,756 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,756 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,781 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:50:13,782 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:50:13,785 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:50:13,785 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:13,788 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:13,788 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:50:13,796 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:50:13,799 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:50:13,800 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:50:13,805 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,806 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:13,808 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:50:13,808 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:50:13,838 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:50:13,848 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:50:44,717 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:50:44,749 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:51:14,718 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:14,755 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:51:29,489 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:29,489 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:29,495 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:29,498 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:29,547 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:51:29,550 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:51:29,599 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:51:29,606 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:51:29,607 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:51:29,608 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:51:29,639 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:29,640 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:29,698 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:51:29,712 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:51:40,189 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:40,191 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:40,204 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:40,207 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:40,249 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:51:40,249 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:51:40,255 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:51:40,255 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:51:40,256 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:51:40,257 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:51:40,284 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:40,285 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:51:40,318 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:51:40,335 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:52:10,287 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:10,623 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:52:38,074 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:38,083 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:38,086 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:38,089 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:38,159 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:52:38,165 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:52:38,167 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:52:38,169 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:52:38,180 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:52:38,180 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1299
+INFO 2025-03-19 09:52:38,240 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:38,243 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:52:38,282 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:52:38,302 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:53:08,716 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:53:08,752 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:53:38,725 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:53:38,774 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:54:08,717 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:54:08,733 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:54:38,714 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:54:38,731 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:55:08,234 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:55:08,263 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:55:38,231 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+WARNING 2025-03-19 09:55:38,234 log Unauthorized: /api/users/notifications/
+WARNING 2025-03-19 09:55:38,235 basehttp "GET /api/users/notifications/ HTTP/1.1" 401 172
+INFO 2025-03-19 09:55:38,261 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
+INFO 2025-03-19 09:55:38,264 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:55:38,274 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:55:54,556 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:55:54,566 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:55:54,566 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:55:54,566 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:55:54,566 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:55:54,572 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:54,578 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:55:54,579 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:54,579 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:55:54,579 views Блоков после сохранения: 9
+INFO 2025-03-19 09:55:54,580 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:55:55,556 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:55:55,563 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:55:55,563 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:55:55,563 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:55:55,563 views Найдено 9 блоков в словаре content
+INFO 2025-03-19 09:55:55,565 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:55,567 views Сохранили content напрямую в модель. Размер: 1270
+INFO 2025-03-19 09:55:55,569 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:55,569 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:55:55,569 views Блоков после сохранения: 9
+INFO 2025-03-19 09:55:55,570 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:55:58,056 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:55:58,063 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:55:58,063 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:55:58,063 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:55:58,063 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 09:55:58,066 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:58,068 views Сохранили content напрямую в модель. Размер: 1521
+INFO 2025-03-19 09:55:58,070 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:58,070 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:55:58,070 views Блоков после сохранения: 10
+INFO 2025-03-19 09:55:58,070 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:55:59,054 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:55:59,061 views UPDATE запрос для документа ID: 131
+INFO 2025-03-19 09:55:59,061 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:55:59,061 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:55:59,061 views Найдено 10 блоков в словаре content
+INFO 2025-03-19 09:55:59,064 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:59,066 views Сохранили content напрямую в модель. Размер: 1521
+INFO 2025-03-19 09:55:59,068 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:55:59,068 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:55:59,068 views Блоков после сохранения: 10
+INFO 2025-03-19 09:55:59,069 basehttp "PUT /api/documents/131/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:56:04,351 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:04,353 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:04,356 basehttp "OPTIONS /api/documents/117/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:04,367 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:04,418 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:04,421 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:04,473 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+WARNING 2025-03-19 09:56:04,486 log Not Found: /api/documents/117/
+WARNING 2025-03-19 09:56:04,486 basehttp "GET /api/documents/117/ HTTP/1.1" 404 49
+INFO 2025-03-19 09:56:04,490 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:07,062 basehttp "OPTIONS /api/documents/?root=true HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,075 basehttp "GET /api/documents/?root=true HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:07,180 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,191 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,198 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,201 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,205 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,206 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,208 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,227 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:07,229 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:07,236 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:07,237 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:07,241 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:07,242 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:56:07,250 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:07,253 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:07,254 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:07,260 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:07,261 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:56:07,267 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,267 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,278 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:07,304 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:07,604 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,604 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:07,616 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:07,617 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:07,617 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:56:07,617 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:56:18,894 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,895 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,898 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,898 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,900 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,901 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,903 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,935 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:18,935 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:18,937 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:18,940 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:18,942 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:18,942 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1419
+INFO 2025-03-19 09:56:18,950 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:18,952 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:18,955 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:18,959 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,959 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:18,960 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:18,962 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1419
+INFO 2025-03-19 09:56:18,985 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:19,003 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:20,433 basehttp "OPTIONS /api/documents/117/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:20,434 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:20,434 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:20,434 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:20,448 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:20,449 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:20,452 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:20,456 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+WARNING 2025-03-19 09:56:20,464 log Not Found: /api/documents/117/
+WARNING 2025-03-19 09:56:20,464 basehttp "GET /api/documents/117/ HTTP/1.1" 404 49
+INFO 2025-03-19 09:56:21,374 basehttp "OPTIONS /api/documents/?root=true HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,383 basehttp "GET /api/documents/?root=true HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:21,470 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,473 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,474 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,474 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,475 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,481 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,482 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,500 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:21,503 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:21,506 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:21,506 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:21,509 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:21,510 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:56:21,518 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:21,521 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:21,529 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,529 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,533 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:21,548 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:21,550 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:56:21,562 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:21,573 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:21,859 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,860 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:21,872 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:21,872 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:21,872 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:56:21,872 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:56:22,586 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:22,593 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:56:22,593 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:56:22,593 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:56:22,593 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:56:22,597 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:22,599 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:56:22,601 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:22,601 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:56:22,601 views Блоков после сохранения: 12
+INFO 2025-03-19 09:56:22,602 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:56:23,641 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:23,655 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:56:23,656 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:56:23,656 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:56:23,657 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:56:23,662 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:23,664 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:56:23,690 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:23,690 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:56:23,690 views Блоков после сохранения: 12
+INFO 2025-03-19 09:56:23,691 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:56:38,280 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,282 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,283 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,283 basehttp "OPTIONS /api/documents/131/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,288 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,290 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,290 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,299 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:38,299 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:38,303 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:38,303 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:38,308 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:38,308 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1419
+INFO 2025-03-19 09:56:38,314 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:38,317 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:38,317 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:38,326 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,331 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:38,333 serializers TO_REPRESENTATION (Document ID: 131): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:38,334 basehttp "GET /api/documents/131/ HTTP/1.1" 200 1419
+INFO 2025-03-19 09:56:38,376 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:38,385 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:39,657 basehttp "OPTIONS /api/documents/131/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:39,669 views Документ 131 добавлен в избранное пользователем 36
+INFO 2025-03-19 09:56:39,670 basehttp "POST /api/documents/131/toggle_favorite/ HTTP/1.1" 200 200
+INFO 2025-03-19 09:56:41,721 basehttp "OPTIONS /api/documents/131/toggle_favorite/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:41,744 views Документ 131 удален из избранного пользователем 36
+INFO 2025-03-19 09:56:41,745 basehttp "POST /api/documents/131/toggle_favorite/ HTTP/1.1" 200 201
+INFO 2025-03-19 09:56:44,261 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,263 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,265 basehttp "OPTIONS /api/users/me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,266 basehttp "OPTIONS /api/documents/favorites/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,269 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,271 basehttp "OPTIONS /api/documents/shared_with_me/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,271 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,298 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:44,302 basehttp "GET /api/users/me/ HTTP/1.1" 200 153
+INFO 2025-03-19 09:56:44,304 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:44,305 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:44,318 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:44,319 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:56:44,322 views Получены избранные документы для пользователя 36, найдено: 1
+INFO 2025-03-19 09:56:44,326 basehttp "GET /api/documents/favorites/ HTTP/1.1" 200 234
+INFO 2025-03-19 09:56:44,328 basehttp "GET /api/documents/shared_with_me/ HTTP/1.1" 200 414
+INFO 2025-03-19 09:56:44,332 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,333 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,340 serializers TO_REPRESENTATION (Document ID: 119): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:44,341 basehttp "GET /api/documents/119/ HTTP/1.1" 200 3442
+INFO 2025-03-19 09:56:44,344 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:44,378 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:56:44,639 basehttp "OPTIONS /api/documents/135/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,639 basehttp "OPTIONS /api/documents/136/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:44,654 serializers TO_REPRESENTATION (Document ID: 135): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:44,655 serializers TO_REPRESENTATION (Document ID: 136): content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:44,655 basehttp "GET /api/documents/135/ HTTP/1.1" 200 1371
+INFO 2025-03-19 09:56:44,655 basehttp "GET /api/documents/136/ HTTP/1.1" 200 496
+INFO 2025-03-19 09:56:45,363 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:45,370 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:56:45,370 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:56:45,370 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:56:45,370 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:56:45,373 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:45,374 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:56:45,376 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:45,376 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:56:45,376 views Блоков после сохранения: 12
+INFO 2025-03-19 09:56:45,377 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:56:46,364 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:56:46,371 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:56:46,371 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:56:46,371 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:56:46,371 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:56:46,375 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:46,377 views Сохранили content напрямую в модель. Размер: 4850
+INFO 2025-03-19 09:56:46,378 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:56:46,378 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:56:46,379 views Блоков после сохранения: 12
+INFO 2025-03-19 09:56:46,379 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:57:14,317 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:57:14,345 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:57:44,317 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:57:44,334 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 492
+INFO 2025-03-19 09:57:57,666 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:57:57,688 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:57:57,688 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:57:57,688 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:57:57,688 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:57:57,691 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:57:57,693 views Сохранили content напрямую в модель. Размер: 4848
+INFO 2025-03-19 09:57:57,695 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:57:57,695 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:57:57,695 views Блоков после сохранения: 12
+INFO 2025-03-19 09:57:57,696 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:57:58,667 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:57:58,675 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:57:58,675 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:57:58,675 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:57:58,675 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:57:58,678 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:57:58,680 views Сохранили content напрямую в модель. Размер: 4848
+INFO 2025-03-19 09:57:58,682 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:57:58,682 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:57:58,682 views Блоков после сохранения: 12
+INFO 2025-03-19 09:57:58,682 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:57:59,335 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:57:59,426 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:57:59,426 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:57:59,426 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:57:59,426 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:57:59,430 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:57:59,433 views Сохранили content напрямую в модель. Размер: 4846
+INFO 2025-03-19 09:57:59,436 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:57:59,436 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:57:59,436 views Блоков после сохранения: 12
+INFO 2025-03-19 09:57:59,437 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
+INFO 2025-03-19 09:58:00,336 basehttp "OPTIONS /api/documents/119/ HTTP/1.1" 200 0
+INFO 2025-03-19 09:58:00,343 views UPDATE запрос для документа ID: 119
+INFO 2025-03-19 09:58:00,344 views Тип content в запросе: <class 'dict'>
+INFO 2025-03-19 09:58:00,344 views Ключи в content: time, blocks, version
+INFO 2025-03-19 09:58:00,344 views Найдено 12 блоков в словаре content
+INFO 2025-03-19 09:58:00,346 views Текущий content: тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:58:00,348 views Сохранили content напрямую в модель. Размер: 4846
+INFO 2025-03-19 09:58:00,349 views После сохранения: content тип <class 'dict'>, пустой: False
+INFO 2025-03-19 09:58:00,349 views Ключи после сохранения: time, blocks, version
+INFO 2025-03-19 09:58:00,349 views Блоков после сохранения: 12
+INFO 2025-03-19 09:58:00,350 basehttp "PUT /api/documents/119/ HTTP/1.1" 200 232
