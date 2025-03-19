@@ -13,6 +13,11 @@ import { useToast } from '@/components/ui/use-toast'
 import { Toaster } from '@/components/ui/toaster'
 import Cookies from "js-cookie"
 import CursorOverlay from "./CursorOverlay"
+import TaskTool from "./tools/task-tool"
+import EditorJS from "@editorjs/editorjs"
+import Header from "@editorjs/header"
+import List from "@editorjs/list"
+import Image from "@editorjs/image"
 
 // Добавляем глобальные стили для курсоров
 import "./remote-cursor.css"
@@ -196,7 +201,7 @@ const NestedDocumentTool = {
       
       // Текст ссылки в стиле Notion с подчеркиванием
       const textSpan = document.createElement('span');
-      textSpan.className = 'font-medium text-sm text-foreground border-b border-muted-foreground/40';
+      textSpan.className = 'font-medium text-m text-foreground border-b border-muted-foreground/40';
       textSpan.textContent = safeTitle;
       
       // Добавляем текст в контейнер
@@ -541,6 +546,15 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
             text: "",
             level: 4
           })
+        }
+      }
+    },
+    {
+      name: "Задача",
+      icon: "☑",
+      action: () => {
+        if (editorInstanceRef.current) {
+          editorInstanceRef.current.blocks.insert("task")
         }
       }
     },
@@ -1356,6 +1370,15 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 }
               }
             },
+            task: {
+              class: TaskTool,
+              inlineToolbar: false,
+              config: {
+                preserveBlank: false,
+                disableLineBreaks: true
+              },
+              tunes: []
+            },
             nestedDocument: NestedDocumentTool 
           },
           i18n: {
@@ -1383,6 +1406,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 "List": "Список",
                 "Checklist": "Чек-лист",
                 "Image": "Изображение",
+                "Task": "Задача",
                 "Nested Document": "Вложенный документ"
               },
               tools: {

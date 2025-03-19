@@ -187,7 +187,7 @@ const NestedDocumentTool = {
       
       // Текст ссылки в стиле Notion с подчеркиванием
       const textSpan = document.createElement('span');
-      textSpan.className = 'font-medium text-sm text-foreground border-b border-muted-foreground/40';
+      textSpan.className = 'font-medium text-m text-foreground border-b border-muted-foreground/40';
       textSpan.textContent = safeTitle;
       
       // Добавляем текст в контейнер

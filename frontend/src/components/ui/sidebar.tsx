@@ -198,7 +198,7 @@ SidebarGroupContent.displayName = "SidebarGroupContent"
 export const SidebarTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
->(({ className, ...props }, ref) => {
+>(({ className, children, ...props }, ref) => {
   const { expanded, setExpanded } = useSidebar()
 
   return (
@@ -206,29 +206,12 @@ export const SidebarTrigger = React.forwardRef<
       ref={ref}
       onClick={() => setExpanded(!expanded)}
       className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-md border border-input bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex h-9 w-9 items-center justify-center rounded-md bg-background text-sm font-medium ring-offset-background transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
         className
       )}
       {...props}
     >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="16"
-        height="16"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className={cn(
-          "transition-transform",
-          expanded ? "rotate-180" : "rotate-0"
-        )}
-      >
-        <path d="M18 8L22 12L18 16" />
-        <path d="M2 12H22" />
-      </svg>
+      {children}
       <span className="sr-only">Toggle Sidebar</span>
     </button>
   )

@@ -108,7 +108,7 @@ export function ShareDocument({ documentId }: ShareDocumentProps) {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant="outline" size="sm" className="gap-1">
+        <Button variant="ghost" size="sm" className="gap-1">
           <Share2 className="h-4 w-4" />
           <span>Поделиться</span>
         </Button>

@@ -145,9 +145,9 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
       {...props}
     >
       <SidebarContent className="flex flex-col flex-1">
-        <div className="flex h-14 items-center border-b px-6">
+        <div className="flex h-16 items-center px-6 overflow-hidden">
           <AcmeLogo />
-          <span className="ml-2 text-lg font-semibold">Acme Inc.</span>
+          <span className="ml-2 text-lg font-semibold whitespace-nowrap">Acme Inc.</span>
         </div>
         <ScrollArea className="flex-1">
           <SidebarMenu>

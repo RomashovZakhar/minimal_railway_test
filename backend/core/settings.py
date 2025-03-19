@@ -180,48 +180,48 @@ REST_FRAMEWORK = {
 # Auth settings
 AUTH_USER_MODEL = 'users.User'
 
-# Настройки логирования
-LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '{levelname} {asctime} {module} {message}',
-            'style': '{',
-        },
-        'simple': {
-            'format': '{levelname} {message}',
-            'style': '{',
-        },
-    },
-    'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
-        },
-        'file': {
-            'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': 'debug.log',
-            'formatter': 'verbose',
-        },
-    },
-    'loggers': {
-        'django': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'channels': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'documents': {
-            'handlers': ['console', 'file'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-    },
-}
+# # Настройки логирования
+# LOGGING = {
+#     'version': 1,
+#     'disable_existing_loggers': False,
+#     'formatters': {
+#         'verbose': {
+#             'format': '{levelname} {asctime} {module} {message}',
+#             'style': '{',
+#         },
+#         'simple': {
+#             'format': '{levelname} {message}',
+#             'style': '{',
+#         },
+#     },
+#     'handlers': {
+#         'console': {
+#             'level': 'INFO',
+#             'class': 'logging.StreamHandler',
+#             'formatter': 'verbose',
+#         },
+#         'file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': 'debug.log',
+#             'formatter': 'verbose',
+#         },
+#     },
+#     'loggers': {
+#         'django': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#         'channels': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#         'documents': {
+#             'handlers': ['console', 'file'],
+#             'level': 'INFO',
+#             'propagate': True,
+#         },
+#     },
+# }

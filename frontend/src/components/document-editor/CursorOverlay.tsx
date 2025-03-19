@@ -16,7 +16,7 @@ interface RemoteCursor {
 
 interface CursorOverlayProps {
   cursors: RemoteCursor[];
-  containerRef: React.RefObject<HTMLDivElement>;
+  containerRef: React.RefObject<HTMLDivElement | null>;
 }
 
 /**

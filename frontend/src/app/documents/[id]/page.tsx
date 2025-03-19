@@ -16,13 +16,13 @@ import { Separator } from "@/components/ui/separator"
 import { DocumentEditor } from "@/components/document-editor"
 import api from "@/lib/api"
 import { 
-  Star, 
+  Star,
   Share, 
   MoreHorizontal,
   ChevronRight,
   BarChart3,
   Trash,
-  Menu,
+  PanelLeft,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { 
@@ -455,9 +455,11 @@ export default function DocumentPage() {
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
-            <SidebarTrigger className="h-9 w-9 shrink-0 -ml-1">
-              <Menu className="h-4 w-4" />
-            </SidebarTrigger>
+            <Button variant="ghost" size="icon" asChild>
+              <SidebarTrigger>
+                <PanelLeft className="h-4 w-4" />
+              </SidebarTrigger>
+            </Button>
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
@@ -481,19 +483,20 @@ export default function DocumentPage() {
             </Breadcrumb>
 
             <div className="flex items-center gap-2 ml-auto">
-
-            <ShareDocument documentId={document.id} />
+              <ShareDocument documentId={document.id} />
 
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={toggleFavorite}
                 className={cn(
-                  "hover:bg-background/60",
                   document.is_favorite && "text-yellow-500"
                 )}
               >
-                <Star className="h-4 w-4" />
+                <Star 
+                  className="h-4 w-4" 
+                  fill={document.is_favorite ? "currentColor" : "none"}
+                />
               </Button>
 
               <NotificationDropdown />
@@ -511,8 +514,6 @@ export default function DocumentPage() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-
-              
             </div>
           </header>
 
