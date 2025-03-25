@@ -292,3 +292,5 @@ notion-things-clone/
 ## Лицензия
 
 MIT 
+
+
