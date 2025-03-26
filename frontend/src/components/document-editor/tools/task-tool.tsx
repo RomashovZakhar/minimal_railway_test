@@ -32,6 +32,7 @@ export default class TaskTool implements BlockTool {
   private _element: HTMLElement;
   private _wrapper: HTMLElement;
   private _lastExpandedState: boolean | undefined;
+  private _outsideClickHandler: ((e: MouseEvent) => void) | null = null;
 
   static get toolbox() {
     return {
@@ -95,20 +96,50 @@ export default class TaskTool implements BlockTool {
     taskHeader.classList.add('task-header');
     taskHeader.draggable = false;
     
-    // Обработчик для предотвращения любых действий по умолчанию на всем блоке
+    // Обработчик для разворачивания/сворачивания задачи при клике на фрейм
     this._element.addEventListener('click', (e) => {
-      if (e && e.target && e.target === this._element) {
+      // Проверяем, что клик не был на чекбоксе или редактируемом тексте
+      const target = e.target as HTMLElement;
+      const isCheckbox = target.closest('.task-checkbox');
+      const isTextEditing = target.closest('.task-text') && document.activeElement === target.closest('.task-text');
+      // Проверяем, был ли клик внутри блока деталей
+      const isTaskDetails = target.closest('.task-details') !== null;
+      // Проверяем, был ли клик на заголовке
+      const isTaskHeader = target.closest('.task-header') !== null;
+      
+      // Если клик не на чекбоксе, не на редактируемом тексте, не внутри блока деталей,
+      // и задача ещё не развернута, разворачиваем её
+      if (!isCheckbox && !isTextEditing && !isTaskDetails && (!this.data.expanded || !isTaskHeader)) {
         e.stopPropagation();
         e.preventDefault();
+        // Если задача не развернута, разворачиваем её
+        if (!this.data.expanded) {
+          this.data.expanded = true;
+          this.updateRender();
+          this.updateData();
+        }
+        // Если задача развернута и клик не на заголовке, сворачиваем её
+        else if (!isTaskHeader) {
+          this.data.expanded = false;
+          this.updateRender();
+          this.updateData();
+        }
       }
-    }, true); // Используем capturing phase
+    }, true);
     
     // Создаем чекбокс
     const checkbox = document.createElement('div');
     checkbox.classList.add('task-checkbox');
-    checkbox.innerHTML = this.data.checked 
-      ? '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="18" rx="9" fill="#007AFF"/><path d="M5 9L8 12L13 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-      : '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="9" r="8" stroke="#C7C7CC" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+    
+    // Создаем внутренний элемент чекбокса с уникальными классами
+    const checkboxCheck = document.createElement('span');
+    checkboxCheck.classList.add('task-checkbox-check');
+    checkbox.appendChild(checkboxCheck);
+    
+    // Добавляем класс для отмеченного состояния
+    if (this.data.checked) {
+      checkbox.classList.add('task-checkbox-checked');
+    }
     
     // Останавливаем всплытие события на всех возможных фазах
     checkbox.onpointerdown = (e) => {
@@ -136,7 +167,8 @@ export default class TaskTool implements BlockTool {
     if (this.data.checked) {
       taskText.classList.add('task-text-completed');
     }
-    taskText.contentEditable = !this.readOnly ? 'true' : 'false';
+    // Делаем текст редактируемым только когда задача раскрыта
+    taskText.contentEditable = !this.readOnly && this.data.expanded ? 'true' : 'false';
     taskText.innerHTML = this.data.text || '';
     
     // Предотвращаем создание новых задач при нажатии Enter
@@ -155,9 +187,9 @@ export default class TaskTool implements BlockTool {
       this.updateData();
     };
     
-    // Предотвращаем обработку кликов, кроме как для установки фокуса
+    // Предотвращаем обработку кликов только когда задача раскрыта
     taskText.onclick = (e) => {
-      if (document.activeElement !== taskText) {
+      if (this.data.expanded && document.activeElement !== taskText) {
         e.stopPropagation();
       }
     };
@@ -165,39 +197,8 @@ export default class TaskTool implements BlockTool {
     // Также делаем его не перетаскиваемым
     taskText.draggable = false;
     
-    // Создаем кнопку для раскрытия/сворачивания задачи
-    const toggleButton = document.createElement('button');
-    toggleButton.className = 'task-toggle-btn';
-    toggleButton.type = 'button';
-    toggleButton.innerHTML = this.data.expanded 
-      ? '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>'
-      : '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>';
-    
-    // Останавливаем всплытие события на всех возможных фазах
-    toggleButton.onpointerdown = (e) => {
-      if (e) e.stopPropagation();
-    };
-    
-    toggleButton.onmousedown = (e) => {
-      if (e) e.stopPropagation();
-    };
-    
-    toggleButton.onclick = (e) => {
-      if (e) {
-        e.stopPropagation();
-        e.preventDefault();
-      }
-      this.data.expanded = !this.data.expanded;
-      this.updateRender();
-      this.updateData();
-    };
-    
-    // Также делаем его не перетаскиваемым
-    toggleButton.draggable = false;
-    
     taskHeader.appendChild(checkbox);
     taskHeader.appendChild(taskText);
-    taskHeader.appendChild(toggleButton);
     
     this._element.appendChild(taskHeader);
     
@@ -207,6 +208,12 @@ export default class TaskTool implements BlockTool {
     
     // Если задача раскрыта, показываем детали
     if (this.data.expanded) {
+      // Добавляем обработчик клика вне задачи, если его еще нет
+      if (!this._outsideClickHandler) {
+        this._outsideClickHandler = this.handleOutsideClick.bind(this);
+        document.addEventListener('click', this._outsideClickHandler);
+      }
+      
       // Добавляем класс для анимации
       setTimeout(() => {
         taskDetails.classList.add('task-details-expanded');
@@ -305,9 +312,11 @@ export default class TaskTool implements BlockTool {
     
     if (checkbox && taskText) {
       // Обновляем чекбокс
-      checkbox.innerHTML = this.data.checked 
-        ? '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><rect width="18" height="18" rx="9" fill="#007AFF"/><path d="M5 9L8 12L13 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
-        : '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><circle cx="9" cy="9" r="8" stroke="#C7C7CC" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+      if (this.data.checked) {
+        checkbox.classList.add('task-checkbox-checked');
+      } else {
+        checkbox.classList.remove('task-checkbox-checked');
+      }
       
       // Обновляем стиль текста
       if (this.data.checked) {
@@ -315,14 +324,153 @@ export default class TaskTool implements BlockTool {
       } else {
         taskText.classList.remove('task-text-completed');
       }
+      
+      // Обновляем редактируемость текста в зависимости от состояния развернутости
+      (taskText as HTMLElement).contentEditable = !this.readOnly && this.data.expanded ? 'true' : 'false';
     }
     
-    // Делаем полную перерисовку при изменении состояния развернутости
-    const oldElement = this._element;
-    this._element = document.createElement('div');
-    this.render();
-    if (oldElement && oldElement.parentElement) {
-      oldElement.replaceWith(this._element);
+    // Обновляем состояние развернутости без полной перерисовки
+    const taskDetails = this._element.querySelector('.task-details');
+    if (taskDetails) {
+      if (this.data.expanded) {
+        // Добавляем обработчик клика вне задачи, если его еще нет
+        if (!this._outsideClickHandler) {
+          this._outsideClickHandler = this.handleOutsideClick.bind(this);
+          document.addEventListener('click', this._outsideClickHandler);
+        }
+        
+        // Небольшая задержка для анимации
+        setTimeout(() => {
+          taskDetails.classList.add('task-details-expanded');
+        }, 10);
+        
+        // Если детали еще не созданы, создаем их
+        if (taskDetails.children.length === 0) {
+          // Создаем поле для описания
+          const taskDescription = document.createElement('div');
+          taskDescription.classList.add('task-description');
+          taskDescription.contentEditable = !this.readOnly ? 'true' : 'false';
+          taskDescription.dataset.placeholder = 'Добавить описание...';
+          taskDescription.innerHTML = this.data.description || '';
+          
+          taskDescription.addEventListener('blur', (event) => {
+            if (taskDescription && taskDescription.innerHTML !== undefined) {
+              this.data.description = taskDescription.innerHTML;
+              this.updateData();
+            }
+          });
+          
+          // Создаем панель с кнопками
+          const taskControls = document.createElement('div');
+          taskControls.classList.add('task-controls');
+          
+          // Кнопка для дедлайна
+          const deadlineButton = document.createElement('button');
+          deadlineButton.classList.add('task-control-btn');
+          deadlineButton.title = 'Установить дедлайн';
+          deadlineButton.innerHTML = this.renderIcon(Calendar);
+          
+          if (this.data.deadline) {
+            const deadlineLabel = document.createElement('span');
+            deadlineLabel.textContent = this.data.deadline;
+            deadlineButton.appendChild(deadlineLabel);
+          }
+          
+          // Кнопка для назначения ответственных
+          const assignButton = document.createElement('button');
+          assignButton.classList.add('task-control-btn');
+          assignButton.innerHTML = this.renderIcon(Users);
+          assignButton.title = 'Назначить ответственных';
+          
+          const assignText = document.createElement('span');
+          assignText.textContent = 'Ответственные';
+          assignButton.appendChild(assignText);
+          
+          // Кнопка для напоминания
+          const reminderButton = document.createElement('button');
+          reminderButton.classList.add('task-control-btn');
+          reminderButton.title = 'Установить напоминание';
+          reminderButton.innerHTML = this.renderIcon(Clock);
+          
+          if (this.data.reminder) {
+            const reminderLabel = document.createElement('span');
+            reminderLabel.textContent = this.data.reminder;
+            reminderButton.appendChild(reminderLabel);
+          }
+          
+          // Кнопка для удаления
+          const deleteButton = document.createElement('button');
+          deleteButton.classList.add('task-control-btn', 'task-delete-btn');
+          deleteButton.title = 'Удалить задачу';
+          deleteButton.innerHTML = this.renderIcon(Trash2);
+          
+          deleteButton.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
+              this.api.blocks.delete();
+            }
+          });
+          
+          // Добавляем все кнопки к панели управления
+          taskControls.appendChild(deadlineButton);
+          taskControls.appendChild(assignButton);
+          taskControls.appendChild(reminderButton);
+          taskControls.appendChild(deleteButton);
+          
+          // Добавляем все элементы к деталям задачи
+          taskDetails.appendChild(taskDescription);
+          taskDetails.appendChild(taskControls);
+        }
+      } else {
+        // Удаляем обработчик клика вне задачи, если он есть
+        if (this._outsideClickHandler) {
+          document.removeEventListener('click', this._outsideClickHandler);
+          this._outsideClickHandler = null;
+        }
+        
+        taskDetails.classList.remove('task-details-expanded');
+      }
+    }
+  }
+
+  // Обработчик клика вне задачи
+  private handleOutsideClick(e: MouseEvent) {
+    // Сначала проверяем, если клик был внутри задачи, не делаем ничего
+    if (this._element && this._element.contains(e.target as Node)) {
+      return; // Клик внутри задачи, не закрываем
+    }
+    
+    // Если клик был вне задачи, проверяем исключения
+    const target = e.target as HTMLElement;
+    
+    // Игнорируем если клик был на диалоге, меню или модальном окне
+    const isOnModalOrDialog = 
+      target.closest('dialog') || 
+      target.closest('[role="dialog"]') || 
+      target.closest('[role="menu"]') || 
+      target.closest('.modal') ||
+      target.closest('.popup');
+    
+    // Проверяем, не происходит ли сейчас редактирование текста где-то
+    const isActiveEditing = document.activeElement && 
+      (document.activeElement.tagName === 'INPUT' || 
+       document.activeElement.tagName === 'TEXTAREA' ||
+       (document.activeElement as HTMLElement).contentEditable === 'true');
+    
+    // Проверяем, не был ли клик на календаре или другом компоненте выбора даты
+    const isOnDatePicker = 
+      target.closest('.date-picker') || 
+      target.closest('.calendar') || 
+      target.closest('.datepicker');
+    
+    // Если клик не на модальном элементе и нет активного редактирования, тогда закрываем
+    if (!isOnModalOrDialog && !isActiveEditing && !isOnDatePicker) {
+      // Если задача развернута, сворачиваем её
+      if (this.data.expanded) {
+        this.data.expanded = false;
+        this.updateRender();
+        this.updateData();
+      }
     }
   }
 
@@ -390,15 +538,23 @@ export default class TaskTool implements BlockTool {
           border-radius: 8px;
           background-color: rgba(255, 255, 255, 0.4);
           border: 1px solid rgba(0, 0, 0, 0.05);
-        //   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
-        //   transition: box-shadow 0.2s ease, transform 0.1s ease;
           overflow: hidden;
+          cursor: pointer;
+          transition: background-color 0.15s ease, border-color 0.3s ease;
+          will-change: transform, opacity;
+        }
+        
+        .task-tool:hover {
+          background-color: rgba(0, 0, 0, 0.015);
         }
         
         .dark .task-tool {
           background-color: rgba(30, 30, 30, 0.3);
           border: 1px solid rgba(255, 255, 255, 0.05);
-        //   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .dark .task-tool:hover {
+          background-color: rgba(255, 255, 255, 0.02);
         }
         
         .task-header {
@@ -407,16 +563,33 @@ export default class TaskTool implements BlockTool {
           padding: 14px 16px;
           border-radius: 6px;
           cursor: pointer;
-          transition: background-color 0.15s ease;
+          transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+          position: relative;
         }
         
-        // .task-header:hover {
-        //   background-color: rgba(0, 0, 0, 0.015);
-        // }
+        .task-header:after {
+          content: '';
+          position: absolute;
+          right: 16px;
+          top: 50%;
+          transform: translateY(-50%) rotate(0deg);
+          width: 12px;
+          height: 12px;
+          // background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8A8A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          // background-repeat: no-repeat;
+          // background-position: center;
+          opacity: 0.6;
+          transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+        }
         
-        // .dark .task-header:hover {
-        //   background-color: rgba(255, 255, 255, 0.02);
-        // }
+        .dark .task-header:after {
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23AAAAAA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+        }
+        
+        .task-tool:has(.task-details-expanded) .task-header:after {
+          transform: translateY(-50%) rotate(180deg);
+          opacity: 0.9;
+        }
         
         .task-checkbox {
           display: flex;
@@ -424,15 +597,69 @@ export default class TaskTool implements BlockTool {
           justify-content: center;
           margin-right: 12px;
           flex-shrink: 0;
-          color: #007AFF;
           cursor: pointer;
           width: 20px;
           height: 20px;
-          transition: transform 0.15s ease;
+          transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+          position: relative;
+          width: 16px;
+          height: 16px;
+          border: 1px solid rgba(0, 0, 0, 0.25);
+          border-radius: 3px;
+          background-color: #fff;
+          transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        
+        .dark .task-checkbox {
+          border-color: rgba(255, 255, 255, 0.25);
+          background-color: rgba(255, 255, 255, 0.05);
         }
         
         .task-checkbox:hover {
           transform: scale(1.1);
+          border-color: rgba(0, 0, 0, 0.4);
+        }
+        
+        .dark .task-checkbox:hover {
+          border-color: rgba(255, 255, 255, 0.4);
+        }
+        
+        .task-checkbox-checked {
+          background-color: #007AFF;
+          border-color: #007AFF;
+        }
+        
+        .task-checkbox-checked:hover {
+          background-color: #0068D6;
+          border-color: #0068D6;
+        }
+        
+        .dark .task-checkbox-checked {
+          background-color: #0A84FF;
+          border-color: #0A84FF;
+        }
+        
+        .dark .task-checkbox-checked:hover {
+          background-color: #0070D6;
+          border-color: #0070D6;
+        }
+        
+        .task-checkbox-check {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          opacity: 0;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-size: 10px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='8' viewBox='0 0 10 8' fill='none'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M9.70704 0.292923C10.0975 0.683446 10.0975 1.31661 9.70704 1.70713L3.70704 7.70713C3.31652 8.09766 2.68335 8.09766 2.29283 7.70713L0.292831 5.70713C-0.0976909 5.31661 -0.0976909 4.68345 0.292831 4.29292C0.683352 3.9024 1.31652 3.9024 1.70704 4.29292L3.00004 5.58586L8.29283 0.292923C8.68335 -0.0975985 9.31652 -0.0975985 9.70704 0.292923Z' fill='white'/%3E%3C/svg%3E");
+          transition: opacity 0.15s ease;
+        }
+        
+        .task-checkbox-checked .task-checkbox-check {
+          opacity: 1;
         }
         
         .task-text {
@@ -445,68 +672,51 @@ export default class TaskTool implements BlockTool {
           color: #000;
           font-weight: 400;
           padding: 2px 0;
+          margin-right: 28px; /* Оставляем место для стрелки */
+          transition: color 0.2s ease;
+        }
+        
+        /* Стиль для неразвернутого состояния, чтобы было понятно что текст нельзя редактировать */
+        .task-tool:not(:has(.task-details-expanded)) .task-text {
+          cursor: pointer;
+        }
+        
+        /* Стиль для развернутого состояния */
+        .task-tool:has(.task-details-expanded) .task-text {
+          cursor: text;
         }
         
         .dark .task-text {
           color: #FFF;
         }
         
-        .task-toggle-btn {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: transparent;
-          border: none;
-          width: 24px;
-          height: 24px;
-          padding: 0;
-          margin-left: 8px;
-          border-radius: 4px;
-          color: #8A8A8A;
-          cursor: pointer;
-          opacity: 0.5;
-          transition: all 0.15s ease;
-          flex-shrink: 0;
-        }
-        
-        // .task-toggle-btn:hover {
-        //   background-color: rgba(0, 0, 0, 0.06);
-        //   opacity: 0.8;
-        // }
-        
-        // .dark .task-toggle-btn:hover {
-        //    background-color: rgba(255, 255, 255, 0.06);
-        // }
-        
         .task-details {
-        //   border-top: 1px solid rgba(0, 0, 0, 0.04);
+          padding: 0px 16px 0px 48px;
           margin-top: 0;
-        //   background-color: rgba(0, 0, 0, 0.01);
           max-height: 0;
           overflow: hidden;
-        //   transition: all 0.3s ease;
           opacity: 0;
+          transform: translateY(-8px);
+          transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
-        
-        .dark .task-details {
-        //   border-top: 1px solid rgba(255, 255, 255, 0.04);
-        //   background-color: rgba(255, 255, 255, 0.01);
-        }
+      
         
         .task-details-expanded {
-          padding: 0px 16px 16px 48px;
+          padding: 16px 16px 16px 48px;
           max-height: 500px;
           opacity: 1;
+          transform: translateY(0);
         }
         
         .task-description {
           font-size: 14px;
           color: #6F6F6F;
           line-height: 1.5;
-          margin: 12px 0 20px 0;
+          margin: 0px 0 20px 0;
           outline: none;
           min-height: 21px;
           padding: 0;
+          transition: opacity 0.3s ease;
         }
         
         .dark .task-description {
