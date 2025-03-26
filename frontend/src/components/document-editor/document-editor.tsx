@@ -18,6 +18,9 @@ import EditorJS from "@editorjs/editorjs"
 import Header from "@editorjs/header"
 import List from "@editorjs/list"
 import Image from "@editorjs/image"
+import { TaskModalsProvider, useTaskModals, TaskModalsContextType } from "@/components/tasks/task-modals-provider"
+import { GlobalTaskModals } from "@/components/tasks/global-task-modals"
+import React from "react"
 
 // Добавляем глобальные стили для курсоров
 import "./remote-cursor.css"
@@ -1662,32 +1665,35 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
   }, [documentData.id, setupWs]);
 
   return (
-    <div className="flex flex-col w-full h-full bg-white overflow-y-auto">
-      <div className="flex items-center justify-between mx-auto w-full" style={{ maxWidth: '650px', padding: '20px 0' }}>
-        <Input
-          className="border-none text-3xl font-bold focus-visible:ring-0 p-0 h-auto"
-          placeholder="Untitled"
-          value={title}
-          onChange={handleTitleChange}
-          ref={titleInputRef as any}
-          autoFocus={false}
-        />
-      </div>
-      
-      {/* Контейнер редактора с ref и оверлеем курсоров */}
-      <div 
-        ref={editorContainerRef}
-        className="flex-1 editor-container relative" 
-        style={{ position: 'relative', minHeight: '300px' }}
-      >
-        <div ref={editorRef} className="min-h-full" />
+    <TaskModalsProvider>
+      <GlobalTaskModals />
+      <div className="flex flex-col h-full relative">
+        <div className="flex items-center justify-between mx-auto w-full" style={{ maxWidth: '650px', padding: '20px 0' }}>
+          <Input
+            className="border-none text-3xl font-bold focus-visible:ring-0 p-0 h-auto"
+            placeholder="Untitled"
+            value={title}
+            onChange={handleTitleChange}
+            ref={titleInputRef as any}
+            autoFocus={false}
+          />
+        </div>
         
-        {/* Компонент для отображения курсоров */}
-        <CursorOverlay 
-          cursors={remoteCursors} 
-          containerRef={editorContainerRef} 
-        />
+        {/* Контейнер редактора с ref и оверлеем курсоров */}
+        <div 
+          ref={editorContainerRef}
+          className="flex-1 editor-container relative" 
+          style={{ position: 'relative', minHeight: '300px' }}
+        >
+          <div ref={editorRef} className="min-h-full" />
+          
+          {/* Компонент для отображения курсоров */}
+          <CursorOverlay 
+            cursors={remoteCursors} 
+            containerRef={editorContainerRef} 
+          />
+        </div>
       </div>
-    </div>
+    </TaskModalsProvider>
   );
 }

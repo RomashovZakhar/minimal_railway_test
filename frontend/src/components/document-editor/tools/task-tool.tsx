@@ -1,5 +1,7 @@
 import React from 'react';
 import { Calendar, Clock, Trash2, Users } from 'lucide-react';
+import { format as formatDate } from 'date-fns';
+import { ru } from 'date-fns/locale';
 
 // Определяем пользовательские типы для инструмента
 interface API {
@@ -10,19 +12,34 @@ interface API {
   };
 }
 
+interface User {
+  id: string;
+  name: string;
+}
+
 interface BlockToolData {
-  text?: string;
-  checked?: boolean;
+  text: string;
+  checked: boolean;
+  expanded: boolean;
   description?: string;
-  deadline?: string;
-  assignees?: string[];
-  reminder?: string;
-  expanded?: boolean;
+  deadline?: string;  // ISO формат даты
+  reminder?: string;  // ISO формат даты
+  assignees?: User[];  // Ответственные
 }
 
 interface BlockTool {
   save: () => unknown;
   render: () => HTMLElement;
+}
+
+interface TaskStatistics {
+  createdAt: string;  // Дата создания задачи
+  editorCount: number;  // Количество редакторов
+  totalDocuments: number;  // Общее количество документов
+  totalTasks: number;  // Общее количество задач
+  completedTasks: number;  // Количество выполненных задач
+  overdueCount: number;  // Количество просроченных задач
+  topContributor?: string;  // Имя самого активного участника
 }
 
 export default class TaskTool implements BlockTool {
@@ -245,9 +262,45 @@ export default class TaskTool implements BlockTool {
       
       if (this.data.deadline) {
         const deadlineLabel = document.createElement('span');
-        deadlineLabel.textContent = this.data.deadline;
+        deadlineLabel.textContent = this.formatDate(this.data.deadline);
         deadlineButton.appendChild(deadlineLabel);
       }
+      
+      // Обработчик для кнопки дедлайна
+      deadlineButton.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        console.log('Клик по кнопке дедлайна');
+        
+        // Используем внешнюю функцию (провайдер модальных окон)
+        if (typeof window !== 'undefined' && (window as any).__taskModals) {
+          console.log('window.__taskModals найден:', (window as any).__taskModals);
+          
+          try {
+            // Вызываем открытие модального окна дедлайна
+            (window as any).__taskModals.openDeadlineModal(
+              'current-task-id', // ID задачи
+              this.data.deadline, // Текущий дедлайн
+              (newDeadline: string) => {
+                // Callback для сохранения результата
+                console.log('Сохраняем новый дедлайн:', newDeadline);
+                if (newDeadline) {
+                  this.data.deadline = newDeadline;
+                } else {
+                  this.data.deadline = undefined;
+                }
+                this.updateRender();
+                this.updateData();
+              }
+            );
+          } catch (error) {
+            console.error('Ошибка при открытии модального окна дедлайна:', error);
+            alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+          }
+        } else {
+          console.error('window.__taskModals не найден');
+          alert('Модальное окно выбора даты недоступно. Обратитесь к администратору.');
+        }
+      });
       
       // Кнопка для назначения ответственных
       const assignButton = document.createElement('button');
@@ -255,9 +308,54 @@ export default class TaskTool implements BlockTool {
       assignButton.innerHTML = this.renderIcon(Users);
       assignButton.title = 'Назначить ответственных';
       
+      // Показываем текущих ответственных
       const assignText = document.createElement('span');
-      assignText.textContent = 'Ответственные';
+      if (this.data.assignees && this.data.assignees.length > 0) {
+        assignText.textContent = `Ответственных: ${this.data.assignees.length}`;
+      } else {
+        assignText.textContent = 'Ответственные';
+      }
       assignButton.appendChild(assignText);
+      
+      // Обработчик для кнопки ответственных
+      assignButton.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        console.log('Клик по кнопке ответственных');
+        
+        // Используем внешнюю функцию (провайдер модальных окон)
+        if (typeof window !== 'undefined' && (window as any).__taskModals) {
+          console.log('window.__taskModals найден:', (window as any).__taskModals);
+          
+          try {
+            // Получаем список доступных пользователей (в реальном приложении будет запрос к API)
+            const availableUsers = [
+              { id: 'user-1', name: 'Иван Иванов', email: 'ivan@example.com' },
+              { id: 'user-2', name: 'Петр Петров', email: 'petr@example.com' },
+              { id: 'user-3', name: 'Мария Сидорова', email: 'maria@example.com' },
+            ];
+            
+            // Вызываем открытие модального окна выбора ответственных
+            (window as any).__taskModals.openAssigneesModal(
+              'current-task-id', // ID задачи
+              this.data.assignees || [], // Текущие ответственные
+              availableUsers, // Доступные пользователи
+              (newAssignees: User[]) => {
+                // Callback для сохранения результата
+                console.log('Сохраняем новых ответственных:', newAssignees);
+                this.data.assignees = newAssignees;
+                this.updateRender();
+                this.updateData();
+              }
+            );
+          } catch (error) {
+            console.error('Ошибка при открытии модального окна ответственных:', error);
+            alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+          }
+        } else {
+          console.error('window.__taskModals не найден');
+          alert('Модальное окно выбора ответственных недоступно. Обратитесь к администратору.');
+        }
+      });
       
       // Кнопка для напоминания
       const reminderButton = document.createElement('button');
@@ -267,9 +365,45 @@ export default class TaskTool implements BlockTool {
       
       if (this.data.reminder) {
         const reminderLabel = document.createElement('span');
-        reminderLabel.textContent = this.data.reminder;
+        reminderLabel.textContent = this.formatDate(this.data.reminder);
         reminderButton.appendChild(reminderLabel);
       }
+      
+      // Обработчик для кнопки напоминания
+      reminderButton.addEventListener('click', (e: Event) => {
+        e.stopPropagation();
+        console.log('Клик по кнопке напоминания');
+        
+        // Используем внешнюю функцию (провайдер модальных окон)
+        if (typeof window !== 'undefined' && (window as any).__taskModals) {
+          console.log('window.__taskModals найден:', (window as any).__taskModals);
+          
+          try {
+            // Вызываем открытие модального окна напоминания
+            (window as any).__taskModals.openReminderModal(
+              'current-task-id', // ID задачи
+              this.data.reminder, // Текущее напоминание
+              (newReminder: string) => {
+                // Callback для сохранения результата
+                console.log('Сохраняем новое напоминание:', newReminder);
+                if (newReminder) {
+                  this.data.reminder = newReminder;
+                } else {
+                  this.data.reminder = undefined;
+                }
+                this.updateRender();
+                this.updateData();
+              }
+            );
+          } catch (error) {
+            console.error('Ошибка при открытии модального окна напоминания:', error);
+            alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+          }
+        } else {
+          console.error('window.__taskModals не найден');
+          alert('Модальное окно выбора даты напоминания недоступно. Обратитесь к администратору.');
+        }
+      });
       
       // Кнопка для удаления
       const deleteButton = document.createElement('button');
@@ -329,6 +463,59 @@ export default class TaskTool implements BlockTool {
       (taskText as HTMLElement).contentEditable = !this.readOnly && this.data.expanded ? 'true' : 'false';
     }
     
+    // Обновляем состояние дедлайна
+    const deadlineButton = this._element.querySelector('.task-control-btn[title="Установить дедлайн"]');
+    if (deadlineButton) {
+      // Очищаем существующую метку дедлайна
+      const existingLabel = deadlineButton.querySelector('span');
+      if (existingLabel) {
+        existingLabel.remove();
+      }
+      
+      // Добавляем новую метку, если дедлайн установлен
+      if (this.data.deadline) {
+        const deadlineLabel = document.createElement('span');
+        deadlineLabel.textContent = this.formatDate(this.data.deadline);
+        deadlineButton.appendChild(deadlineLabel);
+      }
+    }
+    
+    // Обновляем состояние напоминания
+    const reminderButton = this._element.querySelector('.task-control-btn[title="Установить напоминание"]');
+    if (reminderButton) {
+      // Очищаем существующую метку напоминания
+      const existingLabel = reminderButton.querySelector('span');
+      if (existingLabel) {
+        existingLabel.remove();
+      }
+      
+      // Добавляем новую метку, если напоминание установлено
+      if (this.data.reminder) {
+        const reminderLabel = document.createElement('span');
+        reminderLabel.textContent = this.formatDate(this.data.reminder);
+        reminderButton.appendChild(reminderLabel);
+      }
+    }
+    
+    // Обновляем информацию о назначенных ответственных
+    const assignButton = this._element.querySelector('.task-control-btn[title="Назначить ответственных"]');
+    if (assignButton) {
+      // Очищаем существующую метку
+      const existingLabel = assignButton.querySelector('span');
+      if (existingLabel) {
+        existingLabel.remove();
+      }
+      
+      // Добавляем новую метку с информацией о количестве ответственных
+      const assignText = document.createElement('span');
+      if (this.data.assignees && this.data.assignees.length > 0) {
+        assignText.textContent = `Ответственных: ${this.data.assignees.length}`;
+      } else {
+        assignText.textContent = 'Ответственные';
+      }
+      assignButton.appendChild(assignText);
+    }
+    
     // Обновляем состояние развернутости без полной перерисовки
     const taskDetails = this._element.querySelector('.task-details');
     if (taskDetails) {
@@ -372,7 +559,7 @@ export default class TaskTool implements BlockTool {
           
           if (this.data.deadline) {
             const deadlineLabel = document.createElement('span');
-            deadlineLabel.textContent = this.data.deadline;
+            deadlineLabel.textContent = this.formatDate(this.data.deadline);
             deadlineButton.appendChild(deadlineLabel);
           }
           
@@ -383,7 +570,11 @@ export default class TaskTool implements BlockTool {
           assignButton.title = 'Назначить ответственных';
           
           const assignText = document.createElement('span');
-          assignText.textContent = 'Ответственные';
+          if (this.data.assignees && this.data.assignees.length > 0) {
+            assignText.textContent = `Ответственных: ${this.data.assignees.length}`;
+          } else {
+            assignText.textContent = 'Ответственные';
+          }
           assignButton.appendChild(assignText);
           
           // Кнопка для напоминания
@@ -394,7 +585,7 @@ export default class TaskTool implements BlockTool {
           
           if (this.data.reminder) {
             const reminderLabel = document.createElement('span');
-            reminderLabel.textContent = this.data.reminder;
+            reminderLabel.textContent = this.formatDate(this.data.reminder);
             reminderButton.appendChild(reminderLabel);
           }
           
@@ -474,36 +665,24 @@ export default class TaskTool implements BlockTool {
     }
   }
 
-  // Метод для получения текущих данных
+  // Метод для сохранения данных
   save() {
-    return this.data;
+    return {
+      text: this.data.text,
+      checked: this.data.checked,
+      expanded: this.data.expanded,
+      description: this.data.description,
+      deadline: this.data.deadline,
+      reminder: this.data.reminder,
+      assignees: this.data.assignees || []
+    };
   }
 
   // Метод для обновления данных в API
   updateData() {
-    // Приводим наши данные к типу, ожидаемому API
-    const dataToUpdate = { 
-      text: this.data.text,
-      checked: this.data.checked,
-      description: this.data.description,
-      deadline: this.data.deadline,
-      assignees: this.data.assignees,
-      reminder: this.data.reminder,
-      expanded: this.data.expanded
-    } as Record<string, unknown>;
-    
-    try {
-      // Поскольку EditorJS API ожидает индекс блока, используем getCurrentBlockIndex
-      const currentBlockIndex = this.api.blocks.getCurrentBlockIndex();
-      if (currentBlockIndex !== undefined) {
-        // Преобразуем индекс в строку, так как API ожидает строковый параметр
-        this.api.blocks.update(String(currentBlockIndex), dataToUpdate);
-      } else {
-        console.warn('Не удалось получить индекс текущего блока задачи');
-      }
-    } catch (error) {
-      console.error('Ошибка при обновлении данных задачи:', error);
-    }
+    // Обновляем блок данных в EditorJS
+    const blockIndex = this.api.blocks.getCurrentBlockIndex();
+    this.api.blocks.update(blockIndex.toString(), this.data as unknown as Record<string, unknown>);
   }
 
   // Вспомогательный метод для рендеринга иконок из lucide-react
@@ -540,12 +719,18 @@ export default class TaskTool implements BlockTool {
           border: 1px solid rgba(0, 0, 0, 0.05);
           overflow: hidden;
           cursor: pointer;
-          transition: background-color 0.15s ease, border-color 0.3s ease;
+          transition: background-color 0.15s ease, border-color 0.3s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.2s ease;
           will-change: transform, opacity;
         }
         
         .task-tool:hover {
           background-color: rgba(0, 0, 0, 0.015);
+          transform: translateY(-1px);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+        
+        .task-tool:active {
+          transform: translateY(0);
         }
         
         .dark .task-tool {
@@ -555,6 +740,7 @@ export default class TaskTool implements BlockTool {
         
         .dark .task-tool:hover {
           background-color: rgba(255, 255, 255, 0.02);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
         }
         
         .task-header {
@@ -565,6 +751,15 @@ export default class TaskTool implements BlockTool {
           cursor: pointer;
           transition: all 0.2s cubic-bezier(0.25, 1, 0.5, 1);
           position: relative;
+          user-select: none;
+        }
+        
+        .task-header:hover {
+          background-color: rgba(0, 0, 0, 0.03);
+        }
+        
+        .dark .task-header:hover {
+          background-color: rgba(255, 255, 255, 0.05);
         }
         
         .task-header:after {
@@ -573,17 +768,17 @@ export default class TaskTool implements BlockTool {
           right: 16px;
           top: 50%;
           transform: translateY(-50%) rotate(0deg);
-          width: 12px;
-          height: 12px;
-          // background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238A8A8A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-          // background-repeat: no-repeat;
-          // background-position: center;
+          width: 14px;
+          height: 14px;
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238A8A8A' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-repeat: no-repeat;
+          background-position: center;
           opacity: 0.6;
           transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
         }
         
         .dark .task-header:after {
-          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23AAAAAA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+          background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23AAAAAA' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
         }
         
         .task-tool:has(.task-details-expanded) .task-header:after {
@@ -743,8 +938,8 @@ export default class TaskTool implements BlockTool {
         .task-control-btn {
           display: inline-flex;
           align-items: center;
-          gap: 6px;
-          padding: 5px 10px;
+          gap: 8px;
+          padding: 6px 12px;
           border-radius: 6px;
           font-size: 13px;
           font-weight: 500;
@@ -752,7 +947,7 @@ export default class TaskTool implements BlockTool {
           background: rgba(0, 0, 0, 0.03);
           border: 1px solid rgba(0, 0, 0, 0.05);
           cursor: pointer;
-          transition: all 0.15s ease;
+          transition: all 0.2s ease;
         }
         
         .dark .task-control-btn {
@@ -765,6 +960,7 @@ export default class TaskTool implements BlockTool {
           background: rgba(0, 0, 0, 0.07);
           color: #000;
           border-color: rgba(0, 0, 0, 0.1);
+          transform: translateY(-1px);
         }
         
         .dark .task-control-btn:hover {
@@ -774,7 +970,15 @@ export default class TaskTool implements BlockTool {
         }
         
         .task-control-btn:active {
-          transform: translateY(1px);
+          transform: translateY(0px);
+        }
+        
+        .task-control-btn span {
+          font-size: 12.5px;
+          white-space: nowrap;
+          max-width: 120px;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
         
         .task-delete-btn {
@@ -801,6 +1005,18 @@ export default class TaskTool implements BlockTool {
         }
       `;
       document.head.appendChild(styleElement);
+    }
+  }
+
+  // Метод для форматирования даты
+  private formatDate(dateString: string | undefined): string {
+    if (!dateString) return '';
+    
+    try {
+      const date = new Date(dateString);
+      return formatDate(date, 'dd MMM yyyy HH:mm', { locale: ru });
+    } catch (e) {
+      return '';
     }
   }
 } 
