@@ -1,5 +1,6 @@
 import * as React from "react"
 import { format, setHours, setMinutes } from "date-fns"
+import { ru } from "date-fns/locale"
 import { Calendar as CalendarIcon, Clock } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -65,7 +66,7 @@ export function DateTimePicker({
           <div className="flex items-center">
             <CalendarIcon className="mr-2 h-4 w-4" />
             {date ? (
-              format(date, "PPP HH:mm")
+              format(date, "PPP HH:mm", { locale: ru })
             ) : (
               <span>{placeholder}</span>
             )}
@@ -78,8 +79,9 @@ export function DateTimePicker({
           selected={date}
           onSelect={setDate}
           initialFocus
+          locale={ru}
         />
-        <div className="border-t border-border p-3">
+        <div className="border-t border-border px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
               <Clock className="h-4 w-4 text-muted-foreground" />
@@ -87,7 +89,7 @@ export function DateTimePicker({
             </div>
             <div className="flex items-center space-x-2">
               <select
-                className="h-8 w-16 rounded-md border border-input bg-background px-2 text-sm"
+                className="h-9 w-16 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 value={date ? date.getHours() : ""}
                 onChange={handleHourChange}
                 disabled={!date}
@@ -99,9 +101,9 @@ export function DateTimePicker({
                   </option>
                 ))}
               </select>
-              <span>:</span>
+              <span className="text-sm">:</span>
               <select
-                className="h-8 w-16 rounded-md border border-input bg-background px-2 text-sm"
+                className="h-9 w-16 rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
                 value={date ? Math.floor(date.getMinutes() / 5) * 5 : ""}
                 onChange={handleMinuteChange}
                 disabled={!date}

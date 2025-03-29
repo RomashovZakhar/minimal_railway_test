@@ -1,7 +1,7 @@
 import React from 'react';
-import { Calendar, Clock, Trash2, Users } from 'lucide-react';
+import { Calendar, Clock, Trash2, Users, Bell, UserCheck, AlertCircle } from 'lucide-react';
 import { format as formatDate } from 'date-fns';
-import { ru } from 'date-fns/locale';
+import api from '@/lib/api';
 
 // Определяем пользовательские типы для инструмента
 interface API {
@@ -54,7 +54,7 @@ export default class TaskTool implements BlockTool {
   static get toolbox() {
     return {
       title: 'Задача',
-      icon: '<svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M6 9L8 11L12 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      icon: '<svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="2" y="2" width="14" height="14" rx="2" stroke="currentColor" stroke-width="2" fill="none"/><path d="M6 9L8 11L12 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
     };
   }
   
@@ -103,339 +103,354 @@ export default class TaskTool implements BlockTool {
   }
 
   render() {
-    this._element.classList.add('task-tool');
-    // Добавляем атрибуты, которые сообщают EditorJS, что это специальный блок
-    this._element.dataset.skipActionsCheck = 'true';
-    this._element.dataset.noFocus = 'true';
-    this._element.draggable = false;
-    
-    const taskHeader = document.createElement('div');
-    taskHeader.classList.add('task-header');
-    taskHeader.draggable = false;
-    
-    // Обработчик для разворачивания/сворачивания задачи при клике на фрейм
-    this._element.addEventListener('click', (e) => {
-      // Проверяем, что клик не был на чекбоксе или редактируемом тексте
-      const target = e.target as HTMLElement;
-      const isCheckbox = target.closest('.task-checkbox');
-      const isTextEditing = target.closest('.task-text') && document.activeElement === target.closest('.task-text');
-      // Проверяем, был ли клик внутри блока деталей
-      const isTaskDetails = target.closest('.task-details') !== null;
-      // Проверяем, был ли клик на заголовке
-      const isTaskHeader = target.closest('.task-header') !== null;
+    try {
+      this._element.classList.add('task-tool');
+      // Добавляем атрибуты, которые сообщают EditorJS, что это специальный блок
+      this._element.dataset.skipActionsCheck = 'true';
+      this._element.dataset.noFocus = 'true';
+      this._element.draggable = false;
       
-      // Если клик не на чекбоксе, не на редактируемом тексте, не внутри блока деталей,
-      // и задача ещё не развернута, разворачиваем её
-      if (!isCheckbox && !isTextEditing && !isTaskDetails && (!this.data.expanded || !isTaskHeader)) {
-        e.stopPropagation();
-        e.preventDefault();
-        // Если задача не развернута, разворачиваем её
-        if (!this.data.expanded) {
-          this.data.expanded = true;
-          this.updateRender();
-          this.updateData();
-        }
-        // Если задача развернута и клик не на заголовке, сворачиваем её
-        else if (!isTaskHeader) {
-          this.data.expanded = false;
-          this.updateRender();
-          this.updateData();
-        }
-      }
-    }, true);
-    
-    // Создаем чекбокс
-    const checkbox = document.createElement('div');
-    checkbox.classList.add('task-checkbox');
-    
-    // Создаем внутренний элемент чекбокса с уникальными классами
-    const checkboxCheck = document.createElement('span');
-    checkboxCheck.classList.add('task-checkbox-check');
-    checkbox.appendChild(checkboxCheck);
-    
-    // Добавляем класс для отмеченного состояния
-    if (this.data.checked) {
-      checkbox.classList.add('task-checkbox-checked');
-    }
-    
-    // Останавливаем всплытие события на всех возможных фазах
-    checkbox.onpointerdown = (e) => {
-      if (e) e.stopPropagation();
-    };
-    
-    checkbox.onmousedown = (e) => {
-      if (e) e.stopPropagation();
-    };
-    
-    checkbox.onclick = (e) => {
-      e.stopPropagation();
-      e.preventDefault();
-      this.data.checked = !this.data.checked;
-      this.updateRender();
-      this.updateData();
-    };
-    
-    // Также делаем его не перетаскиваемым
-    checkbox.draggable = false;
-    
-    // Создаем текстовое поле для названия задачи
-    const taskText = document.createElement('div');
-    taskText.classList.add('task-text');
-    if (this.data.checked) {
-      taskText.classList.add('task-text-completed');
-    }
-    // Делаем текст редактируемым только когда задача раскрыта
-    taskText.contentEditable = !this.readOnly && this.data.expanded ? 'true' : 'false';
-    taskText.innerHTML = this.data.text || '';
-    
-    // Предотвращаем создание новых задач при нажатии Enter
-    taskText.onkeydown = (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        e.stopPropagation();
-        return false;
-      }
-      return true;
-    };
-    
-    // Обработчик для сохранения текста при потере фокуса
-    taskText.onblur = () => {
-      this.data.text = taskText.innerHTML;
-      this.updateData();
-    };
-    
-    // Предотвращаем обработку кликов только когда задача раскрыта
-    taskText.onclick = (e) => {
-      if (this.data.expanded && document.activeElement !== taskText) {
-        e.stopPropagation();
-      }
-    };
-    
-    // Также делаем его не перетаскиваемым
-    taskText.draggable = false;
-    
-    taskHeader.appendChild(checkbox);
-    taskHeader.appendChild(taskText);
-    
-    this._element.appendChild(taskHeader);
-    
-    // Создаем блок деталей задачи
-    const taskDetails = document.createElement('div');
-    taskDetails.classList.add('task-details');
-    
-    // Если задача раскрыта, показываем детали
-    if (this.data.expanded) {
-      // Добавляем обработчик клика вне задачи, если его еще нет
-      if (!this._outsideClickHandler) {
-        this._outsideClickHandler = this.handleOutsideClick.bind(this);
-        document.addEventListener('click', this._outsideClickHandler);
-      }
+      const taskHeader = document.createElement('div');
+      taskHeader.classList.add('task-header');
+      taskHeader.draggable = false;
       
-      // Добавляем класс для анимации
-      setTimeout(() => {
-        taskDetails.classList.add('task-details-expanded');
-      }, 10);
-      
-      // Создаем поле для описания
-      const taskDescription = document.createElement('div');
-      taskDescription.classList.add('task-description');
-      taskDescription.contentEditable = !this.readOnly ? 'true' : 'false';
-      taskDescription.dataset.placeholder = 'Добавить описание...';
-      taskDescription.innerHTML = this.data.description || '';
-      
-      taskDescription.addEventListener('blur', (event) => {
-        if (taskDescription && taskDescription.innerHTML !== undefined) {
-          this.data.description = taskDescription.innerHTML;
-          this.updateData();
-        }
-      });
-      
-      // Создаем панель с кнопками
-      const taskControls = document.createElement('div');
-      taskControls.classList.add('task-controls');
-      
-      // Кнопка для дедлайна
-      const deadlineButton = document.createElement('button');
-      deadlineButton.classList.add('task-control-btn');
-      deadlineButton.title = 'Установить дедлайн';
-      deadlineButton.innerHTML = this.renderIcon(Calendar);
-      
-      if (this.data.deadline) {
-        const deadlineLabel = document.createElement('span');
-        deadlineLabel.textContent = this.formatDate(this.data.deadline);
-        deadlineButton.appendChild(deadlineLabel);
-      }
-      
-      // Обработчик для кнопки дедлайна
-      deadlineButton.addEventListener('click', (e: Event) => {
-        e.stopPropagation();
-        console.log('Клик по кнопке дедлайна');
+      // Обработчик для разворачивания/сворачивания задачи при клике на фрейм
+      this._element.addEventListener('click', (e) => {
+        // Проверяем, что клик не был на чекбоксе или редактируемом тексте
+        const target = e.target as HTMLElement;
+        const isCheckbox = target.closest('.task-checkbox');
+        const isTextEditing = target.closest('.task-text') && document.activeElement === target.closest('.task-text');
+        // Проверяем, был ли клик внутри блока деталей
+        const isTaskDetails = target.closest('.task-details') !== null;
+        // Проверяем, был ли клик на заголовке
+        const isTaskHeader = target.closest('.task-header') !== null;
         
-        // Используем внешнюю функцию (провайдер модальных окон)
-        if (typeof window !== 'undefined' && (window as any).__taskModals) {
-          console.log('window.__taskModals найден:', (window as any).__taskModals);
-          
-          try {
-            // Вызываем открытие модального окна дедлайна
-            (window as any).__taskModals.openDeadlineModal(
-              'current-task-id', // ID задачи
-              this.data.deadline, // Текущий дедлайн
-              (newDeadline: string) => {
-                // Callback для сохранения результата
-                console.log('Сохраняем новый дедлайн:', newDeadline);
-                if (newDeadline) {
-                  this.data.deadline = newDeadline;
-                } else {
-                  this.data.deadline = undefined;
-                }
-                this.updateRender();
-                this.updateData();
-              }
-            );
-          } catch (error) {
-            console.error('Ошибка при открытии модального окна дедлайна:', error);
-            alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+        // Если клик не на чекбоксе, не на редактируемом тексте, не внутри блока деталей,
+        // и задача ещё не развернута, разворачиваем её
+        if (!isCheckbox && !isTextEditing && !isTaskDetails && (!this.data.expanded || !isTaskHeader)) {
+          e.stopPropagation();
+          e.preventDefault();
+          // Если задача не развернута, разворачиваем её
+          if (!this.data.expanded) {
+            this.data.expanded = true;
+            this.updateRender();
+            this.updateData();
           }
-        } else {
-          console.error('window.__taskModals не найден');
-          alert('Модальное окно выбора даты недоступно. Обратитесь к администратору.');
+          // Если задача развернута и клик не на заголовке, сворачиваем её
+          else if (!isTaskHeader) {
+            this.data.expanded = false;
+            this.updateRender();
+            this.updateData();
+          }
         }
-      });
+      }, true);
       
-      // Кнопка для назначения ответственных
-      const assignButton = document.createElement('button');
-      assignButton.classList.add('task-control-btn');
-      assignButton.innerHTML = this.renderIcon(Users);
-      assignButton.title = 'Назначить ответственных';
+      // Создаем чекбокс
+      const checkbox = document.createElement('div');
+      checkbox.classList.add('task-checkbox');
       
-      // Показываем текущих ответственных
-      const assignText = document.createElement('span');
-      if (this.data.assignees && this.data.assignees.length > 0) {
-        assignText.textContent = `Ответственных: ${this.data.assignees.length}`;
-      } else {
-        assignText.textContent = 'Ответственные';
+      // Создаем внутренний элемент чекбокса с уникальными классами
+      const checkboxCheck = document.createElement('span');
+      checkboxCheck.classList.add('task-checkbox-check');
+      checkbox.appendChild(checkboxCheck);
+      
+      // Добавляем класс для отмеченного состояния
+      if (this.data.checked) {
+        checkbox.classList.add('task-checkbox-checked');
       }
-      assignButton.appendChild(assignText);
       
-      // Обработчик для кнопки ответственных
-      assignButton.addEventListener('click', (e: Event) => {
+      // Останавливаем всплытие события на всех возможных фазах
+      checkbox.onpointerdown = (e) => {
+        if (e) e.stopPropagation();
+      };
+      
+      checkbox.onmousedown = (e) => {
+        if (e) e.stopPropagation();
+      };
+      
+      checkbox.onclick = (e) => {
         e.stopPropagation();
-        console.log('Клик по кнопке ответственных');
+        e.preventDefault();
+        this.data.checked = !this.data.checked;
+        this.updateRender();
+        this.updateData();
+      };
+      
+      // Также делаем его не перетаскиваемым
+      checkbox.draggable = false;
+      
+      // Создаем текстовое поле для названия задачи
+      const taskText = document.createElement('div');
+      taskText.classList.add('task-text');
+      if (this.data.checked) {
+        taskText.classList.add('task-text-completed');
+      }
+      // Делаем текст редактируемым только когда задача раскрыта
+      taskText.contentEditable = !this.readOnly && this.data.expanded ? 'true' : 'false';
+      taskText.innerHTML = this.data.text || '';
+      
+      // Предотвращаем создание новых задач при нажатии Enter
+      taskText.onkeydown = (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+        return true;
+      };
+      
+      // Обработчик для сохранения текста при потере фокуса
+      taskText.onblur = () => {
+        this.data.text = taskText.innerHTML;
+        this.updateData();
+      };
+      
+      // Предотвращаем обработку кликов только когда задача раскрыта
+      taskText.onclick = (e) => {
+        if (this.data.expanded && document.activeElement !== taskText) {
+          e.stopPropagation();
+        }
+      };
+      
+      // Также делаем его не перетаскиваемым
+      taskText.draggable = false;
+      
+      taskHeader.appendChild(checkbox);
+      taskHeader.appendChild(taskText);
+      
+      this._element.appendChild(taskHeader);
+      
+      // Создаем блок деталей задачи
+      const taskDetails = document.createElement('div');
+      taskDetails.classList.add('task-details');
+      
+      // Если задача раскрыта, показываем детали
+      if (this.data.expanded) {
+        // Добавляем обработчик клика вне задачи, если его еще нет
+        if (!this._outsideClickHandler) {
+          this._outsideClickHandler = this.handleOutsideClick.bind(this);
+          document.addEventListener('click', this._outsideClickHandler);
+        }
         
-        // Используем внешнюю функцию (провайдер модальных окон)
-        if (typeof window !== 'undefined' && (window as any).__taskModals) {
-          console.log('window.__taskModals найден:', (window as any).__taskModals);
+        // Добавляем класс для анимации
+        setTimeout(() => {
+          taskDetails.classList.add('task-details-expanded');
+        }, 10);
+        
+        // Создаем поле для описания
+        const taskDescription = document.createElement('div');
+        taskDescription.classList.add('task-description');
+        taskDescription.contentEditable = !this.readOnly ? 'true' : 'false';
+        taskDescription.dataset.placeholder = 'Добавить описание...';
+        taskDescription.innerHTML = this.data.description || '';
+        
+        taskDescription.addEventListener('blur', (event) => {
+          if (taskDescription && taskDescription.innerHTML !== undefined) {
+            this.data.description = taskDescription.innerHTML;
+            this.updateData();
+          }
+        });
+        
+        // Создаем панель с кнопками
+        const taskControls = document.createElement('div');
+        taskControls.classList.add('task-controls');
+        
+        // Кнопка для дедлайна
+        const deadlineButton = document.createElement('button');
+        deadlineButton.classList.add('task-control-btn');
+        deadlineButton.title = 'Установить дедлайн';
+        deadlineButton.innerHTML = this.renderIcon(Calendar);
+        
+        if (this.data.deadline) {
+          const deadlineLabel = document.createElement('span');
+          deadlineLabel.textContent = this.formatDate(this.data.deadline);
+          deadlineButton.appendChild(deadlineLabel);
+        }
+        
+        // Обработчик для кнопки дедлайна
+        deadlineButton.addEventListener('click', (e: Event) => {
+          e.stopPropagation();
+          console.log('Клик по кнопке дедлайна');
           
-          try {
-            // Получаем список доступных пользователей (в реальном приложении будет запрос к API)
-            const availableUsers = [
-              { id: 'user-1', name: 'Иван Иванов', email: 'ivan@example.com' },
-              { id: 'user-2', name: 'Петр Петров', email: 'petr@example.com' },
-              { id: 'user-3', name: 'Мария Сидорова', email: 'maria@example.com' },
-            ];
+          // Используем внешнюю функцию (провайдер модальных окон)
+          if (typeof window !== 'undefined' && (window as any).__taskModals) {
+            console.log('window.__taskModals найден:', (window as any).__taskModals);
             
-            // Вызываем открытие модального окна выбора ответственных
-            (window as any).__taskModals.openAssigneesModal(
-              'current-task-id', // ID задачи
-              this.data.assignees || [], // Текущие ответственные
-              availableUsers, // Доступные пользователи
-              (newAssignees: User[]) => {
-                // Callback для сохранения результата
-                console.log('Сохраняем новых ответственных:', newAssignees);
-                this.data.assignees = newAssignees;
-                this.updateRender();
-                this.updateData();
-              }
-            );
-          } catch (error) {
-            console.error('Ошибка при открытии модального окна ответственных:', error);
-            alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+            try {
+              // Вызываем открытие модального окна дедлайна
+              (window as any).__taskModals.openDeadlineModal(
+                'current-task-id', // ID задачи
+                this.data.deadline, // Текущий дедлайн
+                (newDeadline: string) => {
+                  // Callback для сохранения результата
+                  console.log('Сохраняем новый дедлайн:', newDeadline);
+                  if (newDeadline) {
+                    this.data.deadline = newDeadline;
+                  } else {
+                    this.data.deadline = undefined;
+                  }
+                  this.updateRender();
+                  this.updateData();
+                }
+              );
+            } catch (error) {
+              console.error('Ошибка при открытии модального окна дедлайна:', error);
+              alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+            }
+          } else {
+            console.error('window.__taskModals не найден');
+            alert('Модальное окно выбора даты недоступно. Обратитесь к администратору.');
           }
+        });
+        
+        // Кнопка для назначения ответственных
+        const assignButton = document.createElement('button');
+        assignButton.classList.add('task-control-btn');
+        assignButton.innerHTML = this.renderIcon(UserCheck);
+        assignButton.title = 'Назначить ответственных';
+        
+        // Показываем текущих ответственных
+        const assignText = document.createElement('span');
+        if (this.data.assignees && this.data.assignees.length > 0) {
+          assignText.textContent = `Ответственных: ${this.data.assignees.length}`;
         } else {
-          console.error('window.__taskModals не найден');
-          alert('Модальное окно выбора ответственных недоступно. Обратитесь к администратору.');
+          assignText.textContent = 'Ответственные';
         }
-      });
-      
-      // Кнопка для напоминания
-      const reminderButton = document.createElement('button');
-      reminderButton.classList.add('task-control-btn');
-      reminderButton.title = 'Установить напоминание';
-      reminderButton.innerHTML = this.renderIcon(Clock);
-      
-      if (this.data.reminder) {
-        const reminderLabel = document.createElement('span');
-        reminderLabel.textContent = this.formatDate(this.data.reminder);
-        reminderButton.appendChild(reminderLabel);
+        assignButton.appendChild(assignText);
+        
+        // Обработчик для кнопки ответственных
+        assignButton.addEventListener('click', async (e: Event) => {
+          e.stopPropagation();
+          console.log('Клик по кнопке ответственных');
+          
+          // Используем внешнюю функцию (провайдер модальных окон)
+          if (typeof window !== 'undefined' && (window as any).__taskModals) {
+            console.log('window.__taskModals найден:', (window as any).__taskModals);
+            
+            try {
+              // Используем фиктивные данные для упрощения
+              const availableUsers = [
+                { id: 'user-1', name: 'Иван Иванов', email: 'ivan@example.com' },
+                { id: 'user-2', name: 'Петр Петров', email: 'petr@example.com' },
+                { id: 'user-3', name: 'Мария Сидорова', email: 'maria@example.com' },
+              ];
+              
+              // Вызываем открытие модального окна выбора ответственных
+              (window as any).__taskModals.openAssigneesModal(
+                'current-task-id', // ID задачи
+                this.data.assignees || [], // Текущие ответственные
+                availableUsers, // Доступные пользователи
+                (newAssignees: User[]) => {
+                  // Callback для сохранения результата
+                  console.log('Сохраняем новых ответственных:', newAssignees);
+                  this.data.assignees = newAssignees;
+                  this.updateRender();
+                  this.updateData();
+                }
+              );
+            } catch (error) {
+              console.error('Ошибка при открытии модального окна ответственных:', error);
+              alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+            }
+          } else {
+            console.error('window.__taskModals не найден');
+            alert('Модальное окно выбора ответственных недоступно. Обратитесь к администратору.');
+          }
+        });
+        
+        // Кнопка для напоминания
+        const reminderButton = document.createElement('button');
+        reminderButton.classList.add('task-control-btn');
+        reminderButton.title = 'Установить напоминание';
+        reminderButton.innerHTML = this.renderIcon(Bell);
+        
+        if (this.data.reminder) {
+          const reminderLabel = document.createElement('span');
+          reminderLabel.textContent = this.formatDate(this.data.reminder);
+          reminderButton.appendChild(reminderLabel);
+        }
+        
+        // Обработчик для кнопки напоминания
+        reminderButton.addEventListener('click', (e: Event) => {
+          e.stopPropagation();
+          console.log('Клик по кнопке напоминания');
+          
+          // Используем внешнюю функцию (провайдер модальных окон)
+          if (typeof window !== 'undefined' && (window as any).__taskModals) {
+            console.log('window.__taskModals найден:', (window as any).__taskModals);
+            
+            try {
+              // Вызываем открытие модального окна напоминания
+              (window as any).__taskModals.openReminderModal(
+                'current-task-id', // ID задачи
+                this.data.reminder, // Текущее напоминание
+                (newReminder: string) => {
+                  // Callback для сохранения результата
+                  console.log('Сохраняем новое напоминание:', newReminder);
+                  if (newReminder) {
+                    this.data.reminder = newReminder;
+                  } else {
+                    this.data.reminder = undefined;
+                  }
+                  this.updateRender();
+                  this.updateData();
+                }
+              );
+            } catch (error) {
+              console.error('Ошибка при открытии модального окна напоминания:', error);
+              alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
+            }
+          } else {
+            console.error('window.__taskModals не найден');
+            alert('Модальное окно выбора даты напоминания недоступно. Обратитесь к администратору.');
+          }
+        });
+        
+        // Кнопка для удаления
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('task-control-btn', 'task-delete-btn');
+        deleteButton.title = 'Удалить задачу';
+        deleteButton.innerHTML = this.renderIcon(Trash2);
+        
+        deleteButton.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
+            this.api.blocks.delete();
+          }
+        });
+        
+        // Добавляем все кнопки к панели управления
+        taskControls.appendChild(deadlineButton);
+        taskControls.appendChild(assignButton);
+        taskControls.appendChild(reminderButton);
+        taskControls.appendChild(deleteButton);
+        
+        // Добавляем все элементы к деталям задачи
+        taskDetails.appendChild(taskDescription);
+        taskDetails.appendChild(taskControls);
       }
       
-      // Обработчик для кнопки напоминания
-      reminderButton.addEventListener('click', (e: Event) => {
-        e.stopPropagation();
-        console.log('Клик по кнопке напоминания');
-        
-        // Используем внешнюю функцию (провайдер модальных окон)
-        if (typeof window !== 'undefined' && (window as any).__taskModals) {
-          console.log('window.__taskModals найден:', (window as any).__taskModals);
-          
-          try {
-            // Вызываем открытие модального окна напоминания
-            (window as any).__taskModals.openReminderModal(
-              'current-task-id', // ID задачи
-              this.data.reminder, // Текущее напоминание
-              (newReminder: string) => {
-                // Callback для сохранения результата
-                console.log('Сохраняем новое напоминание:', newReminder);
-                if (newReminder) {
-                  this.data.reminder = newReminder;
-                } else {
-                  this.data.reminder = undefined;
-                }
-                this.updateRender();
-                this.updateData();
-              }
-            );
-          } catch (error) {
-            console.error('Ошибка при открытии модального окна напоминания:', error);
-            alert('Произошла ошибка при открытии модального окна. Попробуйте позже.');
-          }
-        } else {
-          console.error('window.__taskModals не найден');
-          alert('Модальное окно выбора даты напоминания недоступно. Обратитесь к администратору.');
-        }
-      });
+      // Добавляем блок деталей всегда, но разворачиваем только если expanded === true
+      this._element.appendChild(taskDetails);
       
-      // Кнопка для удаления
-      const deleteButton = document.createElement('button');
-      deleteButton.classList.add('task-control-btn', 'task-delete-btn');
-      deleteButton.title = 'Удалить задачу';
-      deleteButton.innerHTML = this.renderIcon(Trash2);
+      // Стили для компонента
+      this.injectStyles();
       
-      deleteButton.addEventListener('click', (e) => {
-        e.stopPropagation();
-        if (confirm('Вы уверены, что хотите удалить эту задачу?')) {
-          this.api.blocks.delete();
-        }
-      });
+      return this._element;
+    } catch (error) {
+      console.error('Ошибка при рендеринге компонента задачи:', error);
+      // Создаем простой элемент для отображения ошибки
+      const errorElement = document.createElement('div');
+      errorElement.classList.add('task-tool-error');
+      errorElement.style.padding = '16px';
+      errorElement.style.backgroundColor = '#FFF0F0';
+      errorElement.style.border = '1px solid #FFD0D0';
+      errorElement.style.borderRadius = '8px';
+      errorElement.style.color = '#FF0000';
+      errorElement.innerHTML = `<p>Ошибка при отображении задачи: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}</p>`;
       
-      // Добавляем все кнопки к панели управления
-      taskControls.appendChild(deadlineButton);
-      taskControls.appendChild(assignButton);
-      taskControls.appendChild(reminderButton);
-      taskControls.appendChild(deleteButton);
-      
-      // Добавляем все элементы к деталям задачи
-      taskDetails.appendChild(taskDescription);
-      taskDetails.appendChild(taskControls);
+      return errorElement;
     }
-    
-    // Добавляем блок деталей всегда, но разворачиваем только если expanded === true
-    this._element.appendChild(taskDetails);
-    
-    // Стили для компонента
-    this.injectStyles();
-    
-    return this._element;
   }
 
   // Обновление рендера при изменении состояния
@@ -566,7 +581,7 @@ export default class TaskTool implements BlockTool {
           // Кнопка для назначения ответственных
           const assignButton = document.createElement('button');
           assignButton.classList.add('task-control-btn');
-          assignButton.innerHTML = this.renderIcon(Users);
+          assignButton.innerHTML = this.renderIcon(UserCheck);
           assignButton.title = 'Назначить ответственных';
           
           const assignText = document.createElement('span');
@@ -581,7 +596,7 @@ export default class TaskTool implements BlockTool {
           const reminderButton = document.createElement('button');
           reminderButton.classList.add('task-control-btn');
           reminderButton.title = 'Установить напоминание';
-          reminderButton.innerHTML = this.renderIcon(Clock);
+          reminderButton.innerHTML = this.renderIcon(Bell);
           
           if (this.data.reminder) {
             const reminderLabel = document.createElement('span');
@@ -685,21 +700,38 @@ export default class TaskTool implements BlockTool {
     this.api.blocks.update(blockIndex.toString(), this.data as unknown as Record<string, unknown>);
   }
 
-  // Вспомогательный метод для рендеринга иконок из lucide-react
-  renderIcon(Icon: typeof Calendar | typeof Clock | typeof Trash2 | typeof Users) {
+  // Метод для рендеринга иконок кнопок
+  renderIcon(icon: any, size = 16) {
     try {
-      // Создаем SVG напрямую вместо конвертации React элемента
+      // Создаем SVG напрямую вместо использования метода toSVG()
       const iconSvgMap = {
         [Calendar.name]: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="3" ry="3"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>',
         [Clock.name]: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
-        [Users.name]: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>',
+        [UserCheck.name]: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><polyline points="17 11 19 13 23 9"></polyline></svg>',
+        [Bell.name]: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>',
         [Trash2.name]: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>'
       };
       
-      return iconSvgMap[Icon.name] || '';
+      const svg = iconSvgMap[icon.name] || '';
+      return `<div style="display: flex; align-items: center; justify-content: center; width: 20px; height: 20px;">${svg}</div>`;
     } catch (error) {
       console.error('Ошибка при рендеринге иконки:', error);
       return '';
+    }
+  }
+
+  // Метод для получения списка пользователей документа
+  async getDocumentUsers() {
+    try {
+      // Возвращаем тестовые данные для упрощения
+      return [
+        { id: 'user-1', name: 'Иван Иванов', email: 'ivan@example.com' },
+        { id: 'user-2', name: 'Петр Петров', email: 'petr@example.com' },
+        { id: 'user-3', name: 'Мария Сидорова', email: 'maria@example.com' },
+      ];
+    } catch (error) {
+      console.error("Ошибка при получении списка пользователей:", error);
+      return [];
     }
   }
 
@@ -1014,7 +1046,8 @@ export default class TaskTool implements BlockTool {
     
     try {
       const date = new Date(dateString);
-      return formatDate(date, 'dd MMM yyyy HH:mm', { locale: ru });
+      // Не используем локализацию, а просто форматируем дату
+      return formatDate(date, 'dd.MM.yyyy HH:mm');
     } catch (e) {
       return '';
     }
