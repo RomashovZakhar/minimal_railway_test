@@ -3,15 +3,32 @@ from rest_framework import viewsets, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db.models import Q
-from .models import Document, AccessRight
-from .serializers import DocumentSerializer, DocumentDetailSerializer, AccessRightSerializer
+from django.db.models import Q, Count
+from django.db import connection
+from .models import Document, AccessRight, DocumentHistory
+from .serializers import DocumentSerializer, DocumentDetailSerializer, AccessRightSerializer, DocumentHistorySerializer
 import json
 import logging
 import copy
+import datetime
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
+
+def get_access(user, document, required_roles):
+    """
+    Функция проверяет, имеет ли пользователь указанные права доступа к документу
+    """
+    # Если пользователь - владелец, у него есть все права
+    if document.owner == user:
+        return True
+    
+    # Проверяем, есть ли у пользователя требуемые права
+    access_right = AccessRight.objects.filter(document=document, user=user).first()
+    if access_right and access_right.role in required_roles:
+        return True
+    
+    return False
 
 class DocumentViewSet(viewsets.ModelViewSet):
     """
@@ -210,6 +227,41 @@ class DocumentViewSet(viewsets.ModelViewSet):
                     blocks = saved_document.content.get('blocks', [])
                     logger.info(f"Блоков после сохранения: {len(blocks)}")
         
+        # Записываем в историю создание документа
+        DocumentHistory.objects.create(
+            document=document,
+            user=request.user,
+            action_type=DocumentHistory.ACTION_CREATE,
+            changes={
+                'content': document.content,
+                'user_id': request.user.id,
+                'username': request.user.username,
+                'title': document.title
+            }
+        )
+        
+        # Если это вложенный документ (есть parent_id), записываем это в историю родительского документа
+        if document.parent:
+            try:
+                parent_document = Document.objects.get(id=document.parent.id)
+                
+                # Записываем в историю родительского документа создание вложенного документа
+                DocumentHistory.objects.create(
+                    document=parent_document,
+                    user=request.user,
+                    action_type=DocumentHistory.ACTION_NESTED_CREATE,
+                    changes={
+                        'nested_document_id': str(document.id),
+                        'nested_document_title': document.title,
+                        'user_id': request.user.id,
+                        'username': request.user.username,
+                        'is_nested': True
+                    }
+                )
+                logger.info(f"Записано создание вложенного документа {document.id} в историю родительского документа {parent_document.id}")
+            except Exception as e:
+                logger.error(f"Ошибка при записи создания вложенного документа в историю: {str(e)}")
+        
         # Возвращаем ответ с созданным документом
         serializer = self.get_serializer(document)
         headers = self.get_success_headers(serializer.data)
@@ -249,6 +301,10 @@ class DocumentViewSet(viewsets.ModelViewSet):
         # Получаем объект документа
         instance = self.get_object()
         
+        # Сохраняем предыдущее состояние для определения типа изменения
+        previous_title = instance.title
+        previous_content = instance.content
+        
         # Проверка текущего содержимого
         logger.info(f"Текущий content: тип {type(instance.content)}, пустой: {not bool(instance.content)}")
         
@@ -270,12 +326,48 @@ class DocumentViewSet(viewsets.ModelViewSet):
             updated_instance = self.get_object()
             logger.info(f"После сохранения: content тип {type(updated_instance.content)}, пустой: {not bool(updated_instance.content)}")
             
-            if isinstance(updated_instance.content, dict):
-                logger.info(f"Ключи после сохранения: {', '.join(updated_instance.content.keys())}")
+            # Определяем тип изменения
+            action_type = DocumentHistory.ACTION_EDIT
+            
+            # Если изменился только заголовок
+            if 'title' in mutable_data and previous_title != mutable_data['title'] and previous_content == updated_instance.content:
+                action_type = DocumentHistory.ACTION_TITLE_CHANGE
+            
+            # Проверяем, нужно ли записывать это в историю
+            should_record = True
+            
+            # Для обычного редактирования (не изменение заголовка) делаем ограничение по времени
+            if action_type == DocumentHistory.ACTION_EDIT:
+                # Не записываем повторные редактирования от того же пользователя с интервалом менее 5 минут
+                from django.utils import timezone
+                last_edit = DocumentHistory.objects.filter(
+                    document=updated_instance, 
+                    user=request.user,
+                    action_type=DocumentHistory.ACTION_EDIT
+                ).order_by('-created_at').first()
                 
-                if 'blocks' in updated_instance.content:
-                    blocks = updated_instance.content.get('blocks', [])
-                    logger.info(f"Блоков после сохранения: {len(blocks)}")
+                if last_edit:
+                    # Проверяем, прошло ли 5 минут с момента последнего редактирования
+                    time_diff = timezone.now() - last_edit.created_at
+                    if time_diff.total_seconds() < 300:  # 5 минут в секундах
+                        should_record = False
+                        logger.info(f"Пропускаем запись редактирования, прошло меньше 5 минут с последнего")
+            
+            # Если нужно записать в историю
+            if should_record:
+                # Записываем в историю изменений
+                DocumentHistory.objects.create(
+                    document=updated_instance,
+                    user=request.user,
+                    action_type=action_type,
+                    changes={
+                        'content': updated_instance.content,
+                        'user_id': request.user.id,
+                        'username': request.user.username,
+                        'action': action_type
+                    }
+                )
+                logger.info(f"Записано действие {action_type} в историю")
             
             return Response(serializer.data)
         
@@ -353,6 +445,19 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 }
             )
             
+            # Записываем в историю предоставление доступа
+            DocumentHistory.objects.create(
+                document=document,
+                user=request.user,
+                action_type=DocumentHistory.ACTION_SHARE,
+                changes={
+                    'user_id': access_right.user.id,
+                    'username': access_right.user.username,
+                    'role': access_right.role,
+                    'include_children': access_right.include_children
+                }
+            )
+            
             logger.info(f"Предоставлен доступ к документу ID {document.id} пользователю {access_right.user.email}")
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
@@ -395,3 +500,284 @@ class DocumentViewSet(viewsets.ModelViewSet):
         
         serializer = self.get_serializer(shared_documents, many=True)
         return Response(serializer.data)
+    
+    @action(detail=True, methods=['get'])
+    def history(self, request, pk=None):
+        """
+        Получение истории изменений документа
+        """
+        document = self.get_object()
+        
+        # Получаем историю изменений документа
+        history = DocumentHistory.objects.filter(document=document).order_by('-created_at')
+        
+        # Сериализуем результаты
+        serializer = DocumentHistorySerializer(history, many=True)
+        
+        return Response(serializer.data)
+    
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Получение документа по ID с записью действия просмотра
+        """
+        # Стандартное получение объекта
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        
+        # Записываем в историю просмотр документа
+        try:
+            # Не записываем повторные просмотры от того же пользователя с интервалом менее 30 минут
+            last_view = DocumentHistory.objects.filter(
+                document=instance, 
+                user=request.user,
+                action_type=DocumentHistory.ACTION_VIEW
+            ).order_by('-created_at').first()
+            
+            should_record = True
+            if last_view:
+                # Проверяем, прошло ли достаточно времени с момента последнего просмотра
+                from django.utils import timezone
+                time_diff = timezone.now() - last_view.created_at
+                if time_diff.total_seconds() < 1800:  # 30 минут в секундах
+                    should_record = False
+            
+            if should_record:
+                DocumentHistory.objects.create(
+                    document=instance,
+                    user=request.user,
+                    action_type=DocumentHistory.ACTION_VIEW,
+                    changes={
+                        'user_id': request.user.id,
+                        'username': request.user.username
+                    }
+                )
+        except Exception as e:
+            # В случае ошибки просто логируем и продолжаем
+            logger.error(f"Ошибка при записи просмотра документа: {str(e)}")
+            
+        return Response(serializer.data)
+
+    @action(detail=True, methods=['get'])
+    def statistics(self, request, pk=None):
+        """
+        Получение статистических данных о документе
+        """
+        document = self.get_object()
+        user = request.user
+        
+        # Проверяем, есть ли у пользователя доступ к документу
+        if document.owner != user and not AccessRight.objects.filter(document=document, user=user).exists():
+            return Response({"detail": "У вас нет доступа к этому документу"}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Получаем дату создания документа
+        created_at = document.created_at
+        
+        # Получаем количество редакторов
+        editors_count = AccessRight.objects.filter(document=document, role=AccessRight.EDITOR).count()
+        if document.owner != user:  # Владелец также является редактором
+            editors_count += 1
+            
+        # Рекурсивно получаем все вложенные документы
+        def get_nested_documents(doc_id):
+            # Находим прямые дочерние документы
+            children = Document.objects.filter(parent_id=doc_id)
+            result = list(children)
+            
+            # Рекурсивно обходим дерево
+            for child in children:
+                result.extend(get_nested_documents(child.id))
+                
+            return result
+                
+        nested_docs = get_nested_documents(document.id)
+        nested_docs_count = len(nested_docs)
+        
+        # Собираем все ID документов для дальнейшей обработки
+        all_doc_ids = [document.id] + [doc.id for doc in nested_docs]
+        
+        # Функция для подсчета задач в документе
+        def count_tasks_in_document(doc):
+            try:
+                if not doc.content or not isinstance(doc.content, dict) or 'blocks' not in doc.content:
+                    return 0, 0
+                
+                total_tasks = 0
+                completed_tasks = 0
+                
+                # Проходим по всем блокам документа
+                for block in doc.content.get('blocks', []):
+                    if block.get('type') == 'task':
+                        total_tasks += 1
+                        if block.get('data', {}).get('checked', False) or block.get('data', {}).get('is_completed', False):
+                            completed_tasks += 1
+                
+                return total_tasks, completed_tasks
+            except Exception as e:
+                logger.error(f"Ошибка при подсчете задач: {e}")
+                return 0, 0
+        
+        # Подсчитываем задачи во всех документах
+        total_tasks = 0
+        total_completed_tasks = 0
+        
+        # Текущий документ
+        doc_tasks, doc_completed = count_tasks_in_document(document)
+        total_tasks += doc_tasks
+        total_completed_tasks += doc_completed
+        
+        # Вложенные документы
+        for doc in nested_docs:
+            doc_tasks, doc_completed = count_tasks_in_document(doc)
+            total_tasks += doc_tasks
+            total_completed_tasks += doc_completed
+        
+        # Находим самого активного пользователя (по количеству закрытых задач)
+        most_active_user = None
+        
+        # Проверяем, что есть история изменений с закрытием задач
+        task_completions = DocumentHistory.objects.filter(
+            document_id__in=all_doc_ids,
+            action_type=DocumentHistory.ACTION_TASK_COMPLETE
+        ).values('user__username').annotate(count=Count('id')).order_by('-count').first()
+        
+        if task_completions:
+            most_active_user = task_completions['user__username']
+        
+        # Вычисляем процент выполнения задач
+        completion_percentage = 0
+        if total_tasks > 0:
+            completion_percentage = round((total_completed_tasks / total_tasks) * 100)
+            
+        # Формируем ответ
+        result = {
+            'created_at': created_at.isoformat(),
+            'editor_count': editors_count,
+            'nested_documents_count': nested_docs_count,
+            'tasks_count': total_tasks,
+            'completed_tasks_count': total_completed_tasks,
+            'completion_percentage': completion_percentage,
+            'most_active_user': most_active_user
+        }
+        
+        return Response(result)
+
+    @action(detail=True, methods=['post'])
+    def toggle_task(self, request, pk=None):
+        """
+        Метод для изменения статуса задачи (завершена/не завершена)
+        """
+        document = self.get_object()
+        access = get_access(request.user, document, ['edit', 'view'])
+        if not access:
+            return Response({'detail': 'У вас нет доступа к этому документу'}, status=status.HTTP_403_FORBIDDEN)
+        
+        try:
+            data = request.data
+            task_id = data.get('task_id')
+            is_completed = data.get('is_completed')
+            
+            if task_id is None or is_completed is None:
+                return Response({'detail': 'Не указаны обязательные параметры'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            document_data = document.content
+            updated = False
+            
+            def update_task(blocks):
+                nonlocal updated
+                for block in blocks:
+                    if block.get('type') == 'task' and block.get('id') == task_id:
+                        block['data']['is_completed'] = is_completed
+                        updated = True
+                        return True
+                    elif block.get('type') == 'nested-document':
+                        try:
+                            nested_doc = Document.objects.get(id=block.get('data', {}).get('id'))
+                            nested_content = nested_doc.content
+                            if update_task(nested_content.get('blocks', [])):
+                                nested_doc.content = nested_content
+                                nested_doc.save()
+                                return True
+                        except Document.DoesNotExist:
+                            pass
+                return False
+            
+            update_task(document_data.get('blocks', []))
+            
+            if updated:
+                document.save()
+                
+                # Запись в историю документа
+                action_type = DocumentHistory.ACTION_TASK_COMPLETE if is_completed else DocumentHistory.ACTION_EDIT
+                DocumentHistory.objects.create(
+                    document=document,
+                    user=request.user,
+                    action_type=action_type,
+                    changes={
+                        'task_id': task_id,
+                        'is_completed': is_completed
+                    }
+                )
+                
+                return Response({'detail': 'Статус задачи обновлен'})
+            else:
+                return Response({'detail': 'Задача не найдена'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'detail': f'Ошибка при обновлении статуса задачи: {str(e)}'}, 
+                            status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class AccessRightViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint для работы с правами доступа к документам
+    """
+    queryset = AccessRight.objects.all()
+    serializer_class = AccessRightSerializer
+    
+    def get_permissions(self):
+        """
+        Настраиваем разрешения
+        """
+        return [IsAuthenticated()]
+    
+    def get_queryset(self):
+        """
+        Возвращает права доступа для документов, принадлежащих текущему пользователю
+        """
+        user = self.request.user
+        return AccessRight.objects.filter(document__owner=user)
+    
+    def destroy(self, request, *args, **kwargs):
+        """
+        Отзыв доступа к документу
+        """
+        access_right = self.get_object()
+        document = access_right.document
+        
+        # Проверяем, является ли пользователь владельцем документа
+        if document.owner != request.user:
+            return Response(
+                {"detail": "Только владелец документа может отозвать доступ"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Сохраняем информацию о пользователе, у которого отзываем доступ
+        user_id = access_right.user.id
+        username = access_right.user.username
+        role = access_right.role
+        
+        # Удаляем доступ
+        access_right.delete()
+        
+        # Записываем в историю отзыв доступа
+        DocumentHistory.objects.create(
+            document=document,
+            user=request.user,
+            action_type=DocumentHistory.ACTION_REVOKE,
+            changes={
+                'user_id': user_id,
+                'username': username,
+                'role': role
+            }
+        )
+        
+        logger.info(f"Отозван доступ к документу ID {document.id} у пользователя {username}")
+        return Response(status=status.HTTP_204_NO_CONTENT)

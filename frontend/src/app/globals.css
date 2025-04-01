@@ -2,6 +2,38 @@
 
 @plugin "tailwindcss-animate";
 
+/* Импортируем стили highlight.js */
+@import 'highlight.js/styles/github.css';
+
+/* Добавляем стили для highlight.js - GitHub тема */
+@import "highlight.js/styles/github.css";
+
+/* Стили для блоков кода с подсветкой */
+.codex-editor .ce-code {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.codex-editor .ce-code__textarea {
+  min-height: 200px;
+  font-family: var(--font-mono) !important;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Стили для отображения блоков кода с подсветкой */
+.hljs {
+  display: block;
+  overflow-x: auto;
+  padding: 1em;
+  border-radius: 0.5rem;
+  background: var(--muted);
+}
+
+.dark .hljs {
+  background: var(--secondary);
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

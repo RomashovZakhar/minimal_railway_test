@@ -53,9 +53,30 @@ class DocumentHistory(models.Model):
     """
     Модель для хранения истории изменений документа
     """
+    ACTION_EDIT = 'edit'
+    ACTION_CREATE = 'create'
+    ACTION_VIEW = 'view'
+    ACTION_SHARE = 'share'
+    ACTION_REVOKE = 'revoke'
+    ACTION_TITLE_CHANGE = 'title_change'
+    ACTION_NESTED_CREATE = 'nested_create'
+    ACTION_TASK_COMPLETE = 'task_complete'
+    
+    ACTION_CHOICES = [
+        (ACTION_EDIT, 'Редактирование'),
+        (ACTION_CREATE, 'Создание'),
+        (ACTION_VIEW, 'Просмотр'),
+        (ACTION_SHARE, 'Предоставление доступа'),
+        (ACTION_REVOKE, 'Отзыв доступа'),
+        (ACTION_TITLE_CHANGE, 'Изменение заголовка'),
+        (ACTION_NESTED_CREATE, 'Создание вложенного документа'),
+        (ACTION_TASK_COMPLETE, 'Завершение задачи'),
+    ]
+    
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='history')
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name='document_edits')
-    changes = models.JSONField()  # Хранит разницу между версиями
+    changes = models.JSONField()  # Хранит данные о изменениях
+    action_type = models.CharField(max_length=20, choices=ACTION_CHOICES, default=ACTION_EDIT)
     created_at = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):

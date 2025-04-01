@@ -375,20 +375,54 @@ class DocumentConsumer(AsyncWebsocketConsumer):
             # Сохраняем предыдущее содержимое для истории
             previous_content = document.content
             
+            # Определяем тип действия (если контент пустой, то это создание)
+            action_type = DocumentHistory.ACTION_CREATE
+            if previous_content and (previous_content.get('blocks') or []):
+                action_type = DocumentHistory.ACTION_EDIT
+                
+                # Проверяем, изменился ли только заголовок
+                if previous_content.get('title') != content.get('title') and previous_content.get('blocks') == content.get('blocks'):
+                    action_type = DocumentHistory.ACTION_TITLE_CHANGE
+            
             # Обновляем содержимое документа
             document.content = content
             document.save()
             
-            # Создаем запись в истории изменений
-            DocumentHistory.objects.create(
-                document=document,
-                user=user,
-                changes={
-                    'content': content,
-                    'user_id': user.id,
-                    'username': user.username,
-                }
-            )
+            # Проверяем, нужно ли записывать это в историю
+            should_record = True
+            
+            # Для обычного редактирования делаем ограничение по времени
+            if action_type == DocumentHistory.ACTION_EDIT:
+                # Не записываем повторные редактирования от того же пользователя с интервалом менее 5 минут
+                from django.utils import timezone
+                last_edit = DocumentHistory.objects.filter(
+                    document=document, 
+                    user=user,
+                    action_type=DocumentHistory.ACTION_EDIT
+                ).order_by('-created_at').first()
+                
+                if last_edit:
+                    # Проверяем, прошло ли 5 минут с момента последнего редактирования
+                    time_diff = timezone.now() - last_edit.created_at
+                    if time_diff.total_seconds() < 300:  # 5 минут в секундах
+                        should_record = False
+                        logger.info(f"Пропускаем запись редактирования в WebSocket, прошло меньше 5 минут с последнего")
+            
+            # Если нужно записать в историю
+            if should_record:
+                # Создаем запись в истории изменений
+                DocumentHistory.objects.create(
+                    document=document,
+                    user=user,
+                    action_type=action_type,
+                    changes={
+                        'content': content,
+                        'user_id': user.id,
+                        'username': user.username,
+                        'action': action_type
+                    }
+                )
+                logger.info(f"Записано действие {action_type} в историю через WebSocket")
             
             logger.info(f"Документ {self.document_id} успешно обновлен пользователем {user.username}")
             return True

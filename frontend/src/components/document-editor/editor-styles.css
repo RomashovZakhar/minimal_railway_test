@@ -19,3 +19,236 @@
   margin-bottom: 0.5rem !important;
   line-height: 1.4;
 }
+
+/* Улучшенные стили для блока кода */
+.ce-block--code {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+/* Стиль для самого блока кода */
+.ce-code {
+  position: relative;
+  width: 100%;
+  margin-bottom: 15px;
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+}
+
+/* Текстовая область для ввода кода */
+.ce-code__textarea {
+  width: 100%;
+  min-height: 200px;
+  padding: 15px !important;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background-color: var(--muted);
+  color: var(--foreground);
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  resize: vertical;
+  tab-size: 2;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  overflow: auto;
+  letter-spacing: 0 !important;
+}
+
+.dark .ce-code__textarea {
+  background-color: var(--secondary);
+  border-color: var(--border);
+}
+
+/* Блок просмотра кода */
+.ce-code__viewer,
+.ce-code pre {
+  margin: 0;
+  padding: 0;
+  border-radius: 5px;
+  overflow: auto;
+  position: relative;
+}
+
+.ce-code pre code,
+.ce-code__viewer {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: var(--muted);
+  color: var(--foreground);
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 2;
+  -moz-tab-size: 2;
+  -o-tab-size: 2;
+  letter-spacing: 0 !important;
+}
+
+.dark .ce-code pre code,
+.dark .ce-code__viewer {
+  background-color: var(--secondary);
+}
+
+/* Улучшенные стили для выпадающего списка языков */
+.ce-code select,
+.ce-code__languageSelect {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 10;
+  font-size: 12px;
+  padding: 4px 8px;
+  padding-right: 24px; /* для иконки стрелки */
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background-color: var(--background);
+  color: var(--foreground);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round' class='feather feather-chevron-down'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 16px;
+}
+
+.dark .ce-code select,
+.dark .ce-code__languageSelect {
+  background-color: var(--secondary);
+  border-color: var(--border);
+}
+
+.ce-code select:focus,
+.ce-code__languageSelect:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary), 0.2);
+}
+
+/* Стили для активного состояния */
+.ce-code.ce-code--focused .ce-code__textarea,
+.ce-code--focused .ce-code__textarea {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(var(--primary), 0.2);
+}
+
+/* Стили для меток языков */
+.ce-code__language-label {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 2px 8px;
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: 4px;
+  z-index: 1;
+}
+
+/* Стили для подсветки синтаксиса */
+.hljs {
+  background: transparent !important;
+  color: var(--foreground) !important;
+  font-family: 'Consolas', 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+  font-size: 14px !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0 !important;
+}
+
+/* Цвета для светлой темы */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name,
+.hljs-tag {
+  color: #0033cc !important;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-attribute,
+.hljs-literal,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-addition {
+  color: #bc0031 !important;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-deletion {
+  color: #808080 !important;
+}
+
+.hljs-meta,
+.hljs-bullet,
+.hljs-regexp,
+.hljs-link {
+  color: #009926 !important;
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+  color: #990073 !important;
+}
+
+/* Цвета для темной темы */
+.dark .hljs-keyword,
+.dark .hljs-selector-tag,
+.dark .hljs-built_in,
+.dark .hljs-name,
+.dark .hljs-tag {
+  color: #66b5ff !important;
+}
+
+.dark .hljs-string,
+.dark .hljs-title,
+.dark .hljs-section,
+.dark .hljs-attribute,
+.dark .hljs-literal,
+.dark .hljs-template-tag,
+.dark .hljs-template-variable,
+.dark .hljs-type,
+.dark .hljs-addition {
+  color: #ff6666 !important;
+}
+
+.dark .hljs-comment,
+.dark .hljs-quote,
+.dark .hljs-deletion {
+  color: #999999 !important;
+}
+
+.dark .hljs-meta,
+.dark .hljs-bullet,
+.dark .hljs-regexp,
+.dark .hljs-link {
+  color: #33cc66 !important;
+}
+
+.dark .hljs-number,
+.dark .hljs-symbol,
+.dark .hljs-variable,
+.dark .hljs-template-variable,
+.dark .hljs-built_in,
+.dark .hljs-builtin-name,
+.dark .hljs-literal,
+.dark .hljs-type,
+.dark .hljs-params {
+  color: #f08bc5 !important;
+}

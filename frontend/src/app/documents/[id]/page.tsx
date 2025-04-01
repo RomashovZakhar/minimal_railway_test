@@ -23,6 +23,7 @@ import {
   BarChart3,
   Trash,
   PanelLeft,
+  Clock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { 
@@ -40,6 +41,16 @@ import {
   SidebarTrigger,
   SidebarInset
 } from "@/components/ui/sidebar"
+import { DocumentHistorySidebar } from "@/components/document/document-history-sidebar"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog"
+import { DocumentStatistics } from "@/components/document-statistics/document-statistics"
 
 // Тип для документа
 interface Document {
@@ -64,6 +75,7 @@ export default function DocumentPage() {
   const isNewDocument = useRef(false);
   const initialLoadDone = useRef(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [showHistorySidebar, setShowHistorySidebar] = useState(false);
 
   useEffect(() => {
     setDocument(null);
@@ -498,6 +510,17 @@ export default function DocumentPage() {
                   fill={document.is_favorite ? "currentColor" : "none"}
                 />
               </Button>
+              
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setShowHistorySidebar(!showHistorySidebar)}
+                className={cn(
+                  showHistorySidebar && "bg-accent"
+                )}
+              >
+                <Clock className="h-4 w-4" />
+              </Button>
 
               <NotificationDropdown />
 
@@ -512,17 +535,49 @@ export default function DocumentPage() {
                     <Trash className="mr-2 h-4 w-4" />
                     Удалить
                   </DropdownMenuItem>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <BarChart3 className="mr-2 h-4 w-4" />
+                        Статистика
+                      </DropdownMenuItem>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-[500px]">
+                      <DialogHeader>
+                        <DialogTitle>Статистика документа</DialogTitle>
+                        <DialogDescription>
+                          Информация об использовании документа
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="py-4">
+                        <DocumentStatistics documentId={document.id} />
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
           </header>
 
           <div className="flex-1 overflow-y-auto">
-            <DocumentEditor
-              document={document}
-              onChange={handleDocumentChange}
-              titleInputRef={titleInputRef}
-            />
+            <div className="flex h-full">
+              <div className={cn("flex-1", showHistorySidebar && "mr-[400px]")}>
+                <DocumentEditor
+                  document={document}
+                  onChange={handleDocumentChange}
+                  titleInputRef={titleInputRef}
+                />
+              </div>
+              
+              {showHistorySidebar && (
+                <div className="fixed top-16 right-0 bottom-0 z-20">
+                  <DocumentHistorySidebar 
+                    documentId={document.id} 
+                    onClose={() => setShowHistorySidebar(false)} 
+                  />
+                </div>
+              )}
+            </div>
           </div>
         </SidebarInset>
       </div>

@@ -191,8 +191,10 @@ class DocumentHistorySerializer(serializers.ModelSerializer):
     Сериализатор для истории изменений документа
     """
     user_details = UserBasicSerializer(source='user', read_only=True)
+    action_label = serializers.CharField(source='get_action_type_display', read_only=True)
+    document_title = serializers.CharField(source='document.title', read_only=True)
     
     class Meta:
         model = DocumentHistory
-        fields = ['id', 'document', 'user', 'user_details', 'changes', 'created_at']
+        fields = ['id', 'document', 'document_title', 'user', 'user_details', 'changes', 'action_type', 'action_label', 'created_at']
         read_only_fields = ['created_at'] 

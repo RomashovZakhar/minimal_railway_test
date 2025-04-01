@@ -7,7 +7,8 @@ import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { cn } from "@/lib/utils";
 
 const fontSans = FontSans({
-  subsets: ["latin", "cyrillic"],
+  subsets: ["latin"],
+  display: 'swap',
   variable: "--font-sans",
 });
 

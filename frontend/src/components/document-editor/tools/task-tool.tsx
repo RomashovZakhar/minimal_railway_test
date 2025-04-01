@@ -2,6 +2,7 @@ import React from 'react';
 import { Calendar, Clock, Trash2, Users, Bell, UserCheck, AlertCircle } from 'lucide-react';
 import { format as formatDate } from 'date-fns';
 import api from '@/lib/api';
+import axios from 'axios';
 
 // Определяем пользовательские типы для инструмента
 interface API {
@@ -168,12 +169,39 @@ export default class TaskTool implements BlockTool {
         if (e) e.stopPropagation();
       };
       
-      checkbox.onclick = (e) => {
+      checkbox.onclick = async (e) => {
         e.stopPropagation();
         e.preventDefault();
-        this.data.checked = !this.data.checked;
-        this.updateRender();
-        this.updateData();
+        
+        try {
+          // Получаем ID документа из URL 
+          const pathSegments = window.location.pathname.split('/');
+          const documentId = pathSegments[pathSegments.length - 1];
+          
+          // Вызываем API метод для изменения статуса задачи
+          await axios.post(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/documents/${documentId}/toggle_task/`,
+            {
+              task_id: this.api.blocks.getCurrentBlockIndex(), // ID блока
+              is_completed: !this.data.checked
+            },
+            {
+              withCredentials: true
+            }
+          );
+          
+          // После успешного обновления статуса в API, обновляем локальное состояние
+          this.data.checked = !this.data.checked;
+          this.updateRender();
+          this.updateData();
+        } catch (error) {
+          console.error("Error toggling task completion:", error);
+          // Отображаем ошибку в консоли, но все равно меняем состояние локально,
+          // чтобы не нарушать UX
+          this.data.checked = !this.data.checked;
+          this.updateRender();
+          this.updateData();
+        }
       };
       
       // Также делаем его не перетаскиваемым
