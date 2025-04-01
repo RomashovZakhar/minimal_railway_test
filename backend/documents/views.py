@@ -11,6 +11,7 @@ import json
 import logging
 import copy
 import datetime
+import re
 
 # Настройка логгера
 logger = logging.getLogger(__name__)
@@ -569,6 +570,9 @@ class DocumentViewSet(viewsets.ModelViewSet):
         if document.owner != user and not AccessRight.objects.filter(document=document, user=user).exists():
             return Response({"detail": "У вас нет доступа к этому документу"}, status=status.HTTP_403_FORBIDDEN)
         
+        # Логируем ID документа и его структуру
+        logger.info(f"Получение статистики для документа ID: {document.id}")
+        
         # Получаем дату создания документа
         created_at = document.created_at
         
@@ -595,41 +599,224 @@ class DocumentViewSet(viewsets.ModelViewSet):
         # Собираем все ID документов для дальнейшей обработки
         all_doc_ids = [document.id] + [doc.id for doc in nested_docs]
         
-        # Функция для подсчета задач в документе
-        def count_tasks_in_document(doc):
-            try:
-                if not doc.content or not isinstance(doc.content, dict) or 'blocks' not in doc.content:
-                    return 0, 0
-                
-                total_tasks = 0
-                completed_tasks = 0
-                
-                # Проходим по всем блокам документа
-                for block in doc.content.get('blocks', []):
-                    if block.get('type') == 'task':
-                        total_tasks += 1
-                        if block.get('data', {}).get('checked', False) or block.get('data', {}).get('is_completed', False):
-                            completed_tasks += 1
-                
-                return total_tasks, completed_tasks
-            except Exception as e:
-                logger.error(f"Ошибка при подсчете задач: {e}")
+        # Прямой анализ JSON для точного подсчета задач
+        def analyze_document_tasks(doc):
+            """Прямой анализ JSON для подсчета всех задач и выполненных задач"""
+            if not doc.content:
+                logger.info(f"Документ {doc.id} не содержит контента")
                 return 0, 0
+            
+            # Преобразуем контент в JSON-строку и в словарь для различных типов анализа
+            try:
+                content_str = json.dumps(doc.content)
+                content_dict = doc.content if isinstance(doc.content, dict) else {}
+            except Exception as e:
+                logger.error(f"Ошибка преобразования content в JSON: {e}")
+                return 0, 0
+            
+            logger.info(f"Анализ документа {doc.id}, размер JSON: {len(content_str)} байт")
+            
+            # Получаем блоки документа
+            blocks = content_dict.get('blocks', [])
+            logger.info(f"Документ содержит {len(blocks)} блоков")
+            
+            # Прямой перебор блоков для точного подсчета
+            total_tasks = 0
+            completed_tasks = 0
+            
+            for block in blocks:
+                block_type = block.get('type')
+                block_id = block.get('id', 'no-id')
+                
+                # Для блоков типа 'list' со стилем 'checklist'
+                if block_type == 'list':
+                    data = block.get('data', {})
+                    style = data.get('style')
+                    
+                    if style == 'checklist':
+                        items = data.get('items', [])
+                        item_count = len(items)
+                        logger.info(f"Найден list-checklist с {item_count} элементами, ID={block_id}")
+                        
+                        # Учитываем каждый элемент как отдельную задачу
+                        for i, item in enumerate(items):
+                            total_tasks += 1
+                            item_str = json.dumps(item) if isinstance(item, dict) else str(item)
+                            
+                            # Проверяем, отмечен ли элемент
+                            checked = False
+                            # Проверяем все возможные варианты хранения статуса "выполнено"
+                            if isinstance(item, dict):
+                                # Прямая проверка на checked = true/True
+                                if item.get('checked') is True or str(item.get('checked')).lower() == 'true':
+                                    checked = True
+                                    logger.info(f"Элемент {i} отмечен через checked=true: {item}")
+                                # Проверка на наличие HTML-класса в content или text
+                                elif isinstance(item.get('content'), str) and 'cdx-list__checkbox--checked' in item.get('content'):
+                                    checked = True
+                                    logger.info(f"Элемент {i} отмечен через HTML класс в content: {item.get('content')[:50]}...")
+                                elif isinstance(item.get('text'), str) and 'cdx-list__checkbox--checked' in item.get('text'):
+                                    checked = True
+                                    logger.info(f"Элемент {i} отмечен через HTML класс в text: {item.get('text')[:50]}...")
+                            # Если item - строка, проверяем наличие HTML-класса
+                            elif isinstance(item, str) and 'cdx-list__checkbox--checked' in item:
+                                checked = True
+                                logger.info(f"Элемент {i} отмечен через HTML класс в строке: {item[:50]}...")
+                            
+                            # Общая проверка на любые признаки в JSON-строке
+                            if not checked and ('"checked":true' in item_str or '"checked": true' in item_str or 
+                                                'cdx-list__checkbox--checked' in item_str or 'checked="true"' in item_str):
+                                checked = True
+                                logger.info(f"Элемент {i} отмечен через поиск в JSON-строке: {item_str[:50]}...")
+                                
+                            if checked:
+                                completed_tasks += 1
+                                logger.info(f"Элемент {i} УЧТЕН как выполненный")
+                            else:
+                                logger.info(f"Элемент {i} НЕ отмечен как выполненный: {item_str[:50]}...")
+                
+                # Для блоков типа 'checklist'
+                elif block_type == 'checklist':
+                    data = block.get('data', {})
+                    items = data.get('items', [])
+                    item_count = len(items)
+                    logger.info(f"Найден checklist с {item_count} элементами, ID={block_id}")
+                    
+                    # Учитываем каждый элемент как отдельную задачу
+                    for i, item in enumerate(items):
+                        total_tasks += 1
+                        item_str = json.dumps(item) if isinstance(item, dict) else str(item)
+                        
+                        # Проверяем, отмечен ли элемент
+                        checked = False
+                        # Проверяем все возможные варианты хранения статуса "выполнено"
+                        if isinstance(item, dict):
+                            # Прямая проверка на checked = true/True
+                            if item.get('checked') is True or str(item.get('checked')).lower() == 'true':
+                                checked = True
+                                logger.info(f"Элемент чеклиста {i} отмечен через checked=true: {item}")
+                            # Проверка на наличие HTML-класса в content или text
+                            elif isinstance(item.get('content'), str) and 'cdx-list__checkbox--checked' in item.get('content'):
+                                checked = True
+                                logger.info(f"Элемент чеклиста {i} отмечен через HTML класс в content")
+                            elif isinstance(item.get('text'), str) and 'cdx-list__checkbox--checked' in item.get('text'):
+                                checked = True
+                                logger.info(f"Элемент чеклиста {i} отмечен через HTML класс в text")
+                        # Если item - строка, проверяем наличие HTML-класса
+                        elif isinstance(item, str) and 'cdx-list__checkbox--checked' in item:
+                            checked = True
+                            logger.info(f"Элемент чеклиста {i} отмечен через HTML класс в строке")
+                        
+                        # Общая проверка на любые признаки в JSON-строке
+                        if not checked and ('"checked":true' in item_str or '"checked": true' in item_str or 
+                                            'cdx-list__checkbox--checked' in item_str or 'checked="true"' in item_str):
+                            checked = True
+                            logger.info(f"Элемент чеклиста {i} отмечен через поиск в JSON-строке")
+                            
+                        if checked:
+                            completed_tasks += 1
+                            logger.info(f"Элемент чеклиста {i} УЧТЕН как выполненный")
+                        else:
+                            logger.info(f"Элемент чеклиста {i} НЕ отмечен как выполненный: {item_str[:50]}...")
+                
+                # Для блоков типа 'task'
+                elif block_type == 'task':
+                    total_tasks += 1
+                    data = block.get('data', {})
+                    is_completed = data.get('is_completed', False)
+                    
+                    if is_completed:
+                        completed_tasks += 1
+            
+            # Если прямой перебор блоков не дал результатов, используем анализ через регулярные выражения
+            if total_tasks == 0:
+                logger.info("Прямой перебор блоков не нашел задач, пробуем регулярные выражения")
+                
+                # Подсчет маркеров выполненных задач
+                
+                # Ищем блоки типа "list" со стилем "checklist"
+                list_checklist_pattern = r'"type"\s*:\s*"list".*?"style"\s*:\s*"checklist"'
+                list_checklists = re.findall(list_checklist_pattern, content_str)
+                list_checklists_count = len(list_checklists)
+                
+                # Ищем блоки типа "checklist"
+                checklist_pattern = r'"type"\s*:\s*"checklist"'
+                checklists = re.findall(checklist_pattern, content_str)
+                checklists_count = len(checklists)
+                
+                # Ищем массивы items в JSON
+                items_pattern = r'"items"\s*:\s*\[(.*?)\]'
+                items_matches = re.findall(items_pattern, content_str, re.DOTALL)
+                
+                # Подсчитываем элементы в найденных массивах items
+                items_count = 0
+                checked_items = 0
+                
+                for items_match in items_matches:
+                    # Подсчет элементов (объектов или строк)
+                    items = re.findall(r'({[^{}]*}|"[^"]*")', items_match)
+                    items_count += len(items)
+                    
+                    # Подсчет отмеченных элементов
+                    for i, item in enumerate(items):
+                        item_is_checked = False
+                        # Проверяем все возможные варианты отметки в JSON
+                        if '"checked":true' in item or '"checked": true' in item:
+                            item_is_checked = True
+                            logger.info(f"Regex: элемент {i} отмечен через checked:true")
+                        elif 'cdx-list__checkbox--checked' in item:
+                            item_is_checked = True
+                            logger.info(f"Regex: элемент {i} отмечен через CSS класс")
+                        elif 'checked="true"' in item:
+                            item_is_checked = True
+                            logger.info(f"Regex: элемент {i} отмечен через HTML атрибут")
+                        elif '"checked":"true"' in item:
+                            item_is_checked = True
+                            logger.info(f"Regex: элемент {i} отмечен через checked:'true' (строка)")
+                        
+                        if item_is_checked:
+                            checked_items += 1
+                            logger.info(f"Regex: элемент {i} УЧТЕН как выполненный")
+                        else:
+                            logger.info(f"Regex: элемент {i} НЕ отмечен как выполненный: {item[:50]}...")
+                
+                # Финальный подсчет задач через регулярные выражения
+                if items_count > 0:
+                    total_tasks = items_count
+                    completed_tasks = checked_items
+                else:
+                    # Используем оценку, если не смогли найти элементы
+                    total_tasks = (list_checklists_count + checklists_count) * 3
+                    
+                    # Ищем элементы с "checked":true для оценки выполненных задач
+                    pattern_checked = r'"checked"\s*:\s*true'
+                    checked_items = re.findall(pattern_checked, content_str)
+                    completed_tasks = len(checked_items)
+            
+            # В любом случае, корректируем результаты
+            if total_tasks < completed_tasks:
+                total_tasks = completed_tasks
+            
+            logger.info(f"ИТОГ по документу {doc.id}: всего задач: {total_tasks}, выполнено: {completed_tasks}")
+            return total_tasks, completed_tasks
         
         # Подсчитываем задачи во всех документах
         total_tasks = 0
         total_completed_tasks = 0
         
         # Текущий документ
-        doc_tasks, doc_completed = count_tasks_in_document(document)
+        doc_tasks, doc_completed = analyze_document_tasks(document)
         total_tasks += doc_tasks
         total_completed_tasks += doc_completed
         
         # Вложенные документы
         for doc in nested_docs:
-            doc_tasks, doc_completed = count_tasks_in_document(doc)
+            doc_tasks, doc_completed = analyze_document_tasks(doc)
             total_tasks += doc_tasks
             total_completed_tasks += doc_completed
+        
+        # Логируем итоговые результаты
+        logger.info(f"ВСЕГО по всем документам - задач: {total_tasks}, выполнено: {total_completed_tasks}")
         
         # Находим самого активного пользователя (по количеству закрытых задач)
         most_active_user = None
@@ -675,6 +862,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
             data = request.data
             task_id = data.get('task_id')
             is_completed = data.get('is_completed')
+            checklist_item_index = data.get('checklist_item_index')  # Индекс пункта для checklist
             
             if task_id is None or is_completed is None:
                 return Response({'detail': 'Не указаны обязательные параметры'}, status=status.HTTP_400_BAD_REQUEST)
@@ -685,10 +873,61 @@ class DocumentViewSet(viewsets.ModelViewSet):
             def update_task(blocks):
                 nonlocal updated
                 for block in blocks:
+                    # Обрабатываем блоки типа task
                     if block.get('type') == 'task' and block.get('id') == task_id:
                         block['data']['is_completed'] = is_completed
                         updated = True
                         return True
+                    # Обрабатываем блоки типа list для чеклистов
+                    elif block.get('type') == 'list' and block.get('id') == task_id:
+                        data = block.get('data', {})
+                        # Проверяем, является ли список чеклистом
+                        if data.get('style') == 'checklist':
+                            # Если указан индекс элемента
+                            if checklist_item_index is not None and isinstance(checklist_item_index, int):
+                                items = data.get('items', [])
+                                if 0 <= checklist_item_index < len(items):
+                                    if isinstance(items[checklist_item_index], dict):
+                                        items[checklist_item_index]['checked'] = is_completed
+                                    else:
+                                        # Если элемент - строка, заменяем его на объект
+                                        items[checklist_item_index] = {
+                                            'text': items[checklist_item_index] if isinstance(items[checklist_item_index], str) else '',
+                                            'checked': is_completed
+                                        }
+                                    updated = True
+                                    return True
+                            # Если индекс не указан, обновляем все элементы
+                            else:
+                                items = data.get('items', [])
+                                for i, item in enumerate(items):
+                                    if isinstance(item, dict):
+                                        item['checked'] = is_completed
+                                    else:
+                                        # Если элемент - строка, заменяем его на объект
+                                        items[i] = {
+                                            'text': item if isinstance(item, str) else '',
+                                            'checked': is_completed
+                                        }
+                                updated = True
+                                return True
+                    # Обрабатываем блоки типа checklist
+                    elif block.get('type') == 'checklist' and block.get('id') == task_id:
+                        # Если указан индекс элемента в checklist
+                        if checklist_item_index is not None and isinstance(checklist_item_index, int):
+                            items = block.get('data', {}).get('items', [])
+                            if 0 <= checklist_item_index < len(items):
+                                items[checklist_item_index]['checked'] = is_completed
+                                updated = True
+                                return True
+                        # Если индекс не указан, пытаемся обновить все элементы (для обратной совместимости)
+                        else:
+                            items = block.get('data', {}).get('items', [])
+                            for item in items:
+                                item['checked'] = is_completed
+                            updated = True
+                            return True
+                    # Обрабатываем вложенные документы
                     elif block.get('type') == 'nested-document':
                         try:
                             nested_doc = Document.objects.get(id=block.get('data', {}).get('id'))
@@ -714,7 +953,8 @@ class DocumentViewSet(viewsets.ModelViewSet):
                     action_type=action_type,
                     changes={
                         'task_id': task_id,
-                        'is_completed': is_completed
+                        'is_completed': is_completed,
+                        'checklist_item_index': checklist_item_index
                     }
                 )
                 

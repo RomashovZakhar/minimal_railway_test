@@ -472,6 +472,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastDocumentContent = useRef<any>(document.content);
   const isSavingRef = useRef(false);
+  const hasChangesRef = useRef(false);
   
   // Переименуем параметр document чтобы избежать конфликта с глобальным window.document
   const documentData = document;
@@ -1634,6 +1635,60 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       }
     };
   }, [documentData.id, setupWs]);
+
+  // Функция для логирования данных редактора
+  const logEditorData = async () => {
+    try {
+      if (!editorInstanceRef.current) {
+        console.error("Редактор не определен");
+        return;
+      }
+      
+      // Получаем данные из редактора
+      const outputData = await editorInstanceRef.current.save();
+      
+      // Логируем структуру данных для диагностики
+      console.log("Выходные данные редактора:", outputData);
+      
+      if (outputData && outputData.blocks) {
+        // Подсчет всех типов блоков
+        const blockTypes: Record<string, number> = {};
+        outputData.blocks.forEach((block: any) => {
+          const blockType = block.type as string;
+          if (!blockTypes[blockType]) {
+            blockTypes[blockType] = 0;
+          }
+          blockTypes[blockType]++;
+          
+          // Выводим данные о каждом блоке
+          console.log(`Блок типа ${blockType}:`, block);
+        });
+        
+        console.log("Типы блоков в документе:", blockTypes);
+        
+        // Проверяем list блоки, которые могут быть чеклистами
+        const lists = outputData.blocks.filter(
+          (block: any) => block.type === 'list'
+        );
+        console.log("Найденные списки:", lists);
+        
+        const checklists = outputData.blocks.filter(
+          (block: any) => block.type === 'checklist'
+        );
+        console.log("Найденные чеклисты:", checklists);
+      }
+    } catch (error) {
+      console.error("Ошибка получения данных редактора:", error);
+    }
+  };
+
+  // Запускаем логирование данных после инициализации редактора
+  setTimeout(() => {
+    if (editorInstanceRef.current) {
+      console.log("Запуск диагностики данных редактора...");
+      logEditorData();
+    }
+  }, 5000);
 
   return (
     <TaskModalsProvider>
