@@ -83,28 +83,6 @@
    createdb notion_things_db
    ```
 
-### Установка Redis
-
-#### Windows
-
-1. Скачайте Redis для Windows с [GitHub](https://github.com/microsoftarchive/redis/releases)
-2. Распакуйте архив в удобное место
-3. Запустите Redis сервер:
-   ```bash
-   redis-server.exe
-   ```
-
-#### MacOS
-
-1. Установите Redis с помощью Homebrew:
-   ```bash
-   brew install redis
-   ```
-2. Запустите Redis:
-   ```bash
-   brew services start redis
-   ```
-
 ### Клонирование репозитория
 
 ```bash
