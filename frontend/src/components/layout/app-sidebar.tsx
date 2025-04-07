@@ -141,40 +141,42 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
   return (
     <Sidebar 
       className={cn("border-r bg-background flex flex-col", className)}
-      style={{ "--sidebar-width": "16rem" } as React.CSSProperties}
+      style={{ "--sidebar-width": "16rem", maxWidth: "16rem" } as React.CSSProperties}
       {...props}
     >
-      <SidebarContent className="flex flex-col flex-1">
-        <div className="flex h-16 items-center px-6 overflow-hidden">
+      <SidebarContent className="flex flex-col flex-1 w-full overflow-hidden">
+        <div className="flex h-16 items-center px-6">
           <AcmeLogo />
-          <span className="ml-2 text-lg font-semibold whitespace-nowrap">Acme Inc.</span>
+          <span className="ml-2 text-lg font-semibold truncate">Acme Inc.</span>
         </div>
-        <ScrollArea className="flex-1">
-          <SidebarMenu>
+        <ScrollArea className="flex-1 w-full [&_[style*='display:table']]:!block [&_[style*='display:table']]:!w-full">
+          <SidebarMenu className="w-full max-w-full">
             {/* Главная / Рабочее пространство */}
-            <SidebarGroup>
+            <SidebarGroup className="w-full">
               <SidebarMenuItem
                 active={pathname === "/"}
                 onClick={navigateToRoot}
+                className="px-6 w-full"
               >
-                Рабочее пространство
+                <span className="block truncate w-full">Рабочее пространство</span>
               </SidebarMenuItem>
             </SidebarGroup>
 
             {/* Избранные документы */}
             {favoriteDocuments.length > 0 && (
-              <SidebarGroup>
-                <SidebarGroupLabel>
+              <SidebarGroup className="w-full">
+                <SidebarGroupLabel className="px-6 w-full">
                   Избранное
                 </SidebarGroupLabel>
-                <SidebarGroupContent>
+                <SidebarGroupContent className="w-full">
                   {favoriteDocuments.map((doc) => (
                     <SidebarMenuItem
                       key={doc.id}
                       active={pathname === `/documents/${doc.id}`}
                       onClick={() => router.push(`/documents/${doc.id}`)}
+                      className="px-6 w-full"
                     >
-                      {doc.title || "Без названия"}
+                      <span className="block truncate w-full">{doc.title || "Без названия"}</span>
                     </SidebarMenuItem>
                   ))}
                 </SidebarGroupContent>
@@ -183,20 +185,21 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
 
             {/* Совместные документы */}
             {sharedDocuments.length > 0 && (
-              <SidebarGroup>
-                <SidebarGroupLabel>
+              <SidebarGroup className="w-full">
+                <SidebarGroupLabel className="px-6 w-full">
                   Совместные документы
                 </SidebarGroupLabel>
-                <SidebarGroupContent>
+                <SidebarGroupContent className="w-full">
                   {sharedDocuments.map((doc) => (
                     <SidebarMenuItem
                       key={doc.id}
                       active={pathname === `/documents/${doc.id}`}
                       onClick={() => router.push(`/documents/${doc.id}`)}
+                      className="px-6 w-full"
                     >
-                      <div className="flex flex-col flex-1 min-w-0">
-                        <span className="truncate">{doc.title || "Без названия"}</span>
-                        <span className="text-xs text-muted-foreground truncate">
+                      <div className="flex flex-col w-full">
+                        <span className="block truncate w-full">{doc.title || "Без названия"}</span>
+                        <span className="block text-xs text-muted-foreground truncate w-full">
                           От: {doc.owner_username}
                           {doc.role && (
                             <span className={cn(
@@ -217,13 +220,19 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
         </ScrollArea>
 
         {/* Нижняя часть с настройками и выходом */}
-        <div className="mt-auto border-t">
-          <SidebarMenu>
-            <SidebarMenuItem onClick={() => window.dispatchEvent(new CustomEvent('open-settings'))}>
-              Настройки
+        <div className="mt-auto border-t w-full">
+          <SidebarMenu className="w-full max-w-full">
+            <SidebarMenuItem 
+              onClick={() => window.dispatchEvent(new CustomEvent('open-settings'))}
+              className="px-6 w-full"
+            >
+              <span className="block truncate w-full">Настройки</span>
             </SidebarMenuItem>
-            <SidebarMenuItem onClick={logout}>
-              Выйти
+            <SidebarMenuItem 
+              onClick={logout}
+              className="px-6 w-full"
+            >
+              <span className="block truncate w-full">Выйти</span>
             </SidebarMenuItem>
           </SidebarMenu>
         </div>

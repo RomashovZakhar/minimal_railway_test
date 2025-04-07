@@ -141,7 +141,7 @@ export const SidebarMenuItem = React.forwardRef<
       {...props}
     >
       {icon && <div className="flex h-5 w-5 items-center justify-center">{icon}</div>}
-      {expanded && <div className="truncate">{children}</div>}
+      {expanded && <div className="w-full overflow-hidden">{children}</div>}
     </div>
   )
 })

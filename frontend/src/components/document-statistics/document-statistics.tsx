@@ -175,3 +175,4 @@ export function DocumentStatistics({ documentId }: DocumentStatisticsProps) {
     </Card>
   );
 } 
+
