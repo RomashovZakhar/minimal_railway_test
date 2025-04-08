@@ -1,9 +1,33 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 from django.contrib.auth.password_validation import validate_password
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .models import Notification
 
 User = get_user_model()
+
+class EmailVerifiedTokenObtainPairSerializer(TokenObtainPairSerializer):
+    """
+    Расширенный TokenObtainPairSerializer с проверкой подтверждения email
+    """
+    def validate(self, attrs):
+        # Получаем учетные данные
+        email = attrs.get('email')
+        
+        try:
+            # Проверяем, существует ли пользователь
+            user = User.objects.get(email=email)
+            
+            # Проверяем, подтвержден ли email
+            if not user.is_email_verified:
+                raise serializers.ValidationError(
+                    {"detail": "Email не подтвержден. Пожалуйста, подтвердите ваш email перед входом в систему."}
+                )
+        except User.DoesNotExist:
+            pass  # Стандартная валидация выбросит соответствующую ошибку
+            
+        # Выполняем стандартную валидацию токена
+        return super().validate(attrs)
 
 class UserSerializer(serializers.ModelSerializer):
     """

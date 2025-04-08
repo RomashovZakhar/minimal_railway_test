@@ -28,7 +28,7 @@ const AuthContext = createContext<AuthContextType>({
 
 export const useAuth = () => useContext(AuthContext);
 
-const publicRoutes = ['/login', '/register', '/forgot-password'];
+const publicRoutes = ['/login', '/register', '/forgot-password', '/verify-email'];
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
@@ -60,6 +60,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const response = await api.get('/users/me/');
         setUser(response.data);
+        
+        // Проверяем, верифицирован ли email
+        if (!response.data.is_email_verified && !publicRoutes.includes(pathname)) {
+          // Если email не подтвержден и страница не публичная, перенаправляем на начальную страницу
+          // В реальном приложении здесь можно перенаправить на специальную страницу подтверждения email
+          router.push('/verify-email');
+          return;
+        }
         
         // Если пользователь на странице входа или регистрации, перенаправляем на корневой документ
         if (publicRoutes.includes(pathname)) {

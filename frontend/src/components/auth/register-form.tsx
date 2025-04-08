@@ -26,7 +26,6 @@ export function RegisterForm({
   const [otpSent, setOtpSent] = useState<boolean>(false)
   const [registrationData, setRegistrationData] = useState<{
     email: string;
-    otp: string;
     password: string;
   } | null>(null)
 
@@ -60,7 +59,6 @@ export function RegisterForm({
       // Сохраняем данные для подтверждения email
       setRegistrationData({
         email: data.email,
-        otp: data.otp, // В реальном приложении OTP будет отправлен на email
         password,
       })
       
@@ -206,16 +204,37 @@ export function RegisterForm({
                     required
                     disabled={isLoading}
                   />
-                  {/* В демо-режиме показываем OTP */}
-                  {registrationData && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Демо-режим: Ваш код {registrationData.otp}
-                    </p>
-                  )}
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Подтверждение..." : "Подтвердить Email"}
                 </Button>
+                <div className="text-center">
+                  <button 
+                    type="button" 
+                    className="text-sm text-primary hover:underline" 
+                    disabled={isLoading}
+                    onClick={async () => {
+                      if (!registrationData) return;
+                      
+                      setIsLoading(true);
+                      setError(null);
+                      
+                      try {
+                        await api.post("/resend-verification/", {
+                          email: registrationData.email
+                        });
+                        setError("Новый код подтверждения отправлен на ваш email.");
+                      } catch (error: any) {
+                        console.error("Ошибка при повторной отправке кода:", error);
+                        setError(error.response?.data?.detail || "Не удалось отправить код повторно.");
+                      } finally {
+                        setIsLoading(false);
+                      }
+                    }}
+                  >
+                    Отправить код повторно
+                  </button>
+                </div>
               </div>
             </form>
           ) : (

@@ -4,8 +4,10 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import get_user_model
-from .serializers import UserSerializer, RegisterSerializer, VerifyEmailSerializer, UserUpdateSerializer, NotificationSerializer
+from rest_framework_simplejwt.views import TokenObtainPairView
+from .serializers import UserSerializer, RegisterSerializer, VerifyEmailSerializer, UserUpdateSerializer, NotificationSerializer, EmailVerifiedTokenObtainPairSerializer
 from .models import Notification
+from .email_service import send_verification_email
 import random
 import string
 import logging
@@ -183,17 +185,18 @@ class RegisterView(generics.CreateAPIView):
         # Создаем пользователя
         user = serializer.save()
         
-        # Генерируем OTP-код и сохраняем его (в реальном проекте нужно отправить на email)
+        # Генерируем OTP-код для верификации email
         otp = ''.join(random.choices(string.digits, k=6))
-        user.otp = otp  # В реальном проекте нужно добавить это поле или использовать кэш/Redis
-        user.save()
+        user.set_verification_code(otp)
         
         logger.info(f"Создан новый пользователь: {user.email}")
+        
+        # Отправляем письмо верификации
+        send_verification_email(user, otp)
         
         return Response({
             "detail": "Пользователь создан. Проверьте email для подтверждения.",
             "email": user.email,
-            "otp": otp  # В продакшен-версии нужно убрать, здесь для удобства разработки
         }, status=status.HTTP_201_CREATED)
 
 class VerifyEmailView(generics.GenericAPIView):
@@ -213,13 +216,54 @@ class VerifyEmailView(generics.GenericAPIView):
         try:
             user = User.objects.get(email=email)
             
-            # В реальном проекте нужно проверить OTP из кэша/Redis
-            if user.otp == otp:  # Используем поле otp, которое мы добавили в RegisterView
+            # Проверяем код верификации
+            if user.is_verification_code_valid(otp):
                 user.is_email_verified = True
+                user.otp = None  # Удаляем код верификации после использования
+                user.otp_created_at = None
                 user.save()
+                
                 logger.info(f"Пользователь {email} подтвердил свой email")
                 return Response({"detail": "Email успешно подтвержден."}, status=status.HTTP_200_OK)
             else:
-                return Response({"detail": "Неверный код подтверждения."}, status=status.HTTP_400_BAD_REQUEST)
+                logger.warning(f"Неверный или устаревший код верификации для {email}")
+                return Response({"detail": "Неверный или устаревший код подтверждения."}, status=status.HTTP_400_BAD_REQUEST)
         except User.DoesNotExist:
+            logger.warning(f"Попытка верификации для несуществующего пользователя: {email}")
             return Response({"detail": "Пользователь не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+class ResendVerificationView(generics.GenericAPIView):
+    """
+    API endpoint для повторной отправки кода верификации
+    """
+    permission_classes = [AllowAny]
+    
+    def post(self, request):
+        email = request.data.get('email')
+        
+        if not email:
+            return Response({"detail": "Email не указан."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            user = User.objects.get(email=email)
+            
+            # Если email уже подтвержден
+            if user.is_email_verified:
+                return Response({"detail": "Email уже подтвержден."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Генерируем новый OTP-код
+            otp = ''.join(random.choices(string.digits, k=6))
+            user.set_verification_code(otp)
+            
+            # Отправляем письмо верификации
+            send_verification_email(user, otp)
+            
+            logger.info(f"Повторная отправка кода верификации для {email}")
+            return Response({"detail": "Код подтверждения отправлен повторно."}, status=status.HTTP_200_OK)
+        
+        except User.DoesNotExist:
+            logger.warning(f"Попытка повторной отправки кода для несуществующего пользователя: {email}")
+            return Response({"detail": "Пользователь не найден."}, status=status.HTTP_404_NOT_FOUND)
+
+class EmailVerifiedTokenObtainPairView(TokenObtainPairView):
+    serializer_class = EmailVerifiedTokenObtainPairSerializer
