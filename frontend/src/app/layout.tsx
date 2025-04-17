@@ -5,6 +5,7 @@ import { AuthProvider } from "@/components/auth";
 import { Toaster } from "@/components/ui/sonner";
 import { SettingsDialog } from "@/components/settings/settings-dialog";
 import { cn } from "@/lib/utils";
+import { FixTableStyleComponent } from "@/components/fix-table-style-component";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -34,6 +35,7 @@ export default function RootLayout({
           {children}
           <SettingsDialog />
           <Toaster />
+          <FixTableStyleComponent />
         </AuthProvider>
       </body>
     </html>

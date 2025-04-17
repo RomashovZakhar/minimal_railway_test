@@ -51,6 +51,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { DocumentStatistics } from "@/components/document-statistics/document-statistics"
+import { Loader } from "@/components/ui/loader"
 
 // Тип для документа
 interface Document {
@@ -58,9 +59,10 @@ interface Document {
   title: string;
   content: any;
   parent: string | null;
-  path?: Array<{ id: string; title: string }>;
+  path?: Array<{ id: string; title: string; icon?: string }>;
   is_favorite?: boolean;
   is_root?: boolean;
+  icon?: string;
 }
 
 export default function DocumentPage() {
@@ -70,7 +72,7 @@ export default function DocumentPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [title, setTitle] = useState<string>("")
-  const [breadcrumbs, setBreadcrumbs] = useState<Array<{id: string, title: string}>>([])
+  const [breadcrumbs, setBreadcrumbs] = useState<Array<{id: string, title: string, icon?: string}>>([])
   const titleInputRef = useRef<HTMLInputElement>(null);
   const isNewDocument = useRef(false);
   const initialLoadDone = useRef(false);
@@ -100,7 +102,7 @@ export default function DocumentPage() {
         
         isNewDocument.current = isNewlyCreated;
         
-        let documentPath: Array<{id: string, title: string}> = [];
+        let documentPath: Array<{id: string, title: string, icon?: string}> = [];
         
         if (documentData.path && Array.isArray(documentData.path)) {
           documentPath = documentData.path;
@@ -111,7 +113,8 @@ export default function DocumentPage() {
             
             documentPath.push({
               id: parentData.id,
-              title: parentData.title || "Без названия"
+              title: parentData.title || "Без названия",
+              icon: parentData.icon
             });
           } catch (parentErr) {
             console.warn("Не удалось загрузить родительский документ:", parentErr);
@@ -120,7 +123,8 @@ export default function DocumentPage() {
         
         documentPath.push({
           id: documentData.id,
-          title: documentData.title || "Без названия"
+          title: documentData.title || "Без названия",
+          icon: documentData.icon
         });
         
         setBreadcrumbs(documentPath);
@@ -309,7 +313,8 @@ export default function DocumentPage() {
           const saveResponse = await api.put(`/documents/${updatedDoc.id}/`, {
             title: updatedDoc.title,
             content: updatedDoc.content,
-            parent: updatedDoc.parent
+            parent: updatedDoc.parent,
+            icon: updatedDoc.icon
           });
           
           console.log('Документ успешно сохранен на сервере:', saveResponse.status);
@@ -430,6 +435,31 @@ export default function DocumentPage() {
     }
   };
 
+  // Обработка обновлений иконки из других вкладок
+  useEffect(() => {
+    const handleIconUpdate = (event: StorageEvent) => {
+      if (event.key === `document_icon_update_${id}` && event.newValue && document) {
+        try {
+          const data = JSON.parse(event.newValue);
+          if (data.documentId === id && data.icon) {
+            // Обновляем иконку документа в текущем состоянии
+            setDocument(prevDoc => {
+              if (!prevDoc) return prevDoc;
+              return { ...prevDoc, icon: data.icon };
+            });
+          }
+        } catch (err) {
+          console.error('Ошибка при обработке обновления иконки:', err);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleIconUpdate);
+    return () => {
+      window.removeEventListener('storage', handleIconUpdate);
+    };
+  }, [id, document]);
+
   if (loading) {
     return (
       <SidebarProvider>
@@ -437,8 +467,11 @@ export default function DocumentPage() {
           <AppSidebar />
           <SidebarInset>
             <div className="flex flex-col items-center justify-center min-h-screen">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-              <p className="text-lg text-muted-foreground">Загрузка документа...</p>
+              <Loader 
+                variant="spinner"
+                size="md"
+                text="Загрузка документа..."
+              />
             </div>
           </SidebarInset>
         </div>
@@ -480,11 +513,19 @@ export default function DocumentPage() {
                     {index > 0 && <BreadcrumbSeparator />}
                     {index === breadcrumbs.length - 1 ? (
                       <BreadcrumbItem>
-                        <BreadcrumbPage>{item.title || "Без названия"}</BreadcrumbPage>
+                        <BreadcrumbPage>
+                          {item.icon && (
+                            <span className="mr-1">{item.icon}</span>
+                          )}
+                          {item.title || "Без названия"}
+                        </BreadcrumbPage>
                       </BreadcrumbItem>
                     ) : (
                       <BreadcrumbItem>
                         <BreadcrumbLink href={`/documents/${item.id}`}>
+                          {item.icon && (
+                            <span className="mr-1">{item.icon}</span>
+                          )}
                           {item.title || "Без названия"}
                         </BreadcrumbLink>
                       </BreadcrumbItem>

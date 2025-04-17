@@ -3,7 +3,7 @@
 import * as React from "react"
 import { usePathname, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { CustomScrollArea } from "@/components/ui/custom-scroll-area"
 import { useAuth } from "@/components/auth"
 import { useEffect, useState } from "react"
 import api from "@/lib/api"
@@ -22,6 +22,7 @@ import {
 interface FavoriteDocument {
   id: string;
   title: string;
+  icon?: string;
 }
 
 // Тип для общего документа
@@ -30,6 +31,7 @@ interface SharedDocument {
   title: string;
   owner_username: string;
   role?: 'editor' | 'viewer';
+  icon?: string;
 }
 
 interface AppSidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -40,6 +42,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
   const { logout } = useAuth()
   const [favoriteDocuments, setFavoriteDocuments] = useState<FavoriteDocument[]>([])
   const [sharedDocuments, setSharedDocuments] = useState<SharedDocument[]>([])
+  
 
   // Загрузка избранных документов
   useEffect(() => {
@@ -108,6 +111,47 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
     };
   }, []);
 
+  // Обработка обновлений иконок документов в реальном времени
+  useEffect(() => {
+    const handleIconUpdated = (event: StorageEvent) => {
+      // Проверяем, является ли ключ обновлением иконки
+      if (event.key && event.key.startsWith('document_icon_update_') && event.newValue) {
+        try {
+          const data = JSON.parse(event.newValue);
+          const documentId = data.documentId;
+          const newIcon = data.icon;
+          
+          // Обновляем иконку в избранных документах
+          setFavoriteDocuments(prev => 
+            prev.map(doc => 
+              doc.id === documentId 
+                ? { ...doc, icon: newIcon } 
+                : doc
+            )
+          );
+          
+          // Обновляем иконку в совместных документах
+          setSharedDocuments(prev => 
+            prev.map(doc => 
+              doc.id === documentId 
+                ? { ...doc, icon: newIcon } 
+                : doc
+            )
+          );
+          
+          console.log(`Обновлена иконка документа ${documentId} на ${newIcon}`);
+        } catch (err) {
+          console.error('Ошибка при обработке обновления иконки:', err);
+        }
+      }
+    };
+    
+    window.addEventListener('storage', handleIconUpdated);
+    return () => {
+      window.removeEventListener('storage', handleIconUpdated);
+    };
+  }, []);
+
   // Функция для перехода к корневому документу
   const navigateToRoot = async () => {
     try {
@@ -147,9 +191,9 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
       <SidebarContent className="flex flex-col flex-1 w-full overflow-hidden">
         <div className="flex h-16 items-center px-6">
           <AcmeLogo />
-          <span className="ml-2 text-lg font-semibold truncate">Acme Inc.</span>
+          <span className="ml-2 text-lg font-semibold truncate">RRodnik</span>
         </div>
-        <ScrollArea className="flex-1 w-full [&_[style*='display:table']]:!block [&_[style*='display:table']]:!w-full">
+        <CustomScrollArea className="flex-1 w-full">
           <SidebarMenu className="w-full max-w-full">
             {/* Главная / Рабочее пространство */}
             <SidebarGroup className="w-full">
@@ -158,7 +202,26 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                 onClick={navigateToRoot}
                 className="px-6 w-full"
               >
-                <span className="block truncate w-full">Рабочее пространство</span>
+                <div className="flex items-center w-full">
+                  <span className="mr-2 text-lg">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="h-4 w-4"
+                    >
+                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                      <polyline points="9 22 9 12 15 12 15 22" />
+                    </svg>
+                  </span>
+                  <span className="block truncate w-full">Рабочее пространство</span>
+                </div>
               </SidebarMenuItem>
             </SidebarGroup>
 
@@ -176,7 +239,28 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                       onClick={() => router.push(`/documents/${doc.id}`)}
                       className="px-6 w-full"
                     >
-                      <span className="block truncate w-full">{doc.title || "Без названия"}</span>
+                      <div className="flex items-center w-full">
+                        <span className="mr-2 text-lg">
+                          {doc.icon || (
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="16"
+                              height="16"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              className="h-4 w-4"
+                            >
+                              <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                              <polyline points="14 2 14 8 20 8" />
+                            </svg>
+                          )}
+                        </span>
+                        <span className="block truncate w-full">{doc.title || "Без названия"}</span>
+                      </div>
                     </SidebarMenuItem>
                   ))}
                 </SidebarGroupContent>
@@ -198,8 +282,29 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                       className="px-6 w-full"
                     >
                       <div className="flex flex-col w-full">
-                        <span className="block truncate w-full">{doc.title || "Без названия"}</span>
-                        <span className="block text-xs text-muted-foreground truncate w-full">
+                        <div className="flex items-center">
+                          <span className="mr-2 text-lg">
+                            {doc.icon || (
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="16"
+                                height="16"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                className="h-4 w-4"
+                              >
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                <polyline points="14 2 14 8 20 8" />
+                              </svg>
+                            )}
+                          </span>
+                          <span className="block truncate w-full">{doc.title || "Без названия"}</span>
+                        </div>
+                        <span className="block text-xs text-muted-foreground truncate w-full pl-6">
                           От: {doc.owner_username}
                           {doc.role && (
                             <span className={cn(
@@ -217,7 +322,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
               </SidebarGroup>
             )}
           </SidebarMenu>
-        </ScrollArea>
+        </CustomScrollArea>
 
         {/* Нижняя часть с настройками и выходом */}
         <div className="mt-auto border-t w-full">

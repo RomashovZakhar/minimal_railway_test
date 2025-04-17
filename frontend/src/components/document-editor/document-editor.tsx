@@ -22,6 +22,21 @@ import Table from "@editorjs/table"
 import { TaskModalsProvider, useTaskModals, TaskModalsContextType } from "@/components/tasks/task-modals-provider"
 import { GlobalTaskModals } from "@/components/tasks/global-task-modals"
 import React from "react"
+import Undo from 'editorjs-undo'
+import Checklist from '@editorjs/checklist'
+import Quote from '@editorjs/quote'
+import CodeTool from '@editorjs/code'
+import Marker from '@editorjs/marker'
+import { useSocket } from '@/hooks/use-socket'
+import styles from '@/styles/editor.module.css'
+import TextareaAutosize from 'react-textarea-autosize'
+import { useUser } from '@/components/auth'
+import * as Y from 'yjs'
+import { WebsocketProvider } from 'y-websocket'
+import { EditorJSFlexibleBlock } from './editor-tools/flexible-block'
+import { randomColor } from '@/lib/utils'
+import TaskTool from './tools/task-tool'
+import { EmojiPicker } from '@/components/document/emoji-picker'
 
 // Добавляем глобальные стили для курсоров
 import "./remote-cursor.css"
@@ -35,6 +50,7 @@ interface Document {
   content: unknown;
   parent: string | null;
   is_favorite?: boolean;
+  icon?: string;
 }
 
 interface DocumentEditorProps {
@@ -75,6 +91,7 @@ const NestedDocumentTool = {
     data: {
       id: string;
       title: string;
+      icon?: string;
     };
     block: HTMLElement;
     container: HTMLElement;
@@ -160,10 +177,14 @@ const NestedDocumentTool = {
         if (response.data && response.data.title) {
           console.log(`Получены данные, текущее название: ${this.data.title}, актуальное название: ${response.data.title}`);
           
-          // Обновляем данные только если название изменилось
-          if (this.data.title !== response.data.title) {
+          // Обновляем данные только если название или иконка изменились
+          const titleChanged = this.data.title !== response.data.title;
+          const iconChanged = this.data.icon !== response.data.icon;
+          
+          if (titleChanged || iconChanged) {
             this.data.title = response.data.title;
-            console.log(`Название обновлено на: ${this.data.title}`);
+            this.data.icon = response.data.icon;
+            console.log(`Название обновлено на: ${this.data.title}, иконка: ${this.data.icon || 'нет'}`);
             
             // Обновляем данные блока в EditorJS
             try {
@@ -171,7 +192,7 @@ const NestedDocumentTool = {
                 const blockIndex = this.api.blocks.getCurrentBlockIndex();
                 if (typeof blockIndex === 'number') {
                   await this.api.blocks.update(blockIndex, this.data);
-                  console.log(`Блок ${blockIndex} обновлен с новым названием`);
+                  console.log(`Блок ${blockIndex} обновлен с новым названием и иконкой`);
                 }
               }
             } catch (e) {
@@ -203,13 +224,32 @@ const NestedDocumentTool = {
       const linkContainer = document.createElement('div');
       linkContainer.className = 'py-1 px-2 -mx-2 my-0.5 inline-block rounded hover:bg-muted/80 transition-colors cursor-pointer';
       
+      // Создаем контейнер для иконки и текста
+      const contentContainer = document.createElement('div');
+      contentContainer.className = 'flex items-center';
+      
+      // Если есть иконка (эмодзи), добавляем ее
+      if (this.data.icon) {
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'mr-2 text-lg';
+        iconSpan.textContent = this.data.icon;
+        contentContainer.appendChild(iconSpan);
+      } else {
+        // Если нет иконки, добавляем стандартную иконку документа
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'mr-2 text-muted-foreground';
+        iconSpan.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-4 w-4"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" /><polyline points="14 2 14 8 20 8" /></svg>';
+        contentContainer.appendChild(iconSpan);
+      }
+      
       // Текст ссылки в стиле Notion с подчеркиванием
       const textSpan = document.createElement('span');
       textSpan.className = 'font-medium text-m text-foreground border-b border-muted-foreground/40';
       textSpan.textContent = safeTitle;
       
       // Добавляем текст в контейнер
-      linkContainer.appendChild(textSpan);
+      contentContainer.appendChild(textSpan);
+      linkContainer.appendChild(contentContainer);
       
       // Добавляем обработчик клика
       linkContainer.addEventListener('click', () => {
@@ -349,6 +389,11 @@ const NestedDocumentTool = {
           title: newTitle
         };
         
+        // Проверяем, есть ли у нового документа иконка
+        if (response.data.icon) {
+          this.data.icon = response.data.icon;
+        }
+        
         // Обновляем отображение блока - НЕ вызываем здесь renderExistingDocument,
         // так как он будет вызван позже при редиректе
         
@@ -363,7 +408,8 @@ const NestedDocumentTool = {
             type: 'nestedDocument',
             data: {
               id: newDocumentId,
-              title: newTitle
+              title: newTitle,
+              icon: response.data.icon
             }
           };
           
@@ -1450,10 +1496,16 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
   }, []);
 
   // Обновляем заголовок документа
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
     onChange({ ...documentData, title: newTitle });
+    
+    // Автоматически подстраиваем высоту textarea под содержимое
+    if (e.target) {
+      e.target.style.height = 'auto';
+      e.target.style.height = e.target.scrollHeight + 'px';
+    }
   };
 
   // Сохранение перед уходом
@@ -1690,19 +1742,78 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
     }
   }, 5000);
 
+  // Обновляем высоту textarea при изменении заголовка
+  useEffect(() => {
+    if (titleInputRef.current) {
+      const textarea = titleInputRef.current;
+      textarea.style.height = 'auto';
+      textarea.style.height = textarea.scrollHeight + 'px';
+    }
+  }, [title]);
+
   return (
     <TaskModalsProvider>
       <GlobalTaskModals />
       <div className="flex flex-col h-full relative">
         <div className="flex items-center justify-between mx-auto w-full" style={{ maxWidth: '650px', padding: '20px 0' }}>
-          <Input
-            className="border-none text-3xl font-bold focus-visible:ring-0 p-0 h-auto"
-            placeholder="Untitled"
-            value={title}
-            onChange={handleTitleChange}
-            ref={titleInputRef as any}
-            autoFocus={false}
-          />
+          <div className="flex flex-col w-full">
+            <EmojiPicker
+              currentEmoji={document.icon}
+              onEmojiSelect={(emoji) => {
+                // Создаем объект с обновленным emoji
+                const updatedDoc = { ...document, icon: emoji };
+                // Обновляем UI
+                onChange(updatedDoc);
+                
+                // Отправляем обновление на сервер
+                api.put(`/documents/${document.id}/`, {
+                  title: document.title,
+                  content: document.content,
+                  parent: document.parent,
+                  is_favorite: document.is_favorite,
+                  icon: emoji
+                })
+                .then(() => {
+                  console.log('Эмодзи успешно сохранен:', emoji);
+                  
+                  // Оповещаем другие вкладки об изменении эмодзи
+                  try {
+                    const iconUpdateEvent = {
+                      documentId: document.id,
+                      icon: emoji,
+                      timestamp: Date.now()
+                    };
+                    localStorage.setItem(`document_icon_update_${document.id}`, JSON.stringify(iconUpdateEvent));
+                    
+                    // Вызываем событие storage вручную для текущей вкладки
+                    window.dispatchEvent(new StorageEvent('storage', {
+                      key: `document_icon_update_${document.id}`,
+                      newValue: JSON.stringify(iconUpdateEvent)
+                    }));
+                  } catch (err) {
+                    console.error('Ошибка при сохранении обновления иконки в localStorage:', err);
+                  }
+                })
+                .catch((error) => {
+                  console.error('Ошибка при сохранении эмодзи:', error);
+                });
+              }}
+            />
+            <div className="w-full">
+              <textarea
+                className="border-none text-3xl font-bold focus-visible:ring-0 focus-visible:outline-none p-0 mt-2 w-full resize-none overflow-hidden bg-transparent"
+                placeholder="Untitled"
+                value={title}
+                onChange={handleTitleChange}
+                ref={titleInputRef as any}
+                rows={Math.min(3, title.split('\n').length)}
+                style={{
+                  height: 'auto',
+                  minHeight: '44px'
+                }}
+              />
+            </div>
+          </div>
         </div>
         
         <div 

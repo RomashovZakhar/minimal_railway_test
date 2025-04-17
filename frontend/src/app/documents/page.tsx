@@ -3,6 +3,7 @@
 import { useEffect } from "react"
 import { useRouter } from "next/navigation"
 import api from "@/lib/api"
+import { Loader } from "@/components/ui/loader"
 
 // Шаблон приветственного контента для нового пользователя
 const welcomeContent = {
@@ -228,8 +229,12 @@ export default function DocumentsIndexPage() {
   // Показываем индикатор загрузки, пока идет перенаправление
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mb-4"></div>
-      <p className="text-lg text-muted-foreground">Загрузка документа...</p>
+      <Loader 
+        variant="skeleton" 
+        size="lg" 
+        text="Загрузка документов..." 
+        fullPage 
+      />
     </div>
   )
 } 

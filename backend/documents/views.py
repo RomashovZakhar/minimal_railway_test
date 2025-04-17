@@ -320,6 +320,12 @@ class DocumentViewSet(viewsets.ModelViewSet):
                 instance.save()
                 logger.info(f"Сохранили content напрямую в модель. Размер: {len(json.dumps(instance.content))}")
             
+            # Проверяем наличие поля icon в запросе и обновляем его
+            if 'icon' in mutable_data:
+                instance.icon = mutable_data['icon']
+                instance.save()
+                logger.info(f"Сохранили icon напрямую в модель: {instance.icon}")
+            
             # Сохраняем остальные поля через сериализатор
             serializer.save()
             

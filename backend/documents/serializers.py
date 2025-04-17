@@ -17,7 +17,7 @@ class DocumentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Document
-        fields = ['id', 'title', 'created_at', 'updated_at', 'owner', 'owner_username', 'parent', 'is_favorite']
+        fields = ['id', 'title', 'created_at', 'updated_at', 'owner', 'owner_username', 'parent', 'is_favorite', 'icon']
         read_only_fields = ['owner', 'created_at', 'updated_at']
 
 class DocumentDetailSerializer(serializers.ModelSerializer):
@@ -130,7 +130,7 @@ class DocumentDetailSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Document
-        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'owner', 'owner_username', 'parent', 'children', 'is_favorite', 'path', 'is_root']
+        fields = ['id', 'title', 'content', 'created_at', 'updated_at', 'owner', 'owner_username', 'parent', 'children', 'is_favorite', 'path', 'is_root', 'icon']
         read_only_fields = ['owner', 'created_at', 'updated_at', 'path', 'is_root']
 
 class UserBasicSerializer(serializers.ModelSerializer):

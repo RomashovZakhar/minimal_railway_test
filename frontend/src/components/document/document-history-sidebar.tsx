@@ -9,6 +9,7 @@ import api from "@/lib/api";
 import { formatDistanceToNow } from "date-fns";
 import { ru } from "date-fns/locale";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Loader } from "@/components/ui/loader";
 
 interface DocumentHistoryEntry {
   id: string;
@@ -131,8 +132,11 @@ export function DocumentHistorySidebar({ documentId, onClose }: DocumentHistoryS
 
       {loading ? (
         <div className="flex flex-col items-center justify-center flex-1 p-8">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-          <p className="text-sm text-muted-foreground">Загрузка истории...</p>
+          <Loader 
+            variant="dots" 
+            size="md" 
+            text="Загрузка истории..." 
+          />
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center flex-1 p-8">

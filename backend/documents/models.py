@@ -16,6 +16,7 @@ class Document(MPTTModel):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='documents')
     is_favorite = models.BooleanField(default=False)
     is_root = models.BooleanField(default=False)  # Флаг для обозначения корневого документа (рабочего пространства)
+    icon = models.CharField(max_length=10, blank=True, null=True)  # Поле для хранения эмодзи
     
     # MPTT поля для древовидной структуры
     parent = TreeForeignKey('self', on_delete=models.CASCADE, null=True, blank=True, related_name='children')

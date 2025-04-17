@@ -2,6 +2,18 @@
 
 @plugin "tailwindcss-animate";
 
+/* Переопределение стилей display:table в сайдбаре */
+*[style*="display:table"] {
+  display: block !important;
+  width: 100% !important;
+}
+
+/* Стили для viewport радиальных компонентов */
+[data-radix-scroll-area-viewport] > div {
+  display: block !important;
+  width: 100% !important;
+}
+
 /* Импортируем стили highlight.js */
 @import 'highlight.js/styles/github.css';
 
