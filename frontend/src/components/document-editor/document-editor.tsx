@@ -542,6 +542,11 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
     try {
       console.log('📥 Применяем внешний контент к редактору');
       
+      // Добавляем класс для предотвращения мерцания при обновлении
+      if (editorContainerRef.current) {
+        editorContainerRef.current.classList.add('updating-content');
+      }
+      
       // Обновляем lastContentRef, чтобы избежать повторной отправки тех же данных
       lastDocumentContent.current = content;
       
@@ -556,9 +561,20 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
         });
       }
       
+      // После применения обновлений, удаляем класс с небольшой задержкой
+      setTimeout(() => {
+        if (editorContainerRef.current) {
+          editorContainerRef.current.classList.remove('updating-content');
+        }
+      }, 100);
+      
       console.log('✅ Внешний контент успешно применен');
     } catch (error) {
       console.error('❌ Ошибка при применении внешнего контента:', error);
+      // Убираем класс даже при ошибке
+      if (editorContainerRef.current) {
+        editorContainerRef.current.classList.remove('updating-content');
+      }
     }
   }, [documentData, onChange]);
 

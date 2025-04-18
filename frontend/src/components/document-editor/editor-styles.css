@@ -252,3 +252,39 @@
 .dark .hljs-params {
   color: #f08bc5 !important;
 }
+
+/* Anti-flicker rules for editor updates */
+.updating-content,
+.updating-content * {
+  transition: none !important;
+  animation: none !important;
+  animation-duration: 0s !important;
+  opacity: 1 !important;
+}
+
+.updating-content .ce-block {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.updating-content .ce-toolbar,
+.updating-content .ce-toolbar__content,
+.updating-content .ce-block__content,
+.updating-content .ce-inline-toolbar,
+.updating-content .codex-editor__redactor {
+  transition: none !important;
+  animation: none !important;
+  transform: none !important;
+  opacity: 1 !important;
+}
+
+/* Ensure stable rendering of existing content */
+.ce-block {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+.ce-block:hover {
+  transition: none !important;
+  animation: none !important;
+}
