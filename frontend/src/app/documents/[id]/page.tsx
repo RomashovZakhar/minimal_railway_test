@@ -11,6 +11,7 @@ import {
   BreadcrumbList,
   BreadcrumbSeparator,
   BreadcrumbPage,
+  BreadcrumbEllipsis,
 } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { DocumentEditor } from "@/components/document-editor"
@@ -460,6 +461,74 @@ export default function DocumentPage() {
     };
   }, [id, document]);
 
+  // Функция для усечения текста с многоточием
+  const truncateText = (text: string, maxLength: number = 25) => {
+    if (!text) return "Без названия";
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+  };
+  
+  // Функция для "умного" отображения хлебных крошек
+  const renderSmartBreadcrumbs = (items: Array<{id: string, title: string, icon?: string}>) => {
+    if (items.length <= 3) {
+      // Если элементов мало, показываем все
+      return items.map((item, index) => (
+        <React.Fragment key={item.id}>
+          {index > 0 && <BreadcrumbSeparator />}
+          {renderBreadcrumbItem(item, index === items.length - 1)}
+        </React.Fragment>
+      ));
+    } else {
+      // Показываем первый элемент, эллипсис и последние 2 элемента
+      const firstItem = items[0];
+      const lastItems = items.slice(-2);
+      const hiddenItems = items.slice(1, -2);
+      
+      return (
+        <>
+          {renderBreadcrumbItem(firstItem, false)}
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <span title={`Скрытые элементы: ${hiddenItems.map(i => i.title).join(', ')}`}>
+              <BreadcrumbEllipsis />
+            </span>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          {lastItems.map((item, index) => (
+            <React.Fragment key={item.id}>
+              {index > 0 && <BreadcrumbSeparator />}
+              {renderBreadcrumbItem(item, index === lastItems.length - 1)}
+            </React.Fragment>
+          ))}
+        </>
+      );
+    }
+  };
+  
+  // Функция для рендеринга отдельного элемента хлебных крошек
+  const renderBreadcrumbItem = (item: {id: string, title: string, icon?: string}, isCurrentPage: boolean) => {
+    const truncatedTitle = truncateText(item.title);
+    
+    return isCurrentPage ? (
+      <BreadcrumbItem>
+        <BreadcrumbPage title={item.title}>
+          {item.icon && (
+            <span className="mr-1">{item.icon}</span>
+          )}
+          {truncatedTitle}
+        </BreadcrumbPage>
+      </BreadcrumbItem>
+    ) : (
+      <BreadcrumbItem>
+        <BreadcrumbLink href={`/documents/${item.id}`} title={item.title}>
+          {item.icon && (
+            <span className="mr-1">{item.icon}</span>
+          )}
+          {truncatedTitle}
+        </BreadcrumbLink>
+      </BreadcrumbItem>
+    );
+  };
+
   if (loading) {
     return (
       <SidebarProvider>
@@ -508,30 +577,7 @@ export default function DocumentPage() {
             <Separator orientation="vertical" className="mr-2 h-4" />
             <Breadcrumb>
               <BreadcrumbList>
-                {breadcrumbs.map((item, index) => (
-                  <React.Fragment key={item.id}>
-                    {index > 0 && <BreadcrumbSeparator />}
-                    {index === breadcrumbs.length - 1 ? (
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>
-                          {item.icon && (
-                            <span className="mr-1">{item.icon}</span>
-                          )}
-                          {item.title || "Без названия"}
-                        </BreadcrumbPage>
-                      </BreadcrumbItem>
-                    ) : (
-                      <BreadcrumbItem>
-                        <BreadcrumbLink href={`/documents/${item.id}`}>
-                          {item.icon && (
-                            <span className="mr-1">{item.icon}</span>
-                          )}
-                          {item.title || "Без названия"}
-                        </BreadcrumbLink>
-                      </BreadcrumbItem>
-                    )}
-                  </React.Fragment>
-                ))}
+                {renderSmartBreadcrumbs(breadcrumbs)}
               </BreadcrumbList>
             </Breadcrumb>
 
