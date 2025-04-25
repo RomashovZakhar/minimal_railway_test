@@ -189,7 +189,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
       {...props}
     >
       <SidebarContent className="flex flex-col flex-1 w-full overflow-hidden">
-        <div className="flex h-16 items-center px-6">
+        <div className="flex h-16 items-center px-4">
           <AcmeLogo />
           <span className="ml-2 text-lg font-semibold truncate">RRodnik</span>
         </div>
@@ -200,7 +200,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
               <SidebarMenuItem
                 active={pathname === "/"}
                 onClick={navigateToRoot}
-                className="px-6 w-full"
+                className="4 w-full"
               >
                 <div className="flex items-center w-full">
                   <span className="mr-2 text-lg">
@@ -228,7 +228,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
             {/* Избранные документы */}
             {favoriteDocuments.length > 0 && (
               <SidebarGroup className="w-full">
-                <SidebarGroupLabel className="px-6 w-full">
+                <SidebarGroupLabel className="4 w-full">
                   Избранное
                 </SidebarGroupLabel>
                 <SidebarGroupContent className="w-full">
@@ -237,7 +237,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                       key={doc.id}
                       active={pathname === `/documents/${doc.id}`}
                       onClick={() => router.push(`/documents/${doc.id}`)}
-                      className="px-6 w-full"
+                      className="px-4 w-full"
                     >
                       <div className="flex items-center w-full">
                         <span className="mr-2 text-lg">
@@ -270,7 +270,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
             {/* Совместные документы */}
             {sharedDocuments.length > 0 && (
               <SidebarGroup className="w-full">
-                <SidebarGroupLabel className="px-6 w-full">
+                <SidebarGroupLabel className="4 w-full">
                   Совместные документы
                 </SidebarGroupLabel>
                 <SidebarGroupContent className="w-full">
@@ -279,7 +279,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
                       key={doc.id}
                       active={pathname === `/documents/${doc.id}`}
                       onClick={() => router.push(`/documents/${doc.id}`)}
-                      className="px-6 w-full"
+                      className="px-4 w-full"
                     >
                       <div className="flex flex-col w-full">
                         <div className="flex items-center">
@@ -329,13 +329,13 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
           <SidebarMenu className="w-full max-w-full">
             <SidebarMenuItem 
               onClick={() => window.dispatchEvent(new CustomEvent('open-settings'))}
-              className="px-6 w-full"
+              className="px-4 w-full"
             >
               <span className="block truncate w-full">Настройки</span>
             </SidebarMenuItem>
             <SidebarMenuItem 
               onClick={logout}
-              className="px-6 w-full"
+              className="px-4 w-full"
             >
               <span className="block truncate w-full">Выйти</span>
             </SidebarMenuItem>

@@ -245,16 +245,7 @@ export default function Home() {
   // Показываем индикатор загрузки, пока идет перенаправление
   return (
     <main className="flex min-h-screen flex-col items-start p-6 max-w-7xl mx-auto">
-      <div className="mb-6 w-full flex justify-between items-center">
-        <h1 className="scroll-m-20 text-3xl font-semibold tracking-tight">
-          Мои документы
-        </h1>
-        <div className="flex items-center gap-2">
-          <NotificationDropdown />
-          <Button onClick={createDocument}>Создать документ</Button>
-        </div>
-      </div>
-      <div className="flex flex-col items-center justify-center min-h-screen">
+      <div className="w-full flex-1 flex items-center justify-center">
         <Loader 
           variant="dots" 
           size="lg" 

@@ -1353,7 +1353,8 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
               class: Image,
               config: {
                 endpoints: {
-                  byFile: '/api/upload-image'
+                  byFile: '/api/upload-image',
+                  byUrl: '/api/upload-image-by-url',
                 },
                 field: 'file',
                 types: 'image/*',
@@ -1391,6 +1392,41 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                       return {
                         success: 0,
                         message: 'Ошибка при загрузке изображения'
+                      };
+                    });
+                  },
+                  uploadByUrl(url: string) {
+                    return fetch('/api/upload-image-by-url', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                      },
+                      body: JSON.stringify({ url })
+                    })
+                    .then(response => response.json())
+                    .then(result => {
+                      if (result.success === 1) {
+                        return {
+                          success: 1,
+                          file: {
+                            url: result.file.url,
+                            name: result.file.name || 'image.jpg',
+                            size: result.file.size
+                          }
+                        };
+                      } else {
+                        console.error('Ошибка загрузки изображения по URL:', result);
+                        return {
+                          success: 0,
+                          message: result.message || 'Ошибка загрузки изображения по URL'
+                        };
+                      }
+                    })
+                    .catch(error => {
+                      console.error('Ошибка при загрузке изображения по URL:', error);
+                      return {
+                        success: 0,
+                        message: 'Ошибка при загрузке изображения по URL'
                       };
                     });
                   }

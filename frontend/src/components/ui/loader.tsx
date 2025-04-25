@@ -41,7 +41,7 @@ export function Loader({
   // Контейнер для лоадера
   const containerClass = cn(
     "flex flex-col items-center justify-center gap-3",
-    fullPage && "min-h-[50vh]",
+    fullPage && "fixed inset-0 w-full h-full",
     className
   );
 
