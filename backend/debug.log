@@ -1119,6 +1119,7 @@ INFO 2025-04-08 21:50:30,980 basehttp "OPTIONS /api/users/notifications/ HTTP/1.
 INFO 2025-04-08 21:50:31,079 basehttp "GET /api/users/notifications/ HTTP/1.1" 200 2
 INFO 2025-04-08 22:06:55,562 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
 WARNING 2025-04-08 22:06:55,592 log Unauthorized: /api/users/notifications/
+
 WARNING 2025-04-08 22:06:55,592 basehttp "GET /api/users/notifications/ HTTP/1.1" 401 172
 INFO 2025-04-08 22:06:55,679 basehttp "POST /api/token/refresh/ HTTP/1.1" 200 242
 INFO 2025-04-08 22:06:55,682 basehttp "OPTIONS /api/users/notifications/ HTTP/1.1" 200 0
