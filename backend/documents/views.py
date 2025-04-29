@@ -16,9 +16,22 @@ import re
 # Настройка логгера
 logger = logging.getLogger(__name__)
 
+# Примечание: класс AccessRightViewSet удален, его функциональность перенесена 
+# в метод revoke_access в DocumentViewSet для удаления прав доступа
+
 def get_access(user, document, required_roles):
     """
     Функция проверяет, имеет ли пользователь указанные права доступа к документу
+    
+    Параметры:
+    - user: пользователь, для которого проверяем доступ
+    - document: документ, к которому проверяем доступ
+    - required_roles: список допустимых ролей для доступа
+      Возможные роли: 'editor' (может редактировать), 'viewer' (может только просматривать)
+      
+    Возвращает:
+    - True, если пользователь имеет указанную роль или является владельцем
+    - False в противном случае
     """
     # Если пользователь - владелец, у него есть все права
     if document.owner == user:
@@ -26,9 +39,12 @@ def get_access(user, document, required_roles):
     
     # Проверяем, есть ли у пользователя требуемые права
     access_right = AccessRight.objects.filter(document=document, user=user).first()
+    
+    # Если право доступа найдено и роль подходит под требуемые
     if access_right and access_right.role in required_roles:
         return True
-    
+        
+    # Пользователь не имеет необходимых прав
     return False
 
 class DocumentViewSet(viewsets.ModelViewSet):
@@ -74,11 +90,28 @@ class DocumentViewSet(viewsets.ModelViewSet):
         # Документы, которые пользователь создал
         own_documents = Q(owner=user)
         
-        # Документы, к которым у пользователя есть доступ
-        access_documents = Q(access_rights__user=user)
+        # Документы, к которым у пользователя есть прямой доступ
+        direct_access = Q(access_rights__user=user)
         
-        # Объединяем и исключаем дубликаты
-        return Document.objects.filter(own_documents | access_documents).distinct()
+        # Документы, к которым у пользователя есть доступ через родительский документ
+        # Сначала находим права доступа с include_children=True
+        parent_access_rights = AccessRight.objects.filter(
+            user=user, 
+            include_children=True
+        ).values_list('document__id', flat=True)
+        
+        # Находим все дочерние документы этих родительских документов
+        children_access = Q()
+        if parent_access_rights:
+            # Строим фильтр для всех родительских документов
+            children_access = Q(parent__id__in=parent_access_rights)
+            
+            # Для всех уровней вложенности можно сделать через рекурсивный запрос,
+            # но это требует более сложной реализации с CTE (Common Table Expressions)
+            # Это простое решение для одного уровня вложенности
+        
+        # Объединяем фильтры и исключаем дубликаты
+        return Document.objects.filter(own_documents | direct_access | children_access).distinct()
     
     @action(detail=False, methods=['get'])
     def favorites(self, request):
@@ -273,6 +306,16 @@ class DocumentViewSet(viewsets.ModelViewSet):
         Переопределяем метод update для правильного сохранения content
         """
         logger.info(f"UPDATE запрос для документа ID: {kwargs.get('pk')}")
+        
+        # Получаем объект документа перед обработкой данных
+        instance = self.get_object()
+        
+        # Проверяем права доступа - только владелец и редакторы могут редактировать документ
+        if not get_access(request.user, instance, ['editor']):
+            return Response(
+                {"detail": "У вас нет прав для редактирования этого документа"},
+                status=status.HTTP_403_FORBIDDEN
+            )
         
         # Создаем глубокую копию данных запроса
         mutable_data = copy.deepcopy(request.data)
@@ -491,6 +534,53 @@ class DocumentViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.data)
     
+    @action(detail=True, methods=['delete'], url_path='access_rights/(?P<access_id>[^/.]+)')
+    def revoke_access(self, request, pk=None, access_id=None):
+        """
+        Отзыв права доступа к документу
+        """
+        document = self.get_object()
+        
+        # Проверяем, является ли текущий пользователь владельцем документа
+        if document.owner != request.user:
+            return Response(
+                {"detail": "Только владелец документа может отозвать доступ"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        try:
+            # Ищем право доступа по ID
+            access_right = AccessRight.objects.get(id=access_id, document=document)
+            
+            # Сохраняем информацию о пользователе для истории
+            user_id = access_right.user.id
+            username = access_right.user.username
+            role = access_right.role
+            
+            # Удаляем доступ
+            access_right.delete()
+            
+            # Записываем в историю отзыв доступа
+            DocumentHistory.objects.create(
+                document=document,
+                user=request.user,
+                action_type=DocumentHistory.ACTION_REVOKE,
+                changes={
+                    'user_id': user_id,
+                    'username': username,
+                    'role': role
+                }
+            )
+            
+            logger.info(f"Отозван доступ к документу ID {document.id} у пользователя {username}")
+            return Response(status=status.HTTP_204_NO_CONTENT)
+            
+        except AccessRight.DoesNotExist:
+            return Response(
+                {"detail": "Право доступа не найдено"},
+                status=status.HTTP_404_NOT_FOUND
+            )
+    
     @action(detail=False, methods=['get'])
     def shared_with_me(self, request):
         """
@@ -523,12 +613,117 @@ class DocumentViewSet(viewsets.ModelViewSet):
         
         return Response(serializer.data)
     
+    @action(detail=True, methods=['get'])
+    def my_role(self, request, pk=None):
+        """
+        Получение роли текущего пользователя для документа
+        """
+        document = self.get_object()
+        user = request.user
+        
+        # Если пользователь - владелец документа
+        if document.owner == user:
+            return Response({"role": "owner"})
+        
+        # Проверяем права доступа пользователя к документу
+        access_right = AccessRight.objects.filter(document=document, user=user).first()
+        if access_right:
+            return Response({"role": access_right.role})
+        
+        # Проверяем права доступа через родительские документы
+        parent = document.parent
+        while parent:
+            parent_access = AccessRight.objects.filter(
+                document=parent,
+                user=user,
+                include_children=True
+            ).first()
+            
+            if parent_access:
+                return Response({"role": parent_access.role})
+                
+            # Если владелец родителя - текущий пользователь
+            if parent.owner == user:
+                return Response({"role": "owner"})
+                
+            # Переходим к следующему родителю
+            parent = parent.parent
+        
+        # Если роль не найдена
+        return Response(
+            {"detail": "У вас нет прав доступа к этому документу"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
+    @action(detail=True, methods=['post'])
+    def validate_edit(self, request, pk=None):
+        """
+        Валидация прав редактирования для текущего пользователя
+        """
+        document = self.get_object()
+        user = request.user
+        
+        # Проверяем, имеет ли пользователь права редактирования
+        if get_access(user, document, ['editor']):
+            return Response({"can_edit": True})
+        
+        return Response(
+            {"detail": "У вас нет прав на редактирование этого документа"},
+            status=status.HTTP_403_FORBIDDEN
+        )
+    
     def retrieve(self, request, *args, **kwargs):
         """
         Получение документа по ID с записью действия просмотра
         """
         # Стандартное получение объекта
         instance = self.get_object()
+        
+        # Проверяем права доступа - пользователь должен быть владельцем, редактором или наблюдателем
+        is_owner = instance.owner == request.user
+        access_right = AccessRight.objects.filter(document=instance, user=request.user).first()
+        
+        # Если пользователь не владелец и у него нет прав доступа
+        if not is_owner and not access_right:
+            return Response(
+                {"detail": "У вас нет прав для просмотра этого документа"},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        # Если используем вложенные документы, нужно проверить права на родительский документ
+        if not is_owner and instance.parent and access_right and not access_right.include_children:
+            # Проверяем, есть ли явное право доступа к родителю с include_children=True
+            has_parent_access = False
+            parent = instance.parent
+            
+            while parent and not has_parent_access:
+                # Проверяем прямой доступ к родителю с include_children=True
+                parent_access = AccessRight.objects.filter(
+                    document=parent,
+                    user=request.user,
+                    include_children=True
+                ).exists()
+                
+                # Если нашли доступ с include_children=True
+                if parent_access:
+                    has_parent_access = True
+                    break
+                    
+                # Проверяем, является ли пользователь владельцем родителя
+                if parent.owner == request.user:
+                    has_parent_access = True
+                    break
+                    
+                # Переходим к следующему родителю вверх по дереву
+                parent = parent.parent
+            
+            # Если нет прав на иерархию вложенных документов
+            if not has_parent_access:
+                return Response(
+                    {"detail": "У вас нет прав для просмотра этого вложенного документа"},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+        
         serializer = self.get_serializer(instance)
         
         # Записываем в историю просмотр документа
@@ -860,9 +1055,16 @@ class DocumentViewSet(viewsets.ModelViewSet):
         Метод для изменения статуса задачи (завершена/не завершена)
         """
         document = self.get_object()
-        access = get_access(request.user, document, ['edit', 'view'])
-        if not access:
-            return Response({'detail': 'У вас нет доступа к этому документу'}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Проверяем права доступа - только редакторы могут изменять задачи
+        # Для наблюдателей нужно добавить ограничение
+        is_owner = document.owner == request.user
+        access_right = AccessRight.objects.filter(document=document, user=request.user).first()
+        
+        # Наблюдатели не могут менять задачи, им запрещен доступ
+        if not is_owner and (not access_right or access_right.role != AccessRight.EDITOR):
+            return Response({'detail': 'У вас нет прав для изменения задач в этом документе'}, 
+                            status=status.HTTP_403_FORBIDDEN)
         
         try:
             data = request.data
@@ -971,59 +1173,67 @@ class DocumentViewSet(viewsets.ModelViewSet):
             return Response({'detail': f'Ошибка при обновлении статуса задачи: {str(e)}'}, 
                             status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class AccessRightViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint для работы с правами доступа к документам
-    """
-    queryset = AccessRight.objects.all()
-    serializer_class = AccessRightSerializer
-    
-    def get_permissions(self):
+    @action(detail=True, methods=['post'], url_path='access_rights/(?P<access_id>[^/.]+)/update')
+    def update_access(self, request, pk=None, access_id=None):
         """
-        Настраиваем разрешения
+        Обновление права доступа к документу (изменение роли)
         """
-        return [IsAuthenticated()]
-    
-    def get_queryset(self):
-        """
-        Возвращает права доступа для документов, принадлежащих текущему пользователю
-        """
-        user = self.request.user
-        return AccessRight.objects.filter(document__owner=user)
-    
-    def destroy(self, request, *args, **kwargs):
-        """
-        Отзыв доступа к документу
-        """
-        access_right = self.get_object()
-        document = access_right.document
+        document = self.get_object()
         
-        # Проверяем, является ли пользователь владельцем документа
+        # Проверяем, является ли текущий пользователь владельцем документа
         if document.owner != request.user:
             return Response(
-                {"detail": "Только владелец документа может отозвать доступ"},
+                {"detail": "Только владелец документа может изменять права доступа"},
                 status=status.HTTP_403_FORBIDDEN
             )
         
-        # Сохраняем информацию о пользователе, у которого отзываем доступ
-        user_id = access_right.user.id
-        username = access_right.user.username
-        role = access_right.role
-        
-        # Удаляем доступ
-        access_right.delete()
-        
-        # Записываем в историю отзыв доступа
-        DocumentHistory.objects.create(
-            document=document,
-            user=request.user,
-            action_type=DocumentHistory.ACTION_REVOKE,
-            changes={
-                'user_id': user_id,
-                'username': username,
-                'role': role
-            }
-        )
-        
-        logger.info(f"Отозван доступ к документу ID {document.id} у пользователя {username}")
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        try:
+            # Ищем право доступа по ID
+            access_right = AccessRight.objects.get(id=access_id, document=document)
+            
+            # Получаем новую роль из запроса
+            new_role = request.data.get('role')
+            if not new_role:
+                return Response(
+                    {"role": "Это поле обязательно"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Проверяем, что роль допустимая
+            if new_role not in ['viewer', 'editor']:
+                return Response(
+                    {"role": "Недопустимая роль. Используйте 'viewer' или 'editor'"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            # Сохраняем старую роль для истории
+            old_role = access_right.role
+            
+            # Обновляем роль
+            access_right.role = new_role
+            access_right.save()
+            
+            # Записываем в историю изменение роли
+            DocumentHistory.objects.create(
+                document=document,
+                user=request.user,
+                action_type=DocumentHistory.ACTION_UPDATE_ACCESS,
+                changes={
+                    'user_id': access_right.user.id,
+                    'username': access_right.user.username,
+                    'old_role': old_role,
+                    'new_role': new_role
+                }
+            )
+            
+            logger.info(f"Изменена роль для доступа к документу ID {document.id} у пользователя {access_right.user.username} с {old_role} на {new_role}")
+            
+            # Возвращаем обновленный объект
+            serializer = AccessRightSerializer(access_right)
+            return Response(serializer.data)
+            
+        except AccessRight.DoesNotExist:
+            return Response(
+                {"detail": "Право доступа не найдено"},
+                status=status.HTTP_404_NOT_FOUND
+            )

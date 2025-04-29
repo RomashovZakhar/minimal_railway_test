@@ -15,27 +15,31 @@ interface EmojiPickerProps {
   currentEmoji?: string;
   onEmojiSelect: (emoji: string) => void;
   defaultIcon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export function EmojiPicker({ 
   currentEmoji, 
   onEmojiSelect, 
-  defaultIcon 
+  defaultIcon,
+  disabled = false
 }: EmojiPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const handleEmojiClick = (emojiData: any) => {
+    if (disabled) return;
     onEmojiSelect(emojiData.emoji);
     setIsOpen(false);
   };
 
   return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
+    <Popover open={isOpen} onOpenChange={disabled ? () => {} : setIsOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="ghost"
-          className="h-16 w-16 p-0 rounded-full"
+          className={`h-16 w-16 p-0 rounded-full ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
           aria-label="Выбрать эмодзи"
+          disabled={disabled}
         >
           {currentEmoji ? (
             <span className="text-4xl">{currentEmoji}</span>

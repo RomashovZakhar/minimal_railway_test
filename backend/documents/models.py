@@ -62,6 +62,7 @@ class DocumentHistory(models.Model):
     ACTION_TITLE_CHANGE = 'title_change'
     ACTION_NESTED_CREATE = 'nested_create'
     ACTION_TASK_COMPLETE = 'task_complete'
+    ACTION_UPDATE_ACCESS = 'update_access'
     
     ACTION_CHOICES = [
         (ACTION_EDIT, 'Редактирование'),
@@ -72,6 +73,7 @@ class DocumentHistory(models.Model):
         (ACTION_TITLE_CHANGE, 'Изменение заголовка'),
         (ACTION_NESTED_CREATE, 'Создание вложенного документа'),
         (ACTION_TASK_COMPLETE, 'Завершение задачи'),
+        (ACTION_UPDATE_ACCESS, 'Изменение роли'),
     ]
     
     document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name='history')

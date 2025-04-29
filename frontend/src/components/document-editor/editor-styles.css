@@ -288,3 +288,84 @@
   transition: none !important;
   animation: none !important;
 }
+
+/* Стили для режима "только для чтения" */
+.editor-readonly {
+  position: relative;
+  opacity: 0.95;
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  filter: grayscale(0.1);
+  user-select: text !important;
+}
+
+/* Явно отключаем редактирование для всех элементов внутри редактора */
+.editor-readonly .ce-block,
+.editor-readonly .ce-toolbar,
+.editor-readonly .ce-toolbar__plus,
+.editor-readonly .ce-toolbar__settings-btn,
+.editor-readonly .ce-paragraph,
+.editor-readonly [contenteditable="true"] {
+  pointer-events: none !important;
+  cursor: default !important;
+  user-select: text !important;
+}
+
+/* Полностью скрываем элементы управления */
+.editor-readonly .ce-toolbar,
+.editor-readonly .ce-toolbar__plus,
+.editor-readonly .ce-toolbar__settings-btn,
+.editor-readonly .ce-inline-toolbar,
+.editor-readonly .ce-conversion-toolbar,
+.editor-readonly .ce-conversion-toolbar--showed,
+.editor-readonly .codex-editor--narrow .ce-toolbar__plus,
+.editor-readonly .ce-popover--opened,
+.editor-readonly .ce-toolbox,
+.editor-readonly .ce-settings,
+.editor-readonly .tc-add-row,
+.editor-readonly .tc-add-column,
+.editor-readonly .tc-settings {
+  display: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.editor-readonly::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(200, 200, 200, 0.05);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.readonly-notice {
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background-color: #f8f9fa;
+  color: #585858;
+  padding: 8px 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border-left: 4px solid #fb7185;
+  display: block;
+  font-weight: 500;
+}
+
+.dark .readonly-notice {
+  background-color: #1e1e2e;
+  color: #cdd6f4;
+  border-color: #f38ba8;
+}
+
+/* Другие стили редактора */

@@ -516,12 +516,142 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
   const [userId, setUserId] = useState<string>('');
   const [username, setUsername] = useState<string>('');
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const titleSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const lastDocumentContent = useRef<any>(document.content);
   const isSavingRef = useRef(false);
   const hasChangesRef = useRef(false);
   
   // Переименуем параметр document чтобы избежать конфликта с глобальным window.document
   const documentData = document;
+  
+  // Состояние для определения роли пользователя (редактор или наблюдатель)
+  const [userRole, setUserRole] = useState<string | null>(null);
+  // Состояние для отслеживания, доступен ли редактор только для чтения
+  const [isReadOnly, setIsReadOnly] = useState<boolean>(false);
+  
+  // Получаем роль пользователя при загрузке
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      try {
+        // Запрашиваем информацию о документе, чтобы получить список доступа и роль пользователя
+        if (documentData.id && user) {
+          try {
+            // Сначала попробуем получить сам документ без запроса прав доступа
+            const docResponse = await api.get(`/documents/${documentData.id}/`);
+            const isOwner = docResponse.data.owner === user.id;
+            
+            // Если владелец, сразу устанавливаем соответствующую роль
+            if (isOwner) {
+              setUserRole('owner');
+              setIsReadOnly(false);
+              console.log('Пользователь является владельцем документа');
+              return;
+            }
+            
+            // Если пользователь не владелец, но может получить доступ к документу,
+            // попробуем получить его роль напрямую
+            try {
+              // Используем правильный эндпоинт для получения роли
+              const roleResponse = await api.get(`/documents/${documentData.id}/my_role/`);
+              console.log('Получена роль пользователя:', roleResponse.data);
+              
+              if (roleResponse.data && roleResponse.data.role) {
+                setUserRole(roleResponse.data.role);
+                setIsReadOnly(roleResponse.data.role === 'viewer');
+                console.log(`Роль пользователя: ${roleResponse.data.role}, режим только для чтения: ${roleResponse.data.role === 'viewer'}`);
+              } else {
+                // Если не удалось получить конкретную роль, пробуем определить по возможности редактирования
+                try {
+                  // Пробуем отправить запрос на валидацию прав редактирования
+                  await api.post(`/documents/${documentData.id}/validate_edit/`);
+                  console.log('Пользователь может редактировать документ');
+                  setUserRole('editor');
+                  setIsReadOnly(false);
+                } catch (validateError) {
+                  console.log('Пользователь не может редактировать документ, устанавливаем режим просмотра');
+                  setUserRole('viewer');
+                  setIsReadOnly(true);
+                }
+              }
+            } catch (roleError) {
+              console.error('Ошибка при получении роли пользователя:', roleError);
+              
+              // Если не удалось получить роль, проверяем наличие доступа к документу
+              if (docResponse && docResponse.data) {
+                console.log('Документ доступен для просмотра, устанавливаем режим просмотра');
+                setUserRole('viewer');
+                setIsReadOnly(true);
+              }
+            }
+          } catch (docError) {
+            console.error('Ошибка при получении документа:', docError);
+            
+            // Если получили 403, пользователь не имеет доступа к документу
+            if (docError.response?.status === 403) {
+              console.log('Нет доступа к документу, устанавливаем режим только для чтения');
+              setUserRole('viewer');
+              setIsReadOnly(true);
+            } else {
+              // Если ошибка не 403, то что-то другое пошло не так
+              console.error('Неизвестная ошибка при получении документа:', docError);
+              setUserRole('no_access');
+              setIsReadOnly(true);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Общая ошибка при получении прав доступа:', error);
+        // По умолчанию устанавливаем режим "только для чтения"
+        setIsReadOnly(true);
+      }
+    };
+    
+    fetchUserRole();
+  }, [documentData.id, user]);
+  
+  // Периодически проверяем и принудительно устанавливаем режим только для чтения
+  useEffect(() => {
+    // Если не в режиме только для чтения, ничего не делаем
+    if (!isReadOnly) return;
+
+    console.log("Настройка периодической проверки режима только для чтения");
+    
+    // Функция для принудительного отключения редактирования
+    const forceReadOnly = () => {
+      try {
+        if (!editorRef.current) return;
+        
+        // Применяем класс, если он не применен
+        if (!editorRef.current.classList.contains('editor-readonly')) {
+          console.log("Добавляем класс editor-readonly");
+          editorRef.current.classList.add('editor-readonly');
+        }
+        
+        // Ищем и отключаем все редактируемые элементы
+        const editableElements = editorRef.current.querySelectorAll('[contenteditable="true"]');
+        
+        if (editableElements.length > 0) {
+          console.log('Обнаружено редактируемых элементов в режиме только для чтения:', editableElements.length);
+          editableElements.forEach(el => {
+            (el as HTMLElement).setAttribute('contenteditable', 'false');
+          });
+        }
+        
+        // Убираем создание уведомления о режиме только для чтения
+      } catch (err) {
+        console.error('Ошибка при принудительном отключении редактирования:', err);
+      }
+    };
+    
+    // Запускаем функцию сразу
+    forceReadOnly();
+    
+    // Затем запускаем периодическую проверку каждые 500мс
+    const interval = setInterval(forceReadOnly, 500);
+    
+    // Очистка интервала при размонтировании
+    return () => clearInterval(interval);
+  }, [isReadOnly]);
 
   // Состояние для хранения содержимого документа
   const [content, setContent] = useState<any[]>([]);
@@ -948,10 +1078,40 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
     }
   }, [documentData.id, documentData.content, getCachedContent, onChange]);
 
-  // Модифицируем triggerAutosave для кэширования
+  // Функция для автосохранения
   const triggerAutosave = useCallback((content: any) => {
-    // Если уже идет сохранение, пропускаем
-    if (isSavingRef.current) return;
+    // Очищаем таймер, если он уже существует
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+    
+    // В режиме "только для чтения" пропускаем сохранение
+    if (isReadOnly) {
+      console.log("Режим только для чтения, автосохранение отключено");
+      return;
+    }
+    
+    // Проверяем текущую роль пользователя
+    if (userRole === 'viewer') {
+      console.log("Пользователь наблюдатель, сохранение невозможно");
+      // Принудительно переключаем режим редактора
+      if (editorInstanceRef.current && !editorInstanceRef.current.readOnly) {
+        try {
+          console.log("Принудительное переключение режима редактора в только для чтения");
+          editorInstanceRef.current.readOnly.toggle(true);
+        } catch (err) {
+          console.error("Ошибка при переключении режима редактора:", err);
+        }
+      }
+      return;
+    }
+    
+    // Если уже идет сохранение, откладываем следующее
+    if (isSavingRef.current) {
+      console.log("Уже идет сохранение, откладываем следующее...");
+      setTimeout(() => triggerAutosave(content), 1000);
+      return;
+    }
     
     // Если контент не изменился, не сохраняем
     if (lastContentRef.current && 
@@ -960,16 +1120,11 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
       return;
     }
     
-    console.log('Контент изменился, планируем сохранение...');
-    console.log('Новый контент:', content);
-    
     // Сразу кэшируем контент локально для защиты от потери данных
     updateContentCache(documentData.id, content);
     
-    // Очищаем предыдущий таймер, если он был
-    if (saveTimeoutRef.current) {
-      clearTimeout(saveTimeoutRef.current);
-    }
+    console.log('Контент изменился, планируем сохранение...');
+    console.log('Новый контент:', content);
     
     // Устанавливаем новый таймер для сохранения с большим дебаунсом
     saveTimeoutRef.current = setTimeout(async () => {
@@ -1052,7 +1207,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
         isSavingRef.current = false;
       }
     }, 300); // Уменьшаем задержку до 300 миллисекунд для более быстрой синхронизации
-  }, [documentData.id, documentData.parent, documentData.is_favorite, title, onChange, updateContentCache]);
+  }, [documentData.id, documentData.parent, documentData.is_favorite, title, onChange, updateContentCache, userRole]);
 
   // Создаем экземпляр EditorJS
   useEffect(() => {
@@ -1243,12 +1398,39 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
 
         // Создаем новый экземпляр
         console.log("Создаем экземпляр EditorJS...");
+        console.log("Режим только для чтения:", isReadOnly ? "ДА" : "НЕТ");
+        console.log("Роль пользователя:", userRole);
+        
         const editor = new EditorJS({
           holder: editorRef.current,
           data: editorData,
+          readOnly: isReadOnly, // Устанавливаем режим "только для чтения" на основе роли пользователя
           onReady: () => {
             console.log('EditorJS готов к работе');
+            console.log('Режим только для чтения установлен:', isReadOnly);
             editorInstanceRef.current = editor;
+            
+            // Добавляем визуальное отображение режима "только для чтения"
+            if (isReadOnly && editorRef.current) {
+              console.log('Применяем визуальные стили для режима только для чтения');
+              editorRef.current.classList.add('editor-readonly');
+              
+              // Удаляем создание уведомления о режиме "только для чтения"
+              
+              // Принудительно отключаем contentEditable для всех элементов
+              setTimeout(() => {
+                try {
+                  const editableElements = editorRef.current.querySelectorAll('[contenteditable="true"]');
+                  console.log('Найдено редактируемых элементов:', editableElements.length);
+                  editableElements.forEach(el => {
+                    (el as HTMLElement).setAttribute('contenteditable', 'false');
+                    console.log('Элемент переведен в режим только для чтения:', el);
+                  });
+                } catch (err) {
+                  console.error('Ошибка при принудительном отключении contentEditable:', err);
+                }
+              }, 100);
+            }
             
             // Устанавливаем редактор в состояние
             setEditor(editor);
@@ -1290,6 +1472,12 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
           },
           onChange: function(api: any) {
             try {
+              // Пропускаем обработку, если режим только для чтения
+              if (isReadOnly) {
+                console.log('Режим только для чтения, изменения игнорируются');
+                return;
+              }
+              
               // Пропускаем автосохранение, если сейчас идет сохранение
               if (isSavingRef.current) return;
               
@@ -1547,17 +1735,44 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
     };
   }, []);
 
-  // Обновляем заголовок документа
+  // Обработчик изменения заголовка
   const handleTitleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // Игнорируем изменения в режиме "только для чтения"
+    if (isReadOnly) {
+      console.log("Режим только для чтения, изменение заголовка игнорируется");
+      return;
+    }
+    
     const newTitle = e.target.value;
     setTitle(newTitle);
-    onChange({ ...documentData, title: newTitle });
     
     // Автоматически подстраиваем высоту textarea под содержимое
     if (e.target) {
       e.target.style.height = 'auto';
       e.target.style.height = e.target.scrollHeight + 'px';
     }
+    
+    // Добавляем дебаунс для сохранения заголовка
+    clearTimeout(titleSaveTimeoutRef.current);
+    titleSaveTimeoutRef.current = setTimeout(() => {
+      console.log('Сохраняем новый заголовок:', newTitle);
+      onChange({ ...documentData, title: newTitle });
+      
+      // Отправляем запрос на обновление заголовка
+      api.put(`/documents/${documentData.id}/`, {
+        title: newTitle,
+        content: documentData.content,
+        parent: documentData.parent,
+        is_favorite: documentData.is_favorite,
+        icon: documentData.icon
+      })
+      .then(() => {
+        console.log('Заголовок успешно сохранен');
+      })
+      .catch((error) => {
+        console.error('Ошибка при сохранении заголовка:', error);
+      });
+    }, 500);
   };
 
   // Сохранение перед уходом
@@ -1803,6 +2018,238 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
     }
   }, [title]);
 
+  // Пересоздаем редактор при изменении режима чтения/редактирования
+  useEffect(() => {
+    console.log("Изменился режим чтения на:", isReadOnly ? "только чтение" : "редактирование");
+    
+    // Если редактор еще не создан, то пропускаем
+    if (!editorInstanceRef.current || !isReady) {
+      console.log("Редактор еще не инициализирован, пропускаем пересоздание");
+      return;
+    }
+    
+    // Принудительно пересоздаем редактор с новым режимом
+    console.log("Пересоздаем редактор с новым режимом чтения");
+    
+    // Используем setTimeout, чтобы дать другим эффектам выполниться
+    setTimeout(() => {
+      try {
+        // Флаг для предотвращения рекурсивного вызова
+        const tempFlag = isFirstRender.current;
+        isFirstRender.current = true;
+        
+        // Уничтожаем старый экземпляр
+        if (editorInstanceRef.current) {
+          editorInstanceRef.current.destroy()
+            .then(() => {
+              console.log("Редактор успешно уничтожен");
+              editorInstanceRef.current = null;
+              
+              // Сбрасываем редактор в состоянии
+              setEditor(null);
+              setIsReady(false);
+              
+              // Запускаем инициализацию заново с небольшой задержкой
+              setTimeout(initEditor, 200);
+            })
+            .catch(err => {
+              console.error("Ошибка при уничтожении редактора:", err);
+              // Всё равно пытаемся инициализировать заново
+              editorInstanceRef.current = null;
+              setEditor(null);
+              setIsReady(false);
+              setTimeout(initEditor, 200);
+            });
+        }
+        
+        // Восстанавливаем флаг
+        isFirstRender.current = tempFlag;
+      } catch (err) {
+        console.error("Ошибка при пересоздании редактора:", err);
+      }
+    }, 100);
+  }, [isReadOnly]);
+
+  // Добавляем периодическую проверку роли пользователя
+  useEffect(() => {
+    // Не запускаем проверку, если документ не загружен или нет пользователя
+    if (!documentData.id || !user) return;
+
+    console.log("Настройка периодической проверки роли пользователя");
+    
+    // Функция для проверки роли
+    const checkUserRole = async () => {
+      try {
+        // Вместо проверки прав доступа, проверяем возможность редактирования
+        try {
+          // Получаем документ
+          const docResponse = await api.get(`/documents/${documentData.id}/`);
+          const isOwner = docResponse.data.owner === user.id;
+          
+          if (isOwner) {
+            // Если роль изменилась
+            if (userRole !== 'owner') {
+              console.log('Пользователь стал владельцем, обновляем роль');
+              setUserRole('owner');
+              setIsReadOnly(false);
+              updateEditorReadOnlyState(false);
+            }
+            return;
+          }
+          
+          // Получаем текущую роль пользователя через правильный эндпоинт
+          try {
+            const roleResponse = await api.get(`/documents/${documentData.id}/my_role/`);
+            console.log('Получена роль пользователя при проверке:', roleResponse.data);
+            
+            if (roleResponse.data && roleResponse.data.role) {
+              // Если роль изменилась
+              if (userRole !== roleResponse.data.role) {
+                console.log(`Роль пользователя изменилась: ${userRole} -> ${roleResponse.data.role}`);
+                setUserRole(roleResponse.data.role);
+                const newReadOnly = roleResponse.data.role === 'viewer';
+                setIsReadOnly(newReadOnly);
+                updateEditorReadOnlyState(newReadOnly);
+              }
+            } else {
+              // Если не удалось получить конкретную роль, пробуем определить по возможности редактирования
+              try {
+                // Пробуем отправить запрос на валидацию прав редактирования
+                await api.post(`/documents/${documentData.id}/validate_edit/`);
+                
+                // Если пользователь успешно отправил запрос на проверку редактирования, значит редактор
+                if (userRole !== 'editor') {
+                  console.log('Пользователь стал редактором, обновляем роль');
+                  setUserRole('editor');
+                  setIsReadOnly(false);
+                  updateEditorReadOnlyState(false);
+                }
+              } catch (validateError) {
+                // Если получаем ошибку при проверке возможности редактирования, значит просмотрщик
+                if (userRole !== 'viewer') {
+                  console.log('Пользователь стал просмотрщиком, обновляем роль');
+                  setUserRole('viewer');
+                  setIsReadOnly(true);
+                  updateEditorReadOnlyState(true);
+                }
+              }
+            }
+          } catch (roleError) {
+            console.error('Ошибка при получении роли пользователя:', roleError);
+            
+            // Если пользователь по-прежнему имеет доступ к документу, но не может узнать свою роль,
+            // пробуем проверить возможность редактирования
+            try {
+              // Пробуем отправить запрос на валидацию прав редактирования
+              await api.post(`/documents/${documentData.id}/validate_edit/`);
+              
+              // Если пользователь может редактировать, но не может получить роль напрямую
+              if (userRole !== 'editor') {
+                console.log('Пользователь может редактировать, обновляем роль');
+                setUserRole('editor');
+                setIsReadOnly(false);
+                updateEditorReadOnlyState(false);
+              }
+            } catch (validateError) {
+              // Если не может редактировать, значит просмотрщик
+              if (userRole !== 'viewer') {
+                console.log('Пользователь стал просмотрщиком (через проверку редактирования)');
+                setUserRole('viewer');
+                setIsReadOnly(true);
+                updateEditorReadOnlyState(true);
+              }
+            }
+          }
+        } catch (docError) {
+          console.error('Ошибка при получении документа:', docError);
+          
+          // Если получили 403, пользователь потерял доступ к документу
+          if (docError.response?.status === 403 && userRole !== 'viewer') {
+            console.log('Пользователь потерял доступ, переключаем на просмотр');
+            setUserRole('viewer');
+            setIsReadOnly(true);
+            updateEditorReadOnlyState(true);
+          }
+        }
+      } catch (error) {
+        console.error("Общая ошибка при проверке роли пользователя:", error);
+      }
+    };
+    
+    // Выносим логику обновления редактора в отдельную функцию
+    const updateEditorReadOnlyState = (newReadOnly: boolean) => {
+      // Если редактор существует
+      if (editorInstanceRef.current) {
+        console.log(`Обновляем состояние редактора, режим только для чтения: ${newReadOnly}`);
+        
+        // Устанавливаем свойство readOnly у редактора
+        try {
+          // Проверяем, соответствует ли текущее состояние редактора требуемому
+          const currentReadOnly = editorInstanceRef.current.readOnly?.isEnabled || false;
+          
+          if (currentReadOnly !== newReadOnly) {
+            console.log(`Меняем состояние readOnly с ${currentReadOnly} на ${newReadOnly}`);
+            editorInstanceRef.current.readOnly.toggle(newReadOnly);
+            console.log("Режим readOnly обновлен в редакторе");
+          } else {
+            console.log(`Состояние readOnly уже установлено в ${newReadOnly}, пропускаем обновление`);
+          }
+        } catch (err) {
+          console.error("Ошибка при обновлении режима readOnly:", err);
+        }
+        
+        // Принудительно обновляем DOM
+        if (editorRef.current) {
+          // Добавляем класс для стилизации режима только для чтения
+          editorRef.current.classList.toggle('editor-readonly', newReadOnly);
+          
+          // Обрабатываем уведомление о режиме только для чтения
+          const existingNotice = editorRef.current.querySelector('.readonly-notice');
+          if (newReadOnly) {
+            // Если нужен режим только для чтения и уведомление отсутствует, добавляем его
+            if (!existingNotice) {
+              const readOnlyNotice = window.document.createElement('div');
+              readOnlyNotice.className = 'readonly-notice';
+              readOnlyNotice.textContent = 'У вас нет прав на редактирование этого документа';
+              editorRef.current.prepend(readOnlyNotice);
+            }
+            
+            // Отключаем все редактируемые элементы
+            const editableElements = editorRef.current.querySelectorAll('[contenteditable="true"]');
+            if (editableElements.length > 0) {
+              console.log('Отключаем редактируемые элементы, количество:', editableElements.length);
+              editableElements.forEach(el => {
+                (el as HTMLElement).setAttribute('contenteditable', 'false');
+              });
+            }
+          } else {
+            // Если режим редактирования, удаляем уведомление
+            if (existingNotice) {
+              existingNotice.remove();
+            }
+            
+            // Включаем редактирование для элементов
+            if (!editorInstanceRef.current.readOnly) {
+              const editableBlocks = editorRef.current.querySelectorAll('.ce-block__content');
+              editableBlocks.forEach(el => {
+                (el as HTMLElement).setAttribute('contenteditable', 'true');
+              });
+            }
+          }
+        }
+      }
+    };
+    
+    // Проверяем роль каждые 10 секунд
+    const interval = setInterval(checkUserRole, 10000);
+    
+    // Разовая проверка при монтировании
+    checkUserRole();
+    
+    // Очистка интервала при размонтировании
+    return () => clearInterval(interval);
+  }, [documentData.id, user, userRole]);
+
   return (
     <TaskModalsProvider>
       <GlobalTaskModals />
@@ -1811,7 +2258,14 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
           <div className="flex flex-col w-full">
             <EmojiPicker
               currentEmoji={document.icon}
+              disabled={isReadOnly}
               onEmojiSelect={(emoji) => {
+                // Если в режиме только для чтения, игнорируем событие
+                if (isReadOnly) {
+                  console.log("Режим только для чтения, изменение эмодзи игнорируется");
+                  return;
+                }
+                
                 // Создаем объект с обновленным emoji
                 const updatedDoc = { ...document, icon: emoji };
                 // Обновляем UI
@@ -1857,11 +2311,15 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 placeholder="Untitled"
                 value={title}
                 onChange={handleTitleChange}
+                readOnly={isReadOnly}
+                disabled={isReadOnly}
                 ref={titleInputRef as any}
                 rows={Math.min(3, title.split('\n').length)}
                 style={{
                   height: 'auto',
-                  minHeight: '44px'
+                  minHeight: '44px',
+                  opacity: isReadOnly ? 0.8 : 1,
+                  cursor: isReadOnly ? 'not-allowed' : 'text'
                 }}
               />
             </div>

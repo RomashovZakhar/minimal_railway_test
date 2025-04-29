@@ -200,7 +200,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
               <SidebarMenuItem
                 active={pathname === "/"}
                 onClick={navigateToRoot}
-                className="4 w-full"
+                className="px-4 w-full"
               >
                 <div className="flex items-center w-full">
                   <span className="mr-2 text-lg">
@@ -228,7 +228,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
             {/* Избранные документы */}
             {favoriteDocuments.length > 0 && (
               <SidebarGroup className="w-full">
-                <SidebarGroupLabel className="4 w-full">
+                <SidebarGroupLabel className="px-4 w-full">
                   Избранное
                 </SidebarGroupLabel>
                 <SidebarGroupContent className="w-full">
@@ -270,7 +270,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
             {/* Совместные документы */}
             {sharedDocuments.length > 0 && (
               <SidebarGroup className="w-full">
-                <SidebarGroupLabel className="4 w-full">
+                <SidebarGroupLabel className="px-4 w-full">
                   Совместные документы
                 </SidebarGroupLabel>
                 <SidebarGroupContent className="w-full">
