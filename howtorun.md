@@ -15,4 +15,8 @@
 1. cd frontend
 2. npm run dev
 
-Саша проверяет коммиты
+## Как коммитить
+
+git add .
+git commit -m "Комментарий"
+git push -u origin main
