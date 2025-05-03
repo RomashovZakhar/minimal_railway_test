@@ -4,7 +4,11 @@ import { useState, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import api from "@/lib/api"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+} from "@/components/ui/input-otp"
 import { Label } from "@/components/ui/label"
 import {
   Card,
@@ -14,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useAuth } from "@/components/auth"
+import { Input } from "@/components/ui/input"
 
 export default function VerifyEmailPage() {
   const { user, isLoading: authLoading } = useAuth()
@@ -129,21 +134,27 @@ export default function VerifyEmailPage() {
               
               <div className="grid gap-2">
                 <Label htmlFor="otp">Код подтверждения</Label>
-                <Input
-                  id="otp"
-                  type="text"
+                <InputOTP
+                  maxLength={6}
                   value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  placeholder="123456"
-                  required
+                  onChange={setOtp}
                   disabled={isLoading}
-                />
+                >
+                  <InputOTPGroup>
+                    <InputOTPSlot index={0} />
+                    <InputOTPSlot index={1} />
+                    <InputOTPSlot index={2} />
+                    <InputOTPSlot index={3} />
+                    <InputOTPSlot index={4} />
+                    <InputOTPSlot index={5} />
+                  </InputOTPGroup>
+                </InputOTP>
               </div>
               
               <Button 
                 type="button" 
                 className="w-full" 
-                disabled={isLoading || !email || !otp}
+                disabled={isLoading || !email || !otp || otp.length < 6}
                 onClick={handleVerify}
               >
                 {isLoading ? "Подтверждение..." : "Подтвердить Email"}

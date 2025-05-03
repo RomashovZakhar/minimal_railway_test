@@ -13,6 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot,
+  InputOTPSeparator,
+} from "@/components/ui/input-otp"
 import { Label } from "@/components/ui/label"
 import api from "@/lib/api"
 
@@ -28,6 +34,7 @@ export function RegisterForm({
     email: string;
     password: string;
   } | null>(null)
+  const [otp, setOtp] = useState<string>("")
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -101,8 +108,7 @@ export function RegisterForm({
     setIsLoading(true)
     setError(null)
 
-    const formData = new FormData(event.currentTarget)
-    const otp = formData.get("otp") as string
+    // Используем otp из состояния
 
     try {
       // Верификация email
@@ -174,14 +180,14 @@ export function RegisterForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-2xl">
+          <CardTitle className="text-2xl text-center">
             {otpSent ? "Подтверждение Email" : "Регистрация"}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-center">
             {otpSent
-              ? "Введите код подтверждения, отправленный на ваш email"
+              ? "Введите код подтверждения, отправленный на ваш email"
               : "Создайте новый аккаунт"}
           </CardDescription>
         </CardHeader>
@@ -194,16 +200,26 @@ export function RegisterForm({
                     {error}
                   </div>
                 )}
-                <div className="grid gap-2">
+                <div className="grid gap-2 text-center items-center justify-center">
                   <Label htmlFor="otp">Код подтверждения</Label>
-                  <Input
-                    id="otp"
-                    name="otp"
-                    type="text"
-                    placeholder="123456"
-                    required
+                  <InputOTP 
+                    maxLength={6}
+                    value={otp}
+                    onChange={setOtp}
                     disabled={isLoading}
-                  />
+                  >
+                    <InputOTPGroup>
+                      <InputOTPSlot index={0} />
+                      <InputOTPSlot index={1} />
+                      <InputOTPSlot index={2} />
+                    </InputOTPGroup>
+                    <InputOTPSeparator />
+                    <InputOTPGroup>
+                      <InputOTPSlot index={3} />
+                      <InputOTPSlot index={4} />
+                      <InputOTPSlot index={5} />
+                    </InputOTPGroup>
+                  </InputOTP>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? "Подтверждение..." : "Подтвердить Email"}
