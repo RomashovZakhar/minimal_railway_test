@@ -187,7 +187,7 @@ export function RegisterForm({
           </CardTitle>
           <CardDescription className="text-center">
             {otpSent
-              ? "Введите код подтверждения, отправленный на ваш email"
+              ? "Введите код подтверждения, отправленный на ваш email"
               : "Создайте новый аккаунт"}
           </CardDescription>
         </CardHeader>
