@@ -194,7 +194,8 @@ export default function DocumentsIndexPage() {
           title: "Моё рабочее пространство",
           parent: null,
           is_root: true,
-          content: welcomeContent
+          content: welcomeContent,
+          icon: "🏡"
         };
         
         console.log("Отправляемые данные:", JSON.stringify(documentData, null, 2));

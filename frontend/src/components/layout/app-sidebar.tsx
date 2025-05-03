@@ -42,6 +42,8 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
   const { logout } = useAuth()
   const [favoriteDocuments, setFavoriteDocuments] = useState<FavoriteDocument[]>([])
   const [sharedDocuments, setSharedDocuments] = useState<SharedDocument[]>([])
+  const [rootDocumentIcon, setRootDocumentIcon] = useState<string | null>(null)
+  const [rootDocumentId, setRootDocumentId] = useState<string | null>(null)
   
 
   // Загрузка избранных документов
@@ -80,6 +82,35 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
     };
 
     fetchSharedDocuments();
+  }, []);
+
+  // Загрузка корневого документа и его иконки
+  useEffect(() => {
+    const fetchRootDocument = async () => {
+      try {
+        const response = await api.get("/documents/?root=true");
+        
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          // Выбираем документ с наименьшим ID (самый первый созданный)
+          const sortedDocs = [...response.data].sort((a, b) => {
+            const idA = parseInt(a.id);
+            const idB = parseInt(b.id);
+            return idA - idB;
+          });
+          
+          setRootDocumentId(sortedDocs[0].id);
+          setRootDocumentIcon(sortedDocs[0].icon || null);
+        } else if (response.data && response.data.id) {
+          // Если получили один объект документа
+          setRootDocumentId(response.data.id);
+          setRootDocumentIcon(response.data.icon || null);
+        }
+      } catch (err) {
+        console.error("Ошибка при загрузке корневого документа:", err);
+      }
+    };
+
+    fetchRootDocument();
   }, []);
 
   // Обработка обновлений избранных документов в реальном времени
@@ -121,6 +152,11 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
           const documentId = data.documentId;
           const newIcon = data.icon;
           
+          // Обновляем иконку корневого документа, если это он
+          if (rootDocumentId === documentId) {
+            setRootDocumentIcon(newIcon);
+          }
+          
           // Обновляем иконку в избранных документах
           setFavoriteDocuments(prev => 
             prev.map(doc => 
@@ -150,7 +186,7 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
     return () => {
       window.removeEventListener('storage', handleIconUpdated);
     };
-  }, []);
+  }, [rootDocumentId]);
 
   // Функция для перехода к корневому документу
   const navigateToRoot = async () => {
@@ -204,21 +240,9 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
               >
                 <div className="flex items-center w-full">
                   <span className="mr-2 text-lg">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-4 w-4"
-                    >
-                      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-                      <polyline points="9 22 9 12 15 12 15 22" />
-                    </svg>
+                    {rootDocumentIcon && (
+                      <span className="text-lg">{rootDocumentIcon}</span>
+                    )}
                   </span>
                   <span className="block truncate w-full">Рабочее пространство</span>
                 </div>
