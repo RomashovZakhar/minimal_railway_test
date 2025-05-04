@@ -766,7 +766,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
         }
       },
       {
-        name: "Чекбокс (задача)",
+        name: "Список задач",
         icon: "☐",
         action: () => {
           if (editorInstanceRef.current) {
@@ -1629,7 +1629,7 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 cols: 3,
               }
             },
-            nestedDocument: NestedDocumentTool 
+            nestedDocument: NestedDocumentTool
           },
           i18n: {
             messages: {
@@ -1654,10 +1654,12 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 "Text": "Текст",
                 "Header": "Заголовок",
                 "List": "Список",
-                "Checklist": "Чек-лист",
+                "Checklist": "Список задач",
                 "Image": "Изображение",
                 "Table": "Таблица",
-                "Nested Document": "Вложенный документ"
+                "Nested Document": "Вложенный документ",
+                "Unordered List": "Маркированный список",
+                "Ordered List": "Нумерованный список"
               },
               tools: {
                 "header": {
@@ -1665,7 +1667,13 @@ export function DocumentEditor({ document, onChange, titleInputRef }: DocumentEd
                 },
                 "list": {
                   "Unordered": "Маркированный список",
-                  "Ordered": "Нумерованный список"
+                  "Ordered": "Нумерованный список",
+                  "Unordered List": "Маркированный список",
+                  "Ordered List": "Нумерованный список"
+                },
+                "checklist": {
+                  "Checklist": "Список задач",
+                  "Checklist item": "Элемент списка задач"
                 },
                 "table": {
                   "Add row above": "Добавить строку выше",

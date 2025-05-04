@@ -33,6 +33,7 @@ const welcomeContent = {
     {
       type: "list",
       data: {
+        title: "Как начать работу",
         style: "unordered",
         items: [
           "Нажмите <kbd>/</kbd> для вызова меню команд",
