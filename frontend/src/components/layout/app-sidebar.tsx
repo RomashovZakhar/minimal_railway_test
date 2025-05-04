@@ -7,7 +7,7 @@ import { CustomScrollArea } from "@/components/ui/custom-scroll-area"
 import { useAuth } from "@/components/auth"
 import { useEffect, useState } from "react"
 import api from "@/lib/api"
-import { AcmeLogo } from "@/components/ui/acme-logo"
+import { RodnikLogo } from "@/components/ui/rodnik-logo"
 import {
   Sidebar,
   SidebarContent,
@@ -226,8 +226,8 @@ export function AppSidebar({ className, ...props }: AppSidebarProps) {
     >
       <SidebarContent className="flex flex-col flex-1 w-full overflow-hidden">
         <div className="flex h-16 items-center px-4">
-          <AcmeLogo />
-          <span className="ml-2 text-lg font-semibold truncate">RRodnik</span>
+          <RodnikLogo />
+          <span className="ml-2 text-lg font-semibold truncate">Rodnik</span>
         </div>
         <CustomScrollArea className="flex-1 w-full">
           <SidebarMenu className="w-full max-w-full">

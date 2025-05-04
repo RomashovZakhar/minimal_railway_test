@@ -14,8 +14,12 @@ const fontSans = FontSans({
 });
 
 export const metadata: Metadata = {
-  title: "Documentea",
-  description: "Управление задачами и документами",
+  title: "Rodnik – Управление документами",
+  description: "Управление документами",
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({
