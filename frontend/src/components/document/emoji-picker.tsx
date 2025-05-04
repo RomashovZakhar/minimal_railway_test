@@ -4,6 +4,7 @@ import { useState } from "react";
 import dynamic from "next/dynamic";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 // Импортируем EmojiPicker динамически, т.к. он не работает на сервере
 const DynamicEmojiPicker = dynamic(
@@ -34,36 +35,25 @@ export function EmojiPicker({
 
   return (
     <Popover open={isOpen} onOpenChange={disabled ? () => {} : setIsOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          className={`h-16 w-16 p-0 rounded-full ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
-          aria-label="Выбрать эмодзи"
-          disabled={disabled}
-        >
-          {currentEmoji ? (
-            <span className="text-4xl">{currentEmoji}</span>
-          ) : (
-            defaultIcon || (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="h-8 w-8"
-              >
-                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-            )
-          )}
-        </Button>
-      </PopoverTrigger>
+      <div className="flex justify-start">
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            className={`${currentEmoji ? 'h-16 w-16 rounded-full' : 'h-9 w-auto rounded-md'} p-0 ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
+            aria-label="Выбрать эмодзи"
+            disabled={disabled}
+          >
+            {currentEmoji ? (
+              <span className="text-4xl">{currentEmoji}</span>
+            ) : (
+              <div className="flex items-center gap-1.5 px-3 py-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                <Plus className="h-3.5 w-3.5" />
+                <span>Добавить иконку</span>
+              </div>
+            )}
+          </Button>
+        </PopoverTrigger>
+      </div>
       <PopoverContent className="w-full p-0 border-none shadow-lg">
         <DynamicEmojiPicker
           onEmojiClick={handleEmojiClick}
