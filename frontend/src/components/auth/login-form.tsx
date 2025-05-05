@@ -21,6 +21,7 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter()
+  
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -39,18 +40,29 @@ export function LoginForm({
         password,
       })
 
-      const data = response.data
-      
       // Сохраняем токены в localStorage
-      localStorage.setItem("accessToken", data.access)
-      localStorage.setItem("refreshToken", data.refresh)
+      localStorage.setItem("accessToken", response.data.access)
+      localStorage.setItem("refreshToken", response.data.refresh)
       
-      // Перенаправляем на корневой документ
-      router.push("/")
-    } catch (error) {
+      // Получаем информацию о пользователе
+      const userResponse = await api.get('/users/me/')
+      
+      if (userResponse.data.is_email_verified) {
+        // Если email подтвержден, перенаправляем на главную страницу
+        router.push("/")
+      } else {
+        // Если email не подтвержден, перенаправляем на страницу верификации
+        router.push("/verify-email")
+      }
+    } catch (error: any) {
       console.error("Ошибка входа:", error)
-      setError("Неверный email или пароль")
-    } finally {
+      if (error.response?.status === 401 || error.response?.status === 400) {
+        setError("Неверный email или пароль")
+      } else if (error.response?.data?.detail) {
+        setError(error.response.data.detail)
+      } else {
+        setError("Произошла ошибка при входе. Попробуйте снова.")
+      }
       setIsLoading(false)
     }
   }
@@ -61,7 +73,7 @@ export function LoginForm({
         <CardHeader>
           <CardTitle className="text-2xl">Вход</CardTitle>
           <CardDescription>
-            Введите ваш email и пароль для входа в аккаунт
+            Введите свой email и пароль для входа
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -72,6 +84,7 @@ export function LoginForm({
                   {error}
                 </div>
               )}
+              
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
                 <Input
@@ -83,33 +96,33 @@ export function LoginForm({
                   disabled={isLoading}
                 />
               </div>
+              
               <div className="grid gap-2">
-                <div className="flex items-center">
+                <div className="flex items-center justify-between">
                   <Label htmlFor="password">Пароль</Label>
-                  <Link
-                    href="/forgot-password"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
+                  <Link href="/forgot-password" className="text-sm underline underline-offset-4 hover:text-primary">
                     Забыли пароль?
                   </Link>
                 </div>
-                <Input 
-                  id="password" 
-                  name="password" 
-                  type="password" 
-                  required 
+                <Input
+                  id="password"
+                  name="password"
+                  type="password"
+                  required
                   disabled={isLoading}
                 />
               </div>
+              
               <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Вход..." : "Войти"}
               </Button>
-            </div>
-            <div className="mt-4 text-center text-sm">
-              Нет аккаунта?{" "}
-              <Link href="/register" className="underline underline-offset-4">
-                Зарегистрироваться
-              </Link>
+              
+              <div className="mt-4 text-center text-sm">
+                Нет аккаунта?{" "}
+                <Link href="/register" className="underline underline-offset-4">
+                  Зарегистрироваться
+                </Link>
+              </div>
             </div>
           </form>
         </CardContent>

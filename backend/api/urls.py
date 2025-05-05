@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
-from users.views import UserViewSet, RegisterView, VerifyEmailView, ResendVerificationView, EmailVerifiedTokenObtainPairView
+from users.views import UserViewSet, RegisterView, VerifyEmailView, ResendVerificationView, EmailVerifiedTokenObtainPairView, PasswordResetRequestView, PasswordResetConfirmView
 from documents.views import DocumentViewSet
 from tasks.views import TaskViewSet
 
@@ -18,6 +18,8 @@ urlpatterns = [
     path('register/', RegisterView.as_view(), name='register'),
     path('verify-email/', VerifyEmailView.as_view(), name='verify_email'),
     path('resend-verification/', ResendVerificationView.as_view(), name='resend_verification'),
+    path('password-reset-request/', PasswordResetRequestView.as_view(), name='password_reset_request'),
+    path('password-reset-confirm/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     
     # Включаем URL-адреса из роутера
     path('', include(router.urls)),

@@ -110,4 +110,24 @@ class VerifyEmailSerializer(serializers.Serializer):
     Сериализатор для подтверждения email
     """
     email = serializers.EmailField(required=True)
-    otp = serializers.CharField(required=True) 
+    otp = serializers.CharField(required=True)
+
+class PasswordResetRequestSerializer(serializers.Serializer):
+    """
+    Сериализатор для запроса на сброс пароля
+    """
+    email = serializers.EmailField(required=True)
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    """
+    Сериализатор для подтверждения сброса пароля
+    """
+    email = serializers.EmailField(required=True)
+    otp = serializers.CharField(required=True)
+    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password_confirm = serializers.CharField(write_only=True, required=True)
+    
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError({"password": "Пароли не совпадают"})
+        return attrs 

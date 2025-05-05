@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import UserSerializer, RegisterSerializer, VerifyEmailSerializer, UserUpdateSerializer, NotificationSerializer, EmailVerifiedTokenObtainPairSerializer
+from .serializers import UserSerializer, RegisterSerializer, VerifyEmailSerializer, UserUpdateSerializer, NotificationSerializer, EmailVerifiedTokenObtainPairSerializer, PasswordResetRequestSerializer, PasswordResetConfirmSerializer
 from .models import Notification
-from .email_service import send_verification_email
+from .email_service import send_verification_email, send_password_reset_email
 import random
 import string
 import logging
@@ -267,3 +267,77 @@ class ResendVerificationView(generics.GenericAPIView):
 
 class EmailVerifiedTokenObtainPairView(TokenObtainPairView):
     serializer_class = EmailVerifiedTokenObtainPairSerializer
+
+class PasswordResetRequestView(generics.GenericAPIView):
+    """
+    API endpoint для запроса сброса пароля
+    """
+    permission_classes = [AllowAny]
+    serializer_class = PasswordResetRequestSerializer
+    
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        email = serializer.validated_data['email']
+        
+        try:
+            user = User.objects.get(email=email)
+            
+            # Генерируем OTP-код для сброса пароля
+            otp = ''.join(random.choices(string.digits, k=6))
+            user.set_verification_code(otp)
+            
+            # Отправляем письмо для сброса пароля
+            send_password_reset_email(user, otp)
+            
+            logger.info(f"Запрос на сброс пароля для {email}")
+            return Response({"detail": "Инструкции по сбросу пароля отправлены на ваш email."}, status=status.HTTP_200_OK)
+        
+        except User.DoesNotExist:
+            # Для безопасности возвращаем успешный ответ даже если пользователь не найден
+            logger.warning(f"Запрос на сброс пароля для несуществующего пользователя: {email}")
+            return Response({"detail": "Если указанный email зарегистрирован в системе, инструкции по сбросу пароля будут отправлены."}, status=status.HTTP_200_OK)
+
+class PasswordResetConfirmView(generics.GenericAPIView):
+    """
+    API endpoint для подтверждения сброса пароля и установки нового пароля
+    """
+    permission_classes = [AllowAny]
+    serializer_class = PasswordResetConfirmSerializer
+    
+    def post(self, request):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        email = serializer.validated_data['email']
+        otp = serializer.validated_data['otp']
+        password = serializer.validated_data['password']
+        
+        try:
+            user = User.objects.get(email=email)
+            
+            # Проверяем код верификации
+            if user.is_verification_code_valid(otp):
+                # Устанавливаем новый пароль
+                user.set_password(password)
+                
+                # Автоматически подтверждаем email, если он еще не подтвержден
+                if not user.is_email_verified:
+                    user.is_email_verified = True
+                    logger.info(f"Email автоматически подтвержден в процессе сброса пароля для {email}")
+                
+                # Очищаем OTP-код
+                user.otp = None
+                user.otp_created_at = None
+                user.save()
+                
+                logger.info(f"Пароль успешно сброшен для пользователя {email}")
+                return Response({"detail": "Пароль успешно сброшен."}, status=status.HTTP_200_OK)
+            else:
+                logger.warning(f"Неверный или устаревший код для сброса пароля для {email}")
+                return Response({"detail": "Неверный или устаревший код подтверждения."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        except User.DoesNotExist:
+            logger.warning(f"Попытка сброса пароля для несуществующего пользователя: {email}")
+            return Response({"detail": "Пользователь не найден."}, status=status.HTTP_404_NOT_FOUND)
